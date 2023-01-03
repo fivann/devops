@@ -1,0 +1,53 @@
+# Create deployment myapp, image: sbeliakou/web-pod-info:v1, replicas: 1
+# Create headless service myapp-headless (ClusterIP=None) pointing to myapp pods
+# Create non-headless service myapp-clusterip (ClusterIP=ClusterIP) pointing to myapp pods
+# Headless service is a way to define DNS name for a pod within the cluster
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: sbeliakou/web-pod-info:v1
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-headless
+  labels:
+    app: myapp
+spec:
+  clusterIP: None
+  selector:
+    app: myapp
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-clusterip
+  labels:
+    app: myapp
+spec:
+  selector:
+    app: myapp
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
