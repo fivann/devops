@@ -21,9 +21,8 @@ spec:
         image: redis:latest
         ports:
         - containerPort: 6379
-
+---
 # add label
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -51,9 +50,9 @@ spec:
         image: redis:latest
         ports:
         - containerPort: 6379
- ### slaves
- 
- apiVersion: apps/v1
+---
+### slaves
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis-slave-deployment
@@ -80,9 +79,8 @@ spec:
         image: redis:latest
         ports:
         - containerPort: 6379
-
+---
 # now frontend
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -107,9 +105,8 @@ spec:
         image: gb-frontend
         ports:
         - containerPort: 8080
-
+---
 # now clusterIP for master
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -128,3 +125,24 @@ spec:
   - name: redis
     port: 6379
     targetPort: 6379
+---  
+# and now for slaves DB-s
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-slaves
+  labels:
+    app: redis
+    role: slave
+    tier: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: redis
+    role: slave
+    tier: backend
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: 6379
+
