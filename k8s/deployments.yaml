@@ -108,3 +108,23 @@ spec:
         ports:
         - containerPort: 8080
 
+# now clusterIP for master
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-master
+  labels:
+    app: redis
+    role: master
+    tier: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: redis
+    role: master
+    tier: backend
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: 6379
