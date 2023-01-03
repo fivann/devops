@@ -51,3 +51,33 @@ spec:
         image: redis:latest
         ports:
         - containerPort: 6379
+ ### slaves
+ 
+ apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-slave-deployment
+  labels:
+    app: redis
+    role: slave
+    tier: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis
+      role: slave
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: slave
+        tier: backend
+    spec:
+      containers:
+      - name: redis
+        image: redis:latest
+        ports:
+        - containerPort: 6379
+
