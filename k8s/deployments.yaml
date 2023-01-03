@@ -81,3 +81,30 @@ spec:
         ports:
         - containerPort: 6379
 
+# now frontend
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: guestbook
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: guestbook
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: guestbook
+        tier: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: gb-frontend
+        ports:
+        - containerPort: 8080
+
