@@ -1,0 +1,115 @@
+apiVersion: v2
+name: guestbook
+
+# This is the chart version. This version number should be incremented each time
+# you make changes to the chart.
+version: 0.1.0
+
+# This is the version number of the Helm chart schema.
+# You should not need to change this.
+chart:
+  schemaVersion: 2
+  version: 1.0.0
+
+# This is the name of the chart that will be displayed in the Helm repository.
+# You should change this to a descriptive name for your chart.
+displayName: Guestbook Chart
+
+# A short description of the chart.
+description: A simple guestbook application with a frontend, backend, and service.
+
+# This is the maintainer of the chart.
+# You should change this to your own name and email address.
+maintainer:
+  name: Ivan Fedorov
+  email: mailme@fedoroff.//in
+
+# This is the list of dependencies for this chart.
+# You can specify other charts or specific versions of charts as dependencies.
+dependencies:
+  - name: redis
+    version: 2.3.4
+
+# This is the list of resources that will be installed by the chart.
+resources:
+  - name: frontend-deployment
+    type: Deployment
+    apiVersion: apps/v1
+    metadata:
+      name: frontend-deployment
+      labels:
+        app: guestbook
+        tier: frontend
+    spec:
+      replicas: 2
+      selector:
+        matchLabels:
+          app: guestbook
+          tier: frontend
+      template:
+        metadata:
+          labels:
+            app: guestbook
+            tier: frontend
+        spec:
+          containers:
+          - name: frontend
+            image: gb-frontend
+            ports:
+            - containerPort: 8080
+  - name: redis-master-deployment
+    type: Deployment
+    apiVersion: apps/v1
+    metadata:
+      name: redis-master-deployment
+      labels:
+        app: redis
+        role: master
+        tier: backend
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: redis
+          role: master
+          tier: backend
+      template:
+        metadata:
+          labels:
+            app: redis
+            role: master
+            tier: backend
+        spec:
+          containers:
+          - name: redis
+            image: redis:latest
+            ports:
+            - containerPort: 6379
+  - name: redis-slave-deployment
+    type: Deployment
+    apiVersion: apps/v1
+    metadata:
+      name: redis-slave-deployment
+      labels:
+        app: redis
+        role: slave
+        tier: backend
+    spec:
+      replicas: 3
+      selector:
+        matchLabels:
+          app: redis
+          role: slave
+          tier: backend
+      template:
+        metadata:
+          labels:
+            app: redis
+            role: slave
+            tier: backend
+        spec:
+          containers:
+          - name: redis
+            image: redis:latest
+            ports:
+            - containerPort
