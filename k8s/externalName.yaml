@@ -1,0 +1,19 @@
+# Services of type ExternalName map a Service to a DNS name, not to a typical selector such as my-service or cassandra.
+#
+# Task:
+# Create ExternalName service:
+# name: db
+# externalName: prodb.a1b2c3d4wxyz.eu-west-1.rds.playpit.net
+# Documentation:
+# https://kubernetes.io/docs/concepts/services-networking/service/#externalname
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  type: ExternalName
+  externalName: prodb.a1b2c3d4wxyz.eu-west-1.rds.playpit.net
+
+# Documentation:
+# https://kubernetes.io/docs/concepts/services-networking/service/#externalname
