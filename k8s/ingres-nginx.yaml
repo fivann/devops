@@ -1,0 +1,7 @@
+## Ingress Controller is aimed to provide Cluster Level single entry point to internal Deployment/Pods resources
+
+# kubectl get deployments -n ingress-nginx -o wide
+# kubectl get services -n ingress-nginx
+## only name:
+# kubectl get services -n ingress-nginx --output=jsonpath='{.items[*].metadata.name}'
+# kubectl describe deployment nginx-ingress-controller -n ingress-nginx
