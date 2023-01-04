@@ -608,23 +608,81 @@ spec:
 
 
 ====================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: colors-ingress
+  namespace: trouble-1
+spec:
+  rules:
+  - host: trouble-1.k8slab.playpit.net
+    http:
+      paths:
+      - pathType: Prefix
+        path: /lime
+        backend:
+          service:
+            name: lime-svc
+            port:
+              number: 80
+      - pathType: Prefix
+        path: /purple
+        backend:
+          service:
+            name: purple-svc
+            port:
+              number: 80
+
+# =============
+
+# Create the custom default-backend:
+# Namespace: ingress-default-backend
+# Deployment Name: sorry-page
+# Image: sbeliakou/http-sorry-page:v1
+# Create a service with the name sorry-page-service (downstreams to sorry-page backend):
+# Namespace: ingress-default-backend
+# Service Name: sorry-page-service
+# Type: ClusterIP
+# Port: 80
+# Configure nginx-ingress-controller deployment to use our custom error backend (--default-backend-service)
+
+# Deployment for the custom default backend
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-default-backend
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: red-color
+  name: sorry-page
+  namespace: ingress-default-backend
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: red-color
+      app: sorry-page
   template:
     metadata:
       labels:
-        app: red-color
+        app: sorry-page
     spec:
       containers:
-      - name: red-color
-        image: sbeliakou/color:v1
-        env:
-        - name: COLOR
-          value: red
+      - name: sorry-page
+        image: sbeliakou/http-sorry-page:v1
+        ports:
+        - containerPort: 80
+---
+# Service for the custom default backend
+apiVersion: v1
+kind: Service
+metadata:
+  name: sorry-page-service
+  namespace: ingress-default-backend
+spec:
+  selector:
+    app: sorry-page
+  ports:
+  - port: 80
+    protocol: TCP
+  type: ClusterIP
