@@ -1,3 +1,4 @@
+## CONFIG MAP
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,6 +8,7 @@ data:
   proxy_read_timeout: "600"
   proxy_send_timeout: "600"
 ---
+## DEPLOYMENT
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,3 +44,28 @@ spec:
           containerPort: 80
         - name: https
           containerPort: 443
+---
+## SERVICE
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-ingress-controller
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    nodePort: 30080
+  - name: https
+    port: 443
+    targetPort: 443
+    nodePort: 30443
+  selector:
+    app: nginx-ingress-controller
+---
+## AUTH
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress-controller
