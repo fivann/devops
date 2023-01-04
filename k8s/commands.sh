@@ -13,3 +13,16 @@ kubectl get no -o wide
 kubectl describe no node01 
 #
 kubectl delete -f myapp.yaml
+#
+
+kubectl get deployments -n ingress-nginx -o wide
+kubectl get services -n ingress-nginx
+# only name:
+kubectl get services -n ingress-nginx --output=jsonpath='{.items[*].metadata.name}'
+kubectl describe deployment nginx-ingress-controller -n ingress-nginx
+# to run command in pod:
+# get a pod:
+kubectl get po -n ingress-nginx
+# and run
+kubectl exec nginx-ingress-controller-65886f4f5d-489ks -n ingress-nginx -it -- nginx -v
+kubectl exec nginx-ingress-controller-65886f4f5d-489ks -n ingress-nginx -it -- /bin/bash
