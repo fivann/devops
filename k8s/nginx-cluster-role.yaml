@@ -1,0 +1,79 @@
+# It looks like the cluster is running with a restrictive authorization mode and the Ingress controller 
+# does not have the necessary permissions to operate correctly. 
+# To fix this issue, you will need to give the Ingress controller the necessary permissions to operate.
+# One way to do this is to use a ClusterRole and ClusterRoleBinding to grant the Ingress controller the necessary permissions.
+# Here is an example YAML file that creates a ClusterRole named ingress-controller with the necessary permissions for an Ingress controller to operate:
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ingress-controller
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - endpoints
+  - nodes
+  - pods
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - update
+  - watch
+- apiGroups:
+  - extensions
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+  - update
+- apiGroups:
+  - extensions
+  resources:
+  - ingresses/status
+  verbs:
+  - update
+---
+# This ClusterRole grants the Ingress controller permissions to perform various actions on resources in the cluster, 
+# such as getting and listing pods, updating services, and watching events.
+# Next, you will need to create a ClusterRoleBinding that binds the ingress-controller ClusterRole to the Ingress controller Deployment:
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ingress-controller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ingress-controller
+subjects:
+- kind: ServiceAccount
+  name: ingress-controller
+  namespace: default
+# This ClusterRoleBinding binds the ingress-controller ClusterRole to the ingress-controller ServiceAccount in the default namespace.
+
+
