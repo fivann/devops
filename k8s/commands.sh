@@ -26,3 +26,9 @@ kubectl get po -n ingress-nginx
 # and run
 kubectl exec nginx-ingress-controller-65886f4f5d-489ks -n ingress-nginx -it -- nginx -v
 kubectl exec nginx-ingress-controller-65886f4f5d-489ks -n ingress-nginx -it -- /bin/bash
+# use the -c flag to specify the container in which to run the command
+kubectl exec nginx-ingress-controller-65886f4f5d-489ks -n ingress-nginx -c nginx-ingress-controller -it -- curl http://localhost > output.txt
+#
+# ingress
+kubectl get ing
+kubectl describe ingress aqua-ingress
