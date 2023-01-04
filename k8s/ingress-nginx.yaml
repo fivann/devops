@@ -381,3 +381,218 @@ spec:
 # https://kubernetes.io/docs/concepts/services-networking/ingress/
 # https://cloud.google.com/kubernetes-engine/docs/concepts/ingress
 
+# ===================
+
+# Create a service from the requirements as below (syntax for k8s v1.19+):
+
+# Application: red-color
+#  Deployment:
+#   Name: red-color
+#   Replicas: 3
+#   Image: sbeliakou/color:v1
+#   Environment Variables:
+#    COLOR=red
+#  Service:
+#   Name: red-svc
+#   Type: ClusterIP
+#   Port: 8080
+
+# Application: green-color
+#  Deployment:
+#   Name: green-color
+#   Replicas: 1
+#   Image: sbeliakou/color:v1
+#   Environment Variables:
+#    COLOR=green
+#  Service:
+#   Name: green-svc
+#   Type: ClusterIP
+#   Port: 8080
+
+# Application: yellow-color
+#  Deployment:
+#   Name: yellow-color
+#   Replicas: 2
+#   Image: sbeliakou/color:v1
+#   Environment Variables:
+#    COLOR=yellow
+#  Service:
+#   Name: yellow-svc
+#   Type: ClusterIP
+#   Port: 8080
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: red-color
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: red-color
+  template:
+    metadata:
+      labels:
+        app: red-color
+    spec:
+      containers:
+      - name: red-color
+        image: sbeliakou/color:v1
+        env:
+        - name: COLOR
+          value: red
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: red-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: red-color
+  ports:
+  - port: 8080
+---
+# green-color Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: green-color
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: green-color
+  template:
+    metadata:
+      labels:
+        app: green-color
+    spec:
+      containers:
+      - name: green-color
+        image: sbeliakou/color:v1
+        env:
+        - name: COLOR
+          value: green
+---
+# green-svc Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: green-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: green-color
+  ports:
+  - port: 8080
+---
+# yellow-color Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yellow-color
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: yellow-color
+  template:
+    metadata:
+      labels:
+        app: yellow-color
+    spec:
+      containers:
+      - name: yellow-color
+        image: sbeliakou/color:v1
+        env:
+        - name: COLOR
+          value: yellow
+---
+# yellow-svc Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: yellow-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: yellow-color
+  ports:
+  - port: 8080
+---
+# switch Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: switch
+spec:
+  type: ClusterIP
+  selector:
+    app: red-color
+    app: green-color
+    app: yellow-color
+  ports:
+  - port: 80
+---
+# lights-ingress Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lights-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: lights.k8slab.playpit.net
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: switch
+            port:
+              number: 80
+      - pathType: Prefix
+        path: /red
+        backend:
+          service:
+            name: red-svc
+            port:
+              number: 8080
+      - pathType: Prefix
+        path: /green
+        backend:
+          service:
+            name: green-svc
+            port:
+              number: 8080
+      - pathType: Prefix
+        path: /yellow
+        backend:
+          service:
+            name: yellow-svc
+            port:
+              number: 8080
+
+
+
+
+# Service: switch
+#  Service:
+#   Name: switch
+#   Type: ClusterIP
+#   Port: 80
+#   Selected Backends: red-svc, yellow-svc and green-svc
+
+# Ingress Resource: lights-ingress
+#  Ingress Name: lights-ingress
+#  FQDN: lights.k8slab.playpit.net
+#  Routing Rules:
+#   lights.k8slab.playpit.net/ -> switch
+#   lights.k8slab.playpit.net/red -> red-svc
+#   lights.k8slab.playpit.net/green -> green-svc
+#   lights.k8slab.playpit.net/yellow -> yellow-svc
