@@ -434,6 +434,7 @@ spec:
     metadata:
       labels:
         app: red-color
+        clrs: all
     spec:
       containers:
       - name: red-color
@@ -442,7 +443,7 @@ spec:
         - name: COLOR
           value: red
         ports:
-        - containerPort: 8080
+        - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -454,6 +455,7 @@ spec:
     app: red-color
   ports:
   - port: 8080
+    targetPort: 80
 ---
 # green-color Deployment
 apiVersion: apps/v1
@@ -469,6 +471,7 @@ spec:
     metadata:
       labels:
         app: green-color
+        clrs: all
     spec:
       containers:
       - name: green-color
@@ -476,6 +479,8 @@ spec:
         env:
         - name: COLOR
           value: green
+        ports:
+        - containerPort: 80
 ---
 # green-svc Service
 apiVersion: v1
@@ -488,6 +493,7 @@ spec:
     app: green-color
   ports:
   - port: 8080
+    targetPort: 80
 ---
 # yellow-color Deployment
 apiVersion: apps/v1
@@ -503,6 +509,7 @@ spec:
     metadata:
       labels:
         app: yellow-color
+        clrs: all
     spec:
       containers:
       - name: yellow-color
@@ -510,6 +517,8 @@ spec:
         env:
         - name: COLOR
           value: yellow
+        ports:
+        - containerPort: 80
 ---
 # yellow-svc Service
 apiVersion: v1
@@ -522,6 +531,7 @@ spec:
     app: yellow-color
   ports:
   - port: 8080
+    targetPort: 80
 ---
 # switch Service
 apiVersion: v1
@@ -531,9 +541,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: red-color
-    app: green-color
-    app: yellow-color
+    clrs: all
   ports:
   - port: 80
 ---
@@ -596,3 +604,27 @@ spec:
 #   lights.k8slab.playpit.net/red -> red-svc
 #   lights.k8slab.playpit.net/green -> green-svc
 #   lights.k8slab.playpit.net/yellow -> yellow-svc
+
+
+
+====================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: red-color
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: red-color
+  template:
+    metadata:
+      labels:
+        app: red-color
+    spec:
+      containers:
+      - name: red-color
+        image: sbeliakou/color:v1
+        env:
+        - name: COLOR
+          value: red
