@@ -1,3 +1,4 @@
+kubectl version --short
 # pod is in CrashLoopBackOff status, how to debug
 kubectl get po --all-namespaces
 # smth like
