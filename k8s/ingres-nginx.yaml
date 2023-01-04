@@ -5,3 +5,258 @@
 ## only name:
 # kubectl get services -n ingress-nginx --output=jsonpath='{.items[*].metadata.name}'
 # kubectl describe deployment nginx-ingress-controller -n ingress-nginx
+# kubectl exec nginx-ingress-controller-65886f4f5d-489ks -n ingress-nginx -it -- nginx -v
+# 
+# https://github.com/kubernetes/ingress-nginx/blob/master/docs/deploy/index.md
+# https://youtu.be/GhZi4DxaxxE
+# Documentation:
+# https://kubernetes.io/docs/concepts/services-networking/ingress/
+# https://cloud.google.com/kubernetes-engine/docs/concepts/ingress
+# https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/
+# https://kubernetes.github.io/ingress-nginx/
+
+ 
+ 
+ 
+# Ingress Resources. 
+# Name Based Virtual Hosting
+
+# What is Ingress Controller?
+# Just a reminder from task #1. It’s a cluster-wide web service, which gets http/https requests from customers and routes traffic inside the cluster to corresponding Pods.
+
+# What is Ingress (Resource or Rule)?
+# It’s a traffic routing configuration - this is how our Ingress Controller knows what request to sent to which pod.
+
+# How to Configure Ingress Resource?
+# Here’s an example of Ingress resource
+
+# Name Based Virtual Hosting:
+
+# For k8s prior v1.19:
+
+apiVersion: networking.k8s.io/v1beta
+kind: Ingress
+metadata:
+  name: name-virtual-host-ingress
+spec:
+  rules:
+  - host: foo.bar.com
+    http:
+      paths:
+      - backend:
+          serviceName: foo-svc
+          servicePort: 80
+          
+# For k8s v1.19+:
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: name-virtual-host-ingress
+spec:
+  rules:
+  - host: foo.bar.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: foo-svc
+            port:
+              number: 80
+# networking.k8s.io/v1beta1 is deprecated in v1.19+, unavailable in v1.22+
+# Use networking.k8s.io/v1 for k8s v1.19+
+
+# With this configuration http request to foo.bar.com should be routed to foo-svc service.
+
+# To see ingress resource (e.g. foo-ingress), use the command as following:
+
+# Describing Ingress Resource
+# $ kubectl describe ingress foo-ingress
+# Name:             foo-ingress
+# Namespace:        default
+# Address:          ...
+# Default backend:  default-http-backend:80 (...)
+# Rules:
+#   Host         Path  Backends
+#   ----         ----  --------
+#   foo.bar.com  
+#                   foo-svc:80
+# ...
+
+# Where Ingress Resouce Should be Created?
+# At least following ideas can come to mind:
+#   Keep Ingress Resource in ingress-nginx namespace - close to Ingress Controller
+#   Keep all Ingress Resources in separate (dedicated) namespace
+#   Keep application related Ingress Resource in the same namespace where application workloads are created
+
+# The best choice is option #3 - at least because of the following considerations:
+#   It won’t require any additional privileges for end-user to manage other namespaces
+#   Easier Service Domain Names resolution (Ingress Resource -> Service) within the same namespace
+#   Eventual Consistency of entire application stack: all resources are running in the same namespace, and ease of deployment approach
+
+# Task
+# There’re aqua, maroon and olive deployments created in default namespace.
+# Please do the following:
+# 1. Create services aqua-svc, maroon-svc and olive-svc for respective deployments
+
+#     kubectl create service clusterip aqua-svc --tcp=80:80 --selector=app=aqua
+#     kubectl create service clusterip maroon-svc --tcp=80:80 --selector=app=maroon
+#     kubectl create service clusterip olive-svc --tcp=80:80 --selector=app=olive
+
+# or
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Service
+metadata:
+  name: aqua-svc
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: aqua
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: maroon-svc
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: maroon
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: olive-svc
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: olive
+  type: ClusterIP
+EOF
+
+# 2. Create (3) Ingress Resources which forward incoming traffic to respective pods:
+# aqua-ingress:
+#   domain name: aqua.k8slab.playpit.net
+#   service name: aqua-svc
+#   service port: 80
+# maroon-ingress
+#   domain name: maroon.k8slab.playpit.net
+#   service name: maroon-svc
+#   service port: 80
+# olive-ingress
+#   domain name: olive.k8slab.playpit.net
+#   service name: olive-svc
+#   service port: 80
+
+kubectl apply -f - <<EOF
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aqua-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: aqua.k8slab.playpit.net
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: aqua-svc
+            port:
+              number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: maroon-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: maroon.k8slab.playpit.net
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: maroon-svc
+            port:
+              number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: olive-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - host: olive.k8slab.playpit.net
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: olive-svc
+            port:
+              number: 80
+EOF
+
+
+# Check your services in “Browser” (the button on the top of this page):
+# aqua.k8slab.playpit.net
+# maroon.k8slab.playpit.net
+# olive.k8slab.playpit.net
+
+# Checking
+# $ kubectl get ing
+# NAME             CLASS    HOSTS                       ADDRESS   PORTS   AGE
+# aqua-ingress     <none>   aqua.k8slab.playpit.net               80      6s
+# maroon-ingress   <none>   maroon.k8slab.playpit.net             80      6s
+# olive-ingress    <none>   olive.k8slab.playpit.net              80      6s
+
+# $ kubectl get pods -o wide | grep aqua
+# aqua-689668dc-29zr5       1/1     Running   0          3m21s   10.42.1.3   node02   <none>           <none>
+# aqua-689668dc-w4t8f       1/1     Running   0          3m21s   10.42.0.2   master   <none>           <none>
+
+# $ kubectl get svc,ep aqua-svc 
+# NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+# service/aqua-svc   ClusterIP   10.43.237.223   <none>        80/TCP    2m52s
+# NAME                 ENDPOINTS                   AGE
+# endpoints/aqua-svc   10.42.0.2:80,10.42.1.3:80   2m52s
+
+# $ kubectl describe ingress aqua-ingress 
+# Name:             aqua-ingress
+# Namespace:        default
+# Address:          172.31.0.2
+# Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
+# Rules:
+#   Host                     Path  Backends
+#   ----                     ----  --------
+#   aqua.k8slab.playpit.net  
+#                            /   aqua-svc:80 (10.42.0.2:80,10.42.1.3:80)
+# Annotations:               <none>
+# Events:
+#   Type    Reason  Age    From                      Message
+#   ----    ------  ----   ----                      -------
+#   Normal  CREATE  2m55s  nginx-ingress-controller  Ingress default/aqua-ingress
+#   Normal  UPDATE  2m47s  nginx-ingress-controller  Ingress default/aqua-ingress
+  
+# Documentation:
+# https://kubernetes.io/docs/concepts/services-networking/ingress/
+# https://cloud.google.com/kubernetes-engine/docs/concepts/ingress
