@@ -11,3 +11,17 @@ kubectl logs nginx-ingress-controller-66f656b54b-h8b4l
 # One way to do this is to use a ClusterRole and ClusterRoleBinding to grant the Ingress controller the necessary permissions.
 
 kubectl exec nginx-ingress-controller-65886f4f5d-xgdxs -n ingress-nginx -it -- cat /etc/nginx/nginx.conf | nl | grep access_logymc
+
+
+kubectl edit deployment nginx-ingress-controller  -n ingress-nginx
+
+# edit args to set up deafult 404:
+# --default-backend-service=ingress-default-backend/sorry-page-service
+# in section like 
+# spec:
+#   template:
+#     spec:
+#       containers:
+#       - name: nginx-ingress-controller
+#         args:
+#         - --default-backend-service=ingress-default-backend/sorry-page-service
