@@ -183,4 +183,100 @@ EOF
 # https://dzone.com/articles/routing-external-traffic-into-your-kubernetes-serv
 
 
+# Task:
+# An application called simple-web-app is running in the cluster.
+# Create ClusterIP Service and set externalIPs to master node (set its IP address):
+# Name: my-web-service
+# Service Type: ClusterIP
+# Service Port: 80
+# Target Port: 80
+# externalIPs: find master node IP
+#  Please choose proper pod selector
+
+# # kubectl describe node master | grep IP
+#   InternalIP:  172.31.0.2
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-web-service
+spec:
+  type: ClusterIP
+  selector:
+    app: simple-web-app  # choose the proper pod selector
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  externalIPs:
+  - 172.31.0.2
+  
+## =======================================================
+# Service Type: LoadBalancer
+# If your Kubernetes cluster has integration with Cloud (using cloud-controller-manager), 
+# creating service type LoadBalancer creates Cloud Load Balancer and automatically integrates it with your K8s’ service.
+# For On-prem Kubernetes Clusters you can use “MetalLB” solution.
+
+# Brief Explanation:
+# https://youtu.be/xCsz9IOt-fs
+
+# Example:
+# On cloud providers which support external load balancers, 
+# setting the type field to LoadBalancer provisions a load balancer for your Service. 
+# The actual creation of the load balancer happens asynchronously, 
+# and information about the provisioned balancer is published in the Service’s 
+# .status.loadBalancer field. For example:
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: MyApp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+  clusterIP: 10.0.171.239
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - ip: 192.0.2.127
+    
+# Here, clusterIP: 10.0.171.239 and ip: 192.0.2.127 will be created automatically
+
+# Task:
+# We need to expose our application externally. DNS name will be assigned to this LB IP separately.
+# Please, follow the next action items:
+
+# Namespace: prod
+# Service Name: book-shelf-service
+# Product Name (deployment): book-shelf
+# Create a service with type LoadBalancer (IP address will be assinged automatically from platform managed pool)
+# Application Port - find it by checking pod logs
+
+
+# Verification:
+# $ kubectl get svc -n prod
+# NAME         TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+# book-shelf   LoadBalancer   10.97.92.142   50.60.70.35   80:32419/TCP   8s
+
+# $ curl 50.60.70.35
+# Title: Winged Vortex
+# Author: James Martin
+
+# $ curl 50.60.70.35
+# Title: Day of Pluto
+# Author: Benjamin Anderson
+
+# $ curl 50.60.70.35
+# Title: Sirius Grieving
+# Author: Benjamin Harris
+
+# Documentation:
+# https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer
+
+
 
