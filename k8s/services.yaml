@@ -257,6 +257,20 @@ status:
 # Create a service with type LoadBalancer (IP address will be assinged automatically from platform managed pool)
 # Application Port - find it by checking pod logs
 
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-shelf-service
+  namespace: prod
+spec:
+  type: LoadBalancer
+  selector:
+    app: book-shelf
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+
 
 # Verification:
 # $ kubectl get svc -n prod
@@ -279,4 +293,90 @@ status:
 # https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer
 
 
+# Service Topology
+# Only Node Local Endpoints
+# A Service that only routes to node local endpoints. If no endpoints exist on the node, traffic is dropped:
+# Example:
 
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: my-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+  topologyKeys:
+    - "kubernetes.io/hostname"
+    
+# Documentation:
+# https://kubernetes.io/docs/concepts/services-networking/service-topology/#only-node-local-endpoints
+
+# Prefer Node Local Endpoints
+# A Service that prefers node local Endpoints but falls back to cluster wide endpoints if node local endpoints do not exist:
+# Example:
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: my-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+  topologyKeys:
+    - "kubernetes.io/hostname"
+    - "*"
+# Documentattion:
+# https://kubernetes.io/docs/concepts/services-networking/service-topology/#prefer-node-local-endpoints
+
+# Only Zonal or Regional Endpoints
+# A Service that prefers zonal then regional endpoints. If no endpoints exist in either, traffic is dropped.
+# Example:
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: my-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+  topologyKeys:
+    - "topology.kubernetes.io/zone"
+    - "topology.kubernetes.io/region"
+    
+# Documentation:
+# https://kubernetes.io/docs/concepts/services-networking/service-topology/#only-zonal-or-regional-endpoints
+
+# Prefer Node Local, Zonal, then Regional Endpoints
+# A Service that prefers node local, zonal, then regional endpoints but falls back to cluster wide endpoints.
+# Example:
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: my-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+  topologyKeys:
+    - "kubernetes.io/hostname"
+    - "topology.kubernetes.io/zone"
+    - "topology.kubernetes.io/region"
+    - "*"
+# Documentattion:
+# https://kubernetes.io/docs/concepts/services-networking/service-topology/#prefer-node-local-zonal-then-regional-endpoints
