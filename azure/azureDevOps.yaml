@@ -1,0 +1,67 @@
+# Example of an Azure DevOps pipeline that builds and deploys a simple web application to Azure:
+# Start with an empty job
+jobs:
+- job: BuildAndDeploy
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  # Install the Azure CLI and login to your Azure account
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'My Azure Subscription'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az login
+  # Build the web application
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '10.x'
+  - script: |
+      npm install
+      npm run build
+    displayName: 'Build web application'
+  # Publish the build artifacts
+  - task: PublishBuildArtifacts@1
+    inputs:
+      artifactName: 'build'
+  # Deploy the web application to Azure
+  - task: AzureWebApp@1
+    inputs:
+      azureSubscription: 'My Azure Subscription'
+      appType: 'webAppLinux'
+      appName: 'my-web-app'
+      package: '$(System.DefaultWorkingDirectory)/build'
+      
+############
+# Example of a GitHub Action that builds and deploys a simple web application to Azure:
+
+name: Deploy to Azure
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+    - run: npm install
+    - run: npm run build
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - uses: azure/cli@v1
+      with:
+        inlineScript: |
+          az webapp deployment source config-zip -g MyResourceGroup -n my-web-app --src $(pwd)/build
+    - uses: azure/webapps-deploy@v2
+      with:
+        app-name: my-web-app
+        package: $(pwd)/build
+
