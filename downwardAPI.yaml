@@ -1,0 +1,173 @@
+# Injecting Pod Details into the Container as Environment Variables
+
+# Following details can be exposed into container as environment variables:
+#   metadata.name - Pod name (actually, container hostname is its pod name, by default)
+#   metadata.namespace - Pod Namespace
+#   spec.nodeName - Node name where pod/container is currently running
+#   spec.serviceAccountName - Pod’s Service Account Name
+#   status.podIP - Pod IP Address
+
+# Here’s an example how to handle this:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-details-example
+spec:
+  containers:
+    - name: main
+      image: k8s.gcr.io/busybox
+      command: 
+      - sh
+      - -c
+      args:
+      - |-
+        printenv
+        while true; do sleep 1; done
+      env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: MY_POD_SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+              
+# Checking how it behaves
+
+# $ kubectl logs pod-details-example | grep MY_
+# MY_POD_SERVICE_ACCOUNT=default
+# MY_POD_NAMESPACE=default
+# MY_POD_IP=10.244.1.20
+# MY_NODE_NAME=node01
+# MY_POD_NAME=pod-details-example
+
+# Or this way:
+
+# $ kubectl exec pod-details-example -- printenv MY_POD_NAMESPACE
+# default
+
+# $ kubectl exec pod-details-example -- printenv MY_NODE_NAME
+# node01
+
+# Good to know …
+# Even without this ENV injection you can always find namespace where the pod is currently running in by inspecting /var/run/secrets/kubernetes.io/serviceaccount/namespace file
+# How to know POD IP Address? Nothing stops you to use ifconfig, ip addr show or even hostname -I (works in Debian/Redhat containers) / hostname -i (works in Busybox, Alpine as well as in Debian/Redhat) commands inside the container.
+
+# Task
+# 1. Create a pod:
+# namespace: default
+# name: hamster
+# image: busybox:1.34
+# command: printenv; sleep infinity
+# 2. Define following env variables from pod’s details:
+# node Name, where pod is currently running on -> POD_NODE
+# pod Namespace -> POD_NAMESPACE
+# 3. Get pod’s logs into /tmp/default-hamster.log
+# Save /tmp/default-hamster.log on client host
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hamster
+  namespace: default
+spec:
+  containers:
+  - name: hamster
+    image: busybox:1.34
+    command: ["sh", "-c", "printenv; sleep infinity"]
+    env:
+    - name: POD_NODE
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+          
+# This file creates a pod with the specified name "hamster" and namespace "default" and runs the "busybox:1.34" image. The command "printenv; sleep infinity" will print the environment variables and sleep indefinitely, which allows you to check the environment variables at runtime.
+
+# The pod also defines two environment variables: POD_NODE and POD_NAMESPACE, these two environment variables will be set with the current node name and the current namespace that pod is running on.
+
+# To get the pod's logs, you can use the kubectl logs command and specify the pod name and namespace.
+
+
+# $ kubectl logs -n default hamster > /tmp/default-hamster.log
+# This command will redirect the pod's logs to a file in the local host '/tmp/default-hamster.log'
+# Additionally, you can use kubectl cp command to copy file or folders between the host and the pod or between pods in the same cluster,
+
+# $ kubectl cp default/hamster:/tmp/default-hamster.log /local/path/
+# This command will copy the '/tmp/default-hamster.log' from the pod 'hamster' in namespace 'default' to the local path '/local/path/'
+
+
+# Documentation
+# https://kubernetes.io/docs/tasks/inject-data-application/environment-variable-expose-pod-information/
+# https://kubernetes.io/docs/reference/kubectl/cheatsheet/#interacting-with-running-pods
+# https://kubernetes.io/docs/tasks/debug-application-cluster/debug-running-pod/#examine-pod-logs
+
+
+##################################
+
+# Pod’s Labels and Annotations
+
+# Another mechanism for consuming the downward API is using a volume plug-in. The downward API volume plug-in creates a volume with configured fields projected into files. The metadata field of the VolumeSource API object is used to configure this volume. The plug-in supports the following fields:
+
+#   Pod Name
+#   Pod Namespace
+#   Pod Annotations
+#   Pod Labels
+
+spec:
+  containers:
+    - volumeMounts:
+        - name: podinfo
+          mountPath: /podinfo
+      ...
+  volumes:
+    - name: podinfo
+      downwardAPI:
+        items:
+          - path: "labels"
+            fieldRef:
+              fieldPath: metadata.labels
+              
+Task:
+Change the deployment scapegoat to use podinfo volume. Pick all labels and annotations under /podinfo folder.
+
+Verify:
+POD=$(kubectl get pod -l application=scapegoat -o custom-columns="POD:.metadata.name" --no-headers)
+kubectl exec -it ${POD} -- cat /podinfo/annotations
+kubectl exec -it ${POD} -- cat /podinfo/labels
+Documentation:
+https://kubernetes.io/docs/tasks/inject-data-application/downward-api-volume-expose-pod-information/
+Want to know more about Annotations and Labels?
+https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+Annotations Example:
+
+spec:
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-status: "update"
+        vault.hashicorp.com/agent-inject-secret-db-creds: "database/creds/db-app"
+        vault.hashicorp.com/role: "db-app"
+        vault.hashicorp.com/ca-cert: "/vault/tls/ca.crt"
+        vault.hashicorp.com/client-cert: "/vault/tls/client.crt"
+        vault.hashicorp.com/client-key: "/vault/tls/client.key"
+        vault.hashicorp.com/tls-secret: "vault-tls-client"
