@@ -1,0 +1,23 @@
+#### 1
+
+# Docker pipeline
+# Builds a Docker image and pushes it to the container registry
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: Docker@2
+  inputs:
+    command: 'buildAndPush'
+    containerRegistry: '<Your container registry name>'
+    tags: |
+      $(Build.BuildId)
+    Dockerfile: 'Dockerfile'
+- script: |
+    echo "Running runme.py inside container"
+    docker run --rm <Your container registry name>/<Your image name> runme.py
+  displayName: 'Run script inside container'
