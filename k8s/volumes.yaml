@@ -154,3 +154,95 @@ spec:
 
 # kubectl get storageclass << sc_name >>
 # kubectl describe storageclass << sc_name >>
+
+
+# Creating PVC with StorageClass
+
+# Here’s an example of PVC definition:
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mypvc
+  namespace: testns
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  
+  # Storage Class to be used
+  storageClassName: gold
+  
+# Task:
+# Please create PVC using Storage Class Name playpit-labs-storage
+
+# Requirements:
+# PVC Name: pvc-with-sc
+# PVC Requested Size: 2Gi
+# PVC Namespace: default
+# Labels:
+# pvc=2gbi
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-with-sc
+  labels:
+    pvc: 2gbi
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: playpit-labs-storage
+
+# This configuration creates a PVC named pvc-with-sc with a requested storage size of 2Gi and storage class playpit-labs-storage in the namespace default, it also sets the label "pvc: 2gbi" in the metadata section.
+
+# When a pod requests the PVC, Kubernetes dynamically provisions the volume based on the storage class requested, the storage class has to be pre-configured in the cluster.
+# Please make sure that the storage class 'playpit-labs-storage' exist in the cluster, also the namespace 'default' should exist before you apply the yaml file.
+
+
+# Using PVC as Volume
+
+# Let’s check our pvc right after its creation:
+
+# $ kubectl get pvc pvc-with-sc
+# NAME          STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS           AGE
+# pvc-with-sc   Pending                                      playpit-labs-storage   2m21s
+# It’s in status Pending which means that PV will be created once the first its consumer appears. Need to create a Pod using this pvc.
+
+# Let’s do this
+
+# Task:
+# Create a Pod which uses pvc-with-sc pvc
+
+# Requirements:
+# Pod name: testing-pvc-sc
+# Container image: busybox:1.34
+# Container command: sleep infinity
+# Volume:
+# persistentVolumeClaim: pvc-with-sc
+# volume Mount: /data
+# Verify:
+# $ kubectl get pv
+# NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                             STORAGECLASS           REASON   AGE
+# ...
+# pvc-2d4be53d-d151-459d-8a0b-9f1315a19142   2Gi        RWO            Delete           Bound    default/pvc-with-sc               playpit-labs-storage            2m4s
+# ...
+
+# $ kubectl get pvc pvc-with-sc
+# NAME                      STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS           AGE
+# pvc-with-sc               Bound    pvc-2d4be53d-d151-459d-8a0b-9f1315a19142   2Gi        RWO            playpit-labs-storage   2m59s
+
+# $ kubectl get po testing-pvc-sc
+# NAME             READY   STATUS    RESTARTS   AGE
+# testing-pvc-sc   1/1     Running   0          38s
+
+# In this configuration, you are creating a Pod named testing-pvc-sc that runs a single container based on the image busybox:1.34 and this container runs the command sleep infinity.
+# The Pod also mounts a volume named pvc-with-sc to the path /data inside the container, this volume is using the previously created PVC pvc-with-sc.
+# It's important to make sure that the pvc pvc-with-sc exist and accessible in the cluster before you apply the yaml file.
+
