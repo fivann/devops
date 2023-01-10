@@ -246,3 +246,131 @@ spec:
 # The Pod also mounts a volume named pvc-with-sc to the path /data inside the container, this volume is using the previously created PVC pvc-with-sc.
 # It's important to make sure that the pvc pvc-with-sc exist and accessible in the cluster before you apply the yaml file.
 
+
+# Setting “default” StorageClass
+
+# Kubernetes v1.6 added the ability to set a default storage class. This is the storage class that will be used to provision a PV if a user does not specify any one in a PVC.
+# You can define a default storage class by setting the annotation storageclass.kubernetes.io/is-default-class to true in the storage class definition. According to the specification, any other value or absence of the annotation is interpreted as false.
+
+# It is possible to configure an existing storage class to be the default storage class by using the following command:
+
+kubectl patch storageclass <storage-class-name> -p '{
+  "metadata": {
+    "annotations": {
+      "storageclass.kubernetes.io/is-default-class":"true"
+    }
+  }
+}'
+# Similarly, you can remove the default storage class annotation by using the following command:
+
+kubectl patch storageclass <storage-class-name> -p '{
+  "metadata": {
+    "annotations": {
+      "storageclass.kubernetes.io/is-default-class":"false"
+    }
+  }
+}'
+
+# Task:
+# Set playpit-labs-storage a default StorageClass for our Cluster
+
+kubectl patch storageclass playpit-labs-storage -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+# Verification:
+# Before patching:
+# $ kubectl get sc
+# NAME                    PROVISIONER             ...
+# playpit-labs-storage    rancher.io/local-path   ...
+
+# After patching:
+# $ kubectl get sc
+# NAME                             PROVISIONER             ...
+# playpit-labs-storage (default)   rancher.io/local-path   ...
+
+# Documentation:
+# https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/
+
+# Using default StorageClass
+
+# Usually all “turn-key” Kubernetes Clusters have “built-in” storage classes and their “native” provisioners.
+# The following table provides more detail on default storage classes pre-installed by cloud provider as well as the specific parameters used by these defaults.
+
+# Cloud Provider	      Default StorageClass Name	  Default Provisioner
+# Amazon Web Services   gp2                       	aws-ebs
+# Microsoft Azure	      standard	                  azure-disk
+# Google Cloud Platform	standard	                  gce-pd
+# OpenStack	            standard	                  cinder
+# VMware vSphere	      thin	                      vsphere-volume
+
+# How do I use a default StorageClass?
+# If your cluster has a default StorageClass that meets your needs, then all you need to do is create a PersistentVolumeClaim (PVC) and the default provisioner will take care of the rest – there is no need to specify the storageClassName:
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mypvc
+  namespace: testns
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+      
+# Task:
+# Please create PVC using default StorageAccount (without mentioning playpit-labs-storage)
+
+# Requirements:
+# PVC Name: pvc-with-default-sc
+# PVC Requested Size: 2Gi
+# PVC Namespace: default
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-with-default-sc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+# In this configuration, the PVC named pvc-with-default-sc is created in the namespace default, it requests for a storage size of 2Gi and it does not mention any storage class.
+# When a pod requests the PVC and does not mention any storage class name, Kubernetes will automatically use the default storage class that was configured in the cluster.
+# Please make sure that the namespace 'default' exists before you apply the yaml file.
+
+# Creating Custom StorageClass
+# To add your own storage class, first determine which provisioners work in your cluster. Then, create a StorageClass object with parameters customized to meet your needs. For many users, the easiest way to create the object is to write a yaml file and apply it with kubectl create -f. The following is an example of a StorageClass for Google Cloud Platform named gold that creates a pd-ssd. Since multiple classes can exist within a cluster, the administrator may leave the default enabled for most workloads (since it uses a pd-standard), with the gold class reserved for workloads that need extra performance.
+
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: gold
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-ssd
+  
+# Task:
+# Create own StorageClass named ifedorov2-storage-class. Find which provisioner is used by playpit-labs-storage and use it.
+#  Obviously it should be similar to playpit-labs-storage as much as possible :) Don’t set any other parameters rather then required.
+
+apiVersion: v1
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: ifedorov2-storage-class
+provisioner: <provisioner>
+
+In this configuration, you are creating a new Storage Class named ifedorov2-storage-class and set the provisioner to be the same as the playpit-labs-storage class.
+
+# To find the provisioner name you can use the kubectl command:
+#   $ kubectl describe storageclass playpit-labs-storage 
+# this will give you a detailed view of the storage class including the provisioner name.
+
+# You can also use this command to view all storage classes available
+
+#   $ kubectl get storageclass 
+# Please make sure that the provisioner is accessible and configured in your cluster, also the user running the command should have enough permissions to create a new storage class.
+
