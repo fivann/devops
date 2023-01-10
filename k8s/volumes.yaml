@@ -374,3 +374,15 @@ In this configuration, you are creating a new Storage Class named ifedorov2-stor
 #   $ kubectl get storageclass 
 # Please make sure that the provisioner is accessible and configured in your cluster, also the user running the command should have enough permissions to create a new storage class.
 
+# Can I delete/turn off the default StorageClasses?
+# You cannot delete the default storage class objects provided. Since they are installed as cluster addons, they will be recreated if they are deleted.
+# You can, however, disable the defaulting behavior by removing (or setting to false) the following annotation: storageclass.beta.kubernetes.io/is-default-class.
+
+# If there are no StorageClass objects marked with the default annotation, then PersistentVolumeClaim objects (without a StorageClass specified) will not trigger dynamic provisioning. They will, instead, fall back to the legacy behavior of binding to an available PersistentVolume object.
+
+# Can I assign my existing PVs to a particular StorageClass?
+# Yes, you can assign a StorageClass to an existing PV by editing the appropriate PV object and adding (or setting) the desired storageClassName field to it.
+# What happens if I delete a PersistentVolumeClaim (PVC)?
+# If the volume was dynamically provisioned, then the default reclaim policy is set to “delete”. This means that, by default, when the PVC is deleted, the underlying PV and storage asset will also be deleted. If you want to retain the data stored on the volume, then you must change the reclaim policy from “delete” to “retain” after the PV is provisioned.
+# Reference:
+# https://kubernetes.io/blog/2017/03/dynamic-provisioning-and-storage-classes-kubernetes/
