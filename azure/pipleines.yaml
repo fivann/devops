@@ -1,23 +1,37 @@
 #### 1
 
-# Docker pipeline
-# Builds a Docker image and pushes it to the container registry
-
-trigger:
-- master
-
-pool:
-  vmImage: 'ubuntu-latest'
+# This task uses the secureFile parameter to specify the file that needs to be downloaded and the destinationFolder parameter to specify the location where the file should be saved. In this case, the file will be saved in the $(Build.SourcesDirectory), this variable points to the folder where the source files are located.
+# In order for the task to download the file, you need to create a secure file in your organization, you can do this by navigating to the Library page and uploading the file, it will be encrypted before it gets uploaded. Once you've done this, you can reference that file in your pipeline by its name.
+# It's important to note that if the file is not present in the secure files library of your organization, this step will fail.
 
 steps:
+- task: DownloadSecureFile@1
+  inputs:
+    secureFile: 'runme-dummy.py'
+    destinationFolder: '$(Build.SourcesDirectory)/'
 - task: Docker@2
   inputs:
-    command: 'buildAndPush'
+    command: 'build'
+    buildContext: '.'
+    tags: |
+      $(Build.BuildId)
+    Dockerfile: |
+      FROM python:3.8-slim-buster
+      WORKDIR /app
+      COPY . /app
+      CMD ["python", "runme-dummy.py"]
+- task: Docker@2
+  inputs:
+    command: 'push'
     containerRegistry: '<Your container registry name>'
     tags: |
       $(Build.BuildId)
-    Dockerfile: 'Dockerfile'
 - script: |
-    echo "Running runme.py inside container"
-    docker run --rm <Your container registry name>/<Your image name> runme.py
+    echo "Running runme-dummy.py inside container"
+    docker run --rm <Your container registry name>/<Your image name> python runme-dummy.py
   displayName: 'Run script inside container'
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'docker-image'
+
