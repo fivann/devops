@@ -1,1 +1,113 @@
-###
+# 1. Pod Shared Volume: emptyDir: {}
+
+# https://youtu.be/AXi2oENUJHo
+
+# On-disk files in a Container are ephemeral, which presents some problems for non-trivial applications when running in Containers. 1. When a Container crashes, kubelet will restart it, but the files will be lost - the Container starts with a clean state. 2. When running Containers together in a Pod it is often necessary to share files between those Containers. The Kubernetes Volume abstraction solves both of these problems.
+
+# An emptyDir volume is first created when a Pod is assigned to a Node, and exists as long as that Pod is running on that node. As the name says, it is initially empty. Containers in the Pod can all read and write the same files in the emptyDir volume, though that volume can be mounted at the same or different paths in each Container. When a Pod is removed from a node for any reason, the data in the emptyDir is deleted forever.
+
+# Example Pod:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pd
+spec:
+  initContainers:
+  - image: image1
+    name: init-contanier-1
+    volumeMounts:
+    - mountPath: /dir1
+      name: pod-shared-volume
+
+  containers:
+  - image: image2
+    name: container-a
+    volumeMounts:
+    - mountPath: /dir2
+      name: pod-shared-volume
+
+  - image: image3
+    name: container-b
+    volumeMounts:
+    - mountPath: /dir3
+      name: pod-shared-volume
+
+  volumes:
+  - name: pod-shared-volume
+    emptyDir: {}
+    
+# In this example, all containers (init-contanier-1, container-a, container-b) have access to the same data located inside their pod.
+
+# Task
+# We are going to run a pod with Tomcat application, will deploy root’s “server page” before main process starts.
+# Please, create a Pod with Init and Regular Containers. Share filesystem between containers. Expose pod to NodePort.
+
+# Requirements
+# Pod:
+# Name: tomcat-with-init-emptydir
+
+# Init Container:
+# Image: busybox:1.34
+# command: wget -O /webapps/ROOT/index.jsp https://playpit-labs-assets.s3-eu-west-1.amazonaws.com/tomcat/index.jsp
+# Volume Mount Path: /webapps/ROOT/
+
+# Container:
+# Image: tomcat:9.0-jre8-alpine
+# Volume Mount Path: /usr/local/tomcat/webapps/ROOT
+# Volume:
+# Name: shared-pod-volume
+# type: emptyDir
+
+# Service:
+# Name: tomcat-with-init-emptydir-svc
+# Type: NodePort
+# Target Port: 8080
+# Node Port: 30080
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tomcat-with-init-emptydir
+spec:
+  initContainers:
+  - name: init-container
+    image: busybox:1.34
+    command: ["wget", "-O", "/webapps/ROOT/index.jsp", "https://playpit-labs-assets.s3-eu-west-1.amazonaws.com/tomcat/index.jsp"]
+    volumeMounts:
+    - name: shared-pod-volume
+      mountPath: /webapps/ROOT/
+  containers:
+  - name: tomcat-container
+    image: tomcat:9.0-jre8-alpine
+    volumeMounts:
+    - name: shared-pod-volume
+      mountPath: /usr/local/tomcat/webapps/ROOT
+  volumes:
+  - name: shared-pod-volume
+    emptyDir: {}
+---
+# In this example, the pod tomcat-with-init-emptydir contains two containers, an "init container" and a "regular container". The init container init-container is used to download a file from the internet, it uses the wget command to download index.jsp and save it in /webapps/ROOT/ directory. Then the init container mounts a volume shared-pod-volume in the path /webapps/ROOT/.
+
+# The regular container tomcat-container is running the Tomcat application and it also mounts the volume shared-pod-volume in the path /usr/local/tomcat/webapps/ROOT, which means that the regular container can access the same files that init container has created in the shared volume.
+
+# This pod also uses an emptyDir type of volume named shared-pod-volume, this type of volume is created when a Pod is assigned to a node, and exists as long as that Pod is running on that node. An emptyDir volume is initially empty when a Pod is created.
+
+# To expose this pod to a NodePort you need to create a Service:
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tomcat-with-init-emptydir-svc
+spec:
+  selector:
+    app: tomcat-with-init-emptydir
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    nodePort: 30080
+  type: NodePort
+
+
+# Documentation
+# https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
