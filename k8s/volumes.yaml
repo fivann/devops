@@ -115,6 +115,90 @@ spec:
 # Documentation
 # https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
 
+# Pod Shared Volume: emptyDir: {}
+
+# Here’s a little bit tricky task.
+
+# Please run a pod with custom details. Using initContainer you should compose an index.html with custom data.
+
+# Requirements:
+# Pod:
+# Name: web-tricky-pod-emptydir
+# Shared Volume:
+# Type: emptyDir
+# Name: shared-pod-volume
+
+# Init Container (initiates index.html file at Pod starts):
+# Image: busybox:1.34
+# Command: simple shell script which creates an index.html page, for example:
+# cat << END > /html/index.html
+# <html>
+#   <head></head>
+#   <body>
+#     <b>Student</b>: Ivan Fedorov2<br>
+#     <b>pod name</b>: $(hostname)<br>
+#     <b>pod ip</b>: $(hostname -i)<br>
+#   </body>
+# </html>
+# END
+
+# Container (shows index.html with nginx web service):
+# Image: nginx:alpine
+# mountPath: /usr/share/nginx/html
+
+# Service:
+# Name: web-tricky-pod-emptydir-svc
+# Type: NodePort
+# NodePort: 30081
+
+# General strategy:
+# Mount emptyDir volume into initContainer and create index.html file
+# Figure out where nginx is looking for index.html to respond to a web request
+# Mount that emptyDir volume (1) into nginx container (2)
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-tricky-pod-emptydir
+  labels:
+    app: web-tricky-pod-emptydir
+spec:
+  volumes:
+  - name: shared-pod-volume
+    emptyDir: {}
+  initContainers:
+  - name: init-html
+    image: busybox:1.34
+    command: ["sh", "-c", "cat << END > /html/index.html\n<html>\n  <head></head>\n  <body>\n    <b>Student</b>: Ivan Fedorov2<br>\n    <b>pod name</b>: $(hostname)<br>\n    <b>pod ip</b>: $(hostname -i)<br>\n  </body>\n</html>\nEND"]
+    volumeMounts:
+    - name: shared-pod-volume
+      mountPath: /html
+  containers:
+  - name: web
+    image: nginx:alpine
+    volumeMounts:
+    - name: shared-pod-volume
+      mountPath: /usr/share/nginx/html
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-tricky-pod-emptydir-svc
+spec:
+  selector:
+    app: web-tricky-pod-emptydir
+  type: NodePort
+  ports:
+  - name: http
+    port: 80
+    nodePort: 30081
+
+# This file creates a pod with the specified name, "web-tricky-pod-emptydir". The pod has a single volume of type "emptyDir" with the specified name "shared-pod-volume". The pod has two containers, the first one is initContainers that runs the "busybox:1.34" image, the command creates the index.html file in the /html folder of the shared volume, and the "init-html" container will use the shared volume to create the index.html file
+
+# The second container runs the "nginx:alpine" image and is used to serve the index.html file from the shared volume. The container's "web" volumeMounts points to the shared volume and the path of /usr/share/nginx/html, nginx looks for the index.html here.
+
+# Than it creates a service with the name "web-tricky-pod-emptydir-svc" that directs traffic to the pods that are selected by the app=web-tricky-pod-emptydir, and it opens the port 30081 on the nodes to be able to access the service.
+
 
 # Persistent Volumes
 
