@@ -1,0 +1,109 @@
+# Injecting Pod Details into the Container as Environment Variables
+
+# Following details can be exposed into container as environment variables:
+#   metadata.name - Pod name (actually, container hostname is its pod name, by default)
+#   metadata.namespace - Pod Namespace
+#   spec.nodeName - Node name where pod/container is currently running
+#   spec.serviceAccountName - Pod’s Service Account Name
+#   status.podIP - Pod IP Address
+
+# Here’s an example how to handle this:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-details-example
+spec:
+  containers:
+    - name: main
+      image: k8s.gcr.io/busybox
+      command: 
+      - sh
+      - -c
+      args:
+      - |-
+        printenv
+        while true; do sleep 1; done
+      env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: MY_POD_SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+              
+# Checking how it behaves
+
+# $ kubectl logs pod-details-example | grep MY_
+# MY_POD_SERVICE_ACCOUNT=default
+# MY_POD_NAMESPACE=default
+# MY_POD_IP=10.244.1.20
+# MY_NODE_NAME=node01
+# MY_POD_NAME=pod-details-example
+
+# Or this way:
+
+# $ kubectl exec pod-details-example -- printenv MY_POD_NAMESPACE
+# default
+# $ kubectl exec pod-details-example -- printenv MY_NODE_NAME
+# node01
+
+# Good to know …
+# Even without this ENV injection you can always find namespace where the pod is currently running in by inspecting /var/run/secrets/kubernetes.io/serviceaccount/namespace file
+# How to know POD IP Address? Nothing stops you to use ifconfig, ip addr show or even hostname -I (works in Debian/Redhat containers) / hostname -i (works in Busybox, Alpine as well as in Debian/Redhat) commands inside the container.
+
+# Task
+# 1. Create a pod:
+# namespace: default
+# name: hamster
+# image: busybox:1.34
+# command: printenv; sleep infinity
+
+# 2. Define following env variables from pod’s details:
+# node Name, where pod is currently running on -> POD_NODE
+# pod Namespace -> POD_NAMESPACE
+
+# 3. Get pod’s logs into /tmp/default-hamster.log
+# Save /tmp/default-hamster.log on client host
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hamster
+  namespace: default
+spec:
+  containers:
+  - name: hamster
+    image: busybox:1.34
+    command: ["sh", "-c", "printenv; sleep infinity"]
+    env:
+    - name: POD_NODE
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+
+# $ kubectl logs -f hamster -n default > /tmp/default-hamster.log
+
+
+# Documentation
+# https://kubernetes.io/docs/tasks/inject-data-application/environment-variable-expose-pod-information/
+# https://kubernetes.io/docs/reference/kubectl/cheatsheet/#interacting-with-running-pods
+# https://kubernetes.io/docs/tasks/debug-application-cluster/debug-running-pod/#examine-pod-logs
