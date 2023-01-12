@@ -161,3 +161,88 @@ spec:
         vault.hashicorp.com/client-key: "/vault/tls/client.key"
         vault.hashicorp.com/tls-secret: "vault-tls-client"
 
+##########################################################
+
+# Pod’s Resources Fields
+
+# When you specify a Pod, you can optionally specify how much of each resource a Container needs. The most common resources to specify are CPU and memory (RAM); there are others.
+
+# When you specify the resource request for Containers in a Pod, the scheduler uses this information to decide which node to place the Pod on.
+
+# When you specify a resource limit for a Container, the kubelet enforces those limits so that the running container is not allowed to use more of that resource than the limit you set. The kubelet also reserves at least the request amount of that system resource specifically for that container to use.
+
+# This is crucial information when you plan cluster capacity to prevent under- or over-utilization.
+
+Example:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-envars-resourcefieldref
+spec:
+  containers:
+    - name: container
+      image: ...
+      ...
+      resources:
+        requests:
+          memory: "32Mi"
+          cpu: "125m"
+        limits:
+          memory: "64Mi"
+          cpu: "250m"
+  ...
+  
+# More details:
+# https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+# All of this is from the Infrastucture point of view, but what about applications? Do they know about these restrictions?
+
+# You should keep in mind at least the following:
+# If a Container exceeds its memory limit, it might be terminated.
+# If a Container exceeds its memory request, it is likely that its Pod will be evicted whenever the node runs out of memory.
+# How can we prevent this danger?
+
+# Well, at least we can let application know about this outer (on container level) configuration by providing Environment variables or storing these details in some files.
+# Let’s try.
+# Use Container fields as values for environment variables
+# Here’s an example:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-envars-resourcefieldref
+spec:
+  containers:
+    - name: test-container
+      image: ...
+      command: ...
+      resources:
+        requests:
+          memory: "32Mi"
+          cpu: "125m"
+      env:
+        - name: MY_CPU_REQUEST
+          valueFrom:
+            resourceFieldRef:
+              containerName: test-container
+              resource: requests.cpu
+        - name: MY_CPU_LIMIT
+          valueFrom:
+            resourceFieldRef:
+              containerName: test-container
+              resource: limits.cpu
+              
+# Task:
+# Update scapegoat deployment to provide following environemnt variables into the main container:
+
+# CPU_REQUEST: requests.cpu
+# CPU_LIMIT: limits.cpu
+# RAM_REQUEST: requests.memory
+# RAM_LIMIT: limits.memory
+
+# Verify:
+# $ POD=$(kubectl get pod -l application=scapegoat -o custom-columns="POD:.metadata.name" --no-headers)
+# $ kubectl exec -it ${POD} -- env | egrep '(REQUEST|LIMIT)'
+# CPU_REQUEST=1
+# CPU_LIMIT=1
+# RAM_REQUEST=33554432
+# RAM_LIMIT=67108864
