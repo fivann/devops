@@ -493,9 +493,14 @@ spec:
 # kubectl get storageclass << sc_name >>
 # kubectl describe storageclass << sc_name >>
 
+##########################################################################################
+## PVC PV Troubleshooting 
+# $ kubectl edit pv pv-trouble
+# $ kubectl edit pvc pv-trouble-claim 
+# Check if AccessModel and Claiming size are mathcing!
 
+##########################################################################################
 # Creating PVC with StorageClass
-
 # Here’s an example of PVC definition:
 
 apiVersion: v1
