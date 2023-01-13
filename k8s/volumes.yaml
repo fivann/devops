@@ -500,6 +500,106 @@ spec:
 # Check if AccessModel and Claiming size are mathcing!
 
 ##########################################################################################
+
+# Task
+# There is  mysql-data pv. Please create deployment object and respective persistent volume claim based on following requirements:
+
+# Requirements:
+# Deployment Name: mysql-db
+# Image Name: mysql:8
+# Replicas: 1
+# Environment Variables:
+# MYSQL_RANDOM_ROOT_PASSWORD: true
+# MYSQL_DATABASE: production
+# MYSQL_USER: ifedorov2
+# MYSQL_PASSWORD: pAssw0rd
+# Container Port: 3306
+# Store MySQL Data in Kubernetes PV:
+# PV Name: mysql-data
+# PVC Name: mysql-data-claim
+# mountPath: /var/lib/mysql
+
+# Please find a draft of the application stack in ~/mysql-app.yaml
+
+#  Wait till deployment finishes
+
+# Note:
+# For DB and other stateful applications, the best choice is to use StatefulSets!
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-db
+  template:
+    metadata:
+      labels:
+        app: mysql-db
+    spec:
+      containers:
+      - name: mysql-db
+        image: mysql:8
+        env:
+        - name: MYSQL_RANDOM_ROOT_PASSWORD
+          value: "true"
+        - name: MYSQL_DATABASE
+          value: production
+        - name: MYSQL_USER
+          value: ifedorov2
+        - name: MYSQL_PASSWORD
+          value: pAssw0rd
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-data
+        persistentVolumeClaim:
+          claimName: mysql-data-claim
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-data-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+  selector:
+    matchLabels:
+      pv: mysql-data
+##########################################################################################
+
+# RECLAIMING 
+
+# When a consumer is done with their volume, they can delete the PVC objects from the API that allows reclamation of the resource. The reclaim policy for a PersistentVolume tells the cluster what to do with the volume after it has been released of its claim. Currently, volumes can either be Retained, Recycled, or Deleted
+
+# The Retain reclaim policy allows for manual reclamation of the resource
+# The Delete reclaim policy removes both the PersistentVolume object from Kubernetes, as well as the associated storage asset in the external infrastructure (such as an AWS EBS or so on)
+# The Recycle reclaim policy performs a basic scrub (rm -rf /thevolume/*) on the volume and makes it available again for a new claim -  Only if supported by the underlying volume plugin
+# Documentation:
+# https://kubernetes.io/docs/concepts/storage/persistent-volumes/#reclaiming
+
+##########################################################################################
+
+# Storage Classes
+
+# There are two ways PVs may be provisioned: statically or dynamically:
+#   Static way means that you have to specify PV and PVC should be configured to utilize existing PVs - all what we did on previous scenarios
+#   Dynamic implies the storage resources are dynamically provisioned using the provisioner specified by the StorageClass object (see user-guide). StorageClasses are essentially blueprints that abstract away the underlying storage provider, as well as other parameters, like disk-type (e.g.; solid-state vs standard disks).
+
+# First, let’s check what StorageClasses our Cluster has
+# $ kubectl get storageclass << sc_name >>
+# $ kubectl describe storageclass << sc_name >>
+
+
 # Creating PVC with StorageClass
 # Here’s an example of PVC definition:
 
@@ -514,7 +614,6 @@ spec:
   resources:
     requests:
       storage: 100Gi
-  
   # Storage Class to be used
   storageClassName: gold
   
@@ -547,6 +646,8 @@ spec:
 
 # When a pod requests the PVC, Kubernetes dynamically provisions the volume based on the storage class requested, the storage class has to be pre-configured in the cluster.
 # Please make sure that the storage class 'playpit-labs-storage' exist in the cluster, also the namespace 'default' should exist before you apply the yaml file.
+
+##########################################################################################
 
 
 # Using PVC as Volume
