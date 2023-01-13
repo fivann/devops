@@ -468,6 +468,12 @@ spec:
 # https://youtu.be/hAhoeg3RryY
 # https://youtu.be/x2sMWUkasoE
 
+# static PV provisioning
+# https://www.youtube.com/watch?v=XSNuDl3wHuc
+
+# dynamic PV provisioning
+# https://www.youtube.com/watch?v=LQjQvN_HXvY
+
 # $ kubectl get pv
 # $ kubectl get pv <<pv name>> -o yaml
 # $ kubectl describe pv <<pv name>>
