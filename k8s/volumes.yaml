@@ -671,6 +671,26 @@ spec:
 # Volume:
 # persistentVolumeClaim: pvc-with-sc
 # volume Mount: /data
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: testing-pvc-sc
+spec:
+  containers:
+  - name: busybox
+    image: busybox:1.34
+    command: ["sleep", "infinity"]
+    volumeMounts:
+    - name: pvc-data
+      mountPath: /data
+  volumes:
+  - name: pvc-data
+    persistentVolumeClaim:
+      claimName: pvc-with-sc
+
+
 # Verify:
 # $ kubectl get pv
 # NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                             STORAGECLASS           REASON   AGE
@@ -690,6 +710,7 @@ spec:
 # The Pod also mounts a volume named pvc-with-sc to the path /data inside the container, this volume is using the previously created PVC pvc-with-sc.
 # It's important to make sure that the pvc pvc-with-sc exist and accessible in the cluster before you apply the yaml file.
 
+##########################################################################################
 
 # Setting “default” StorageClass
 
@@ -733,6 +754,8 @@ kubectl patch storageclass playpit-labs-storage -p '{"metadata": {"annotations":
 
 # Documentation:
 # https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/
+
+##########################################################################################
 
 # Using default StorageClass
 
@@ -785,6 +808,8 @@ spec:
 # When a pod requests the PVC and does not mention any storage class name, Kubernetes will automatically use the default storage class that was configured in the cluster.
 # Please make sure that the namespace 'default' exists before you apply the yaml file.
 
+##########################################################################################
+
 # Creating Custom StorageClass
 # To add your own storage class, first determine which provisioners work in your cluster. Then, create a StorageClass object with parameters customized to meet your needs. For many users, the easiest way to create the object is to write a yaml file and apply it with kubectl create -f. The following is an example of a StorageClass for Google Cloud Platform named gold that creates a pd-ssd. Since multiple classes can exist within a cluster, the administrator may leave the default enabled for most workloads (since it uses a pd-standard), with the gold class reserved for workloads that need extra performance.
 
@@ -806,6 +831,15 @@ apiVersion: storage.k8s.io/v1
 metadata:
   name: ifedorov2-storage-class
 provisioner: <provisioner>
+
+$ kubectl describe storageclass playpit-labs-storage | grep Provisioner
+
+apiVersion: v1
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: ifedorov2-storage-class
+provisioner: rancher.io/local-path
 
 In this configuration, you are creating a new Storage Class named ifedorov2-storage-class and set the provisioner to be the same as the playpit-labs-storage class.
 
