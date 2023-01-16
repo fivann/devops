@@ -1,3 +1,6 @@
+# Basics in Rus
+# https://www.youtube.com/watch?v=9SS-0GeH2ho
+
 # 1. Stateful Service, Longread
 # Distributed stateful applications require features such as persistent identity, networking, storage, and ordinality. The Stateful Service pattern describes the StatefulSet primitive that provides these building blocks with strong guarantees ideal for the management of stateful applications.
 
