@@ -218,5 +218,21 @@ spec:
 #   "id": "ef6e0fa5-190e-49a9-af31-c3f029a8ce6b"
 # }
 
+#######################################################################################################################################
 
+# 6. Statefulset Upgrade
+# In StatefulSet you are allowed to change only spec.replicas, spec.template and spec.updateStrategy fields. Other setting require deleteing sts and creating a new one.
 
+# Task:
+# Let’s update contianer’s image to version 2:
+#   $ kubectl set image sts random-generator main=sbeliakou/random-generator:2
+# Please pay attention to the way how StatefulSet recreates pods. It starts from #2 and goes to #0
+# Verify:
+#   $ kubectl get sts random-generator -o wide
+#   NAME               READY   AGE   CONTAINERS   IMAGES
+#   random-generator   3/3     21m   main         sbeliakou/random-generator:2
+# # kubectl get pods
+#   NAME                 READY   STATUS    RESTARTS   AGE
+#   random-generator-2   1/1     Running   0          52s
+#   random-generator-1   1/1     Running   0          23s
+#   random-generator-0   1/1     Running   0          13s
