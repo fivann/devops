@@ -172,3 +172,51 @@ spec:
 
 # Task:
 # Add volumeClaimTemplates from the example above to random-generator sts. Recreate statefulset if it’s needed.
+
+########################################################################################################################################
+
+# Checking App IDs
+# Now let’s investigate IDs of all our application instances
+
+# Task:
+# Run web-check pod based on alpine
+# Install curl inside web-check pod
+# Check application ID for each random-generator pod (see Example)
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-check
+spec:
+  containers:
+  - name: web-check
+    image: alpine
+    command: ["/bin/sh"]
+    args: ["-c", "while true; do echo hello;done"]
+    command: ["/bin/sh", "-c", "apk add curl -y && while true; do echo hello1;done"]
+    command: ["/bin/sh", "-c", "while true; do echo hello; sleep 10; done"]
+
+
+#    37  kubectl exec web-check -it -- apk add curl 
+#    41  kubectl exec web-check -it -- curl random-generator-0.random-generator.default.svc.cluster.local
+#    42  kubectl exec web-check -it -- curl random-generator-1.random-generator.default.svc.cluster.local
+#    43  kubectl exec web-check -it -- curl random-generator-2.random-generator.default.svc.cluster.local
+   
+   
+# Example:
+# curl random-generator-0.random-generator.default.svc.cluster.local
+# {
+#   "version": 1,
+#   "random": 912806936502845108,
+#   "id": "ef6e0fa5-190e-49a9-af31-c3f029a8ce6b"
+# }
+# curl random-generator-0.random-generator
+# {
+#   "version": 1,
+#   "random": 3345159992639137808,
+#   "id": "ef6e0fa5-190e-49a9-af31-c3f029a8ce6b"
+# }
+
+
+
