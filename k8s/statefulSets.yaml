@@ -1,0 +1,104 @@
+# 1. Stateful Service, Longread
+# Distributed stateful applications require features such as persistent identity, networking, storage, and ordinality. The Stateful Service pattern describes the StatefulSet primitive that provides these building blocks with strong guarantees ideal for the management of stateful applications.
+
+# A Stateless application or process is something that does not save or reference information about previous operations. Every time it carries each operation from the scratch just like the first time and provides functionality to use print, CDN (Content Delivery Network) or the Web Servers in order to process every short-term request. For example, someone is searching a question in the search engine and pressed the Enter button. In case if the searching operation gets interrupted or closed due to some reason, you have to start a new one as there is no saved data for your previous request.
+
+# A Stateful application remembers specific details of a user like profile, preferences, and user actions. This information is considered as the ‘Status’ of a system. For example, your shopping cart while using any website in Cloud. Each time you select an item and add it in your cart, you add it with the items added previously and eventually, you navigate to the checkout page.
+
+# Problem
+
+# We could deploy a stateful application such as Apache ZooKeeper, MongoDB, Redis, or MySQL by using a Deployment, which could create a ReplicaSet with replicas=1 to make it reliable; use a Service to discover its endpoint; and use PersistentVolumeClaim and PersistentVolume as permanent storage for its state.
+
+# While that is mostly true for a single-instance stateful application, it is not entirely true, as a ReplicaSet does not guarantee at-most-once semantics, and the number of replicas can vary temporarily. Such a situation can be disastrous and lead to data loss.
+
+# Also, the main challenges come up when it is a distributed stateful service that is composed of multiple instances. A stateful application composed of multiple clustered services requires multifaceted guarantees from the underlying infrastructure.
+
+# Here, some of the most common long-lived persistent prerequisites for distributed stateful applications:
+
+# Storage
+# We could easily increase the number of replicas in a ReplicaSet and end up with a distributed stateful application. However, how do we define the storage requirements in such a case? Typically a distributed stateful application such as those mentioned previously would require dedicated, persistent storage for every instance. A ReplicaSet with replicas=3 and a PersistentVolumeClaim (PVC) definition would result in all three Pods attached to the same PersistentVolume (PV). While the ReplicaSet and the PVC ensure the instances are up and the storage is attached to whichever node the instances are scheduled on, the storage is not dedicated, but shared among all Pod instances.
+
+# A workaround here would be for the application instances to use shared storage and have an in-app mechanism for splitting the storage into subfolders and using it without conflicts. While doable, this approach creates a single point of a failure with the single storage. Also, it is error-prone as the number of Pods changes during scaling, and it may cause severe challenges around preventing data corruption or loss during scaling.
+
+# Another workaround would be to have a separate ReplicaSet (with replicas=1) for every instance of the distributed stateful application. In this scenario, every ReplicaSet would get its PVC and dedicated storage. The downside of this approach is that it is intensive in manual labor: scaling up requires creating a new set of ReplicaSet, PVC, or Service definitions. This approach lacks a single abstraction for managing all instances of the stateful application as one.
+
+# Networking
+# Similar to the storage requirements, a distributed stateful application requires a stable network identity. In addition to storing application-specific data into the storage space, stateful applications also store configuration details such as hostname and connection details of their peers. That means every instance should be reachable in a predictable address that should not change dynamically as is the case with Pod IP addresses in a ReplicaSet. Here we could address this requirement again through a workaround: create a Service per ReplicaSet and have replicas=1. However, managing such a setup is manual work, and the application itself cannot rely on a stable hostname because it changes after every restart and is also not aware of the Service name it is accessed from.
+
+# Identity
+# As you can see from the preceding requirements, clustered stateful applications depend heavily on every instance having a hold of its long-lived storage and network identity. That is because in a stateful application, every instance is unique and knows its own identity, and the main ingredients of that identity are the long-lived storage and the networking coordinates. To this list, we could also add the identity/name of the instance (some stateful applications require unique persistent names), which in Kubernetes would be the Pod name. A Pod created with ReplicaSet would have a random name and would not preserve that identity across a restart.
+
+# Ordinality
+# In addition to a unique and long-lived identity, the instances of clustered stateful applications have a fixed position in the collection of instances. This ordering typically impacts the sequence in which the instances are scaled up and down. However, it can also be used for data distribution or access and in-cluster behavior positioning such as locks, singletons, or masters.
+
+# Other Requirements
+# Stable and long-lived storage, networking, identity, and ordinality are among the collective needs of clustered stateful applications. Managing stateful applications also carries many other specific requirements that vary case by case. For example, some applications have the notion of a quorum and require a minimum number of instances to be always available; some are sensitive to ordinality, and some are fine with parallel Deployments; some tolerate duplicate instances, and some don’t. Planning for all these one-off cases and providing generic mechanisms is an impossible task and that’s why Kubernetes also allows creating CustomResourceDefinitions and Operators for managing stateful applications.
+
+# Documentation:
+# https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/
+
+##################################################################################################################################
+
+# 2. Sample Stateful Application
+# Stateless Pods created through a ReplicaSet are assumed to be identical, and it doesn’t matter on which one a request lands (hence the load balancing with a regular Service). But stateful Pods differ from each other, and we may need to reach a specific Pod by its coordinates.
+
+# 1. Create Headless Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: random-generator
+spec:
+  clusterIP: None
+  selector:
+    app: random-generator
+    
+# In a headless Service, clusterIP: None, which means we don’t want a kube-proxy to handle the Service, and we don’t want a cluster IP allocation nor load balancing.
+
+# 2. Create Stateful Application
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: random-generator
+spec:
+  # References the mandatory Service 
+  serviceName: random-generator
+  replicas: 3
+  selector:
+    matchLabels:
+      app: random-generator
+  template:
+    metadata:
+      labels:
+        app: random-generator
+    spec:
+      containers:
+      - image: sbeliakou/random-generator:1
+        name: main
+
+# Verify:
+# kubectl get svc,sts,pods
+#   NAME                       TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+#   service/kubernetes         ClusterIP   10.43.0.1    <none>        443/TCP   9m8s
+#   service/random-generator   ClusterIP   None         <none>        <none>    38s
+
+#   NAME                                READY   AGE
+#   statefulset.apps/random-generator   3/3     26s
+
+#   NAME                     READY   STATUS    RESTARTS   AGE
+#   pod/random-generator-0   1/1     Running   0          26s
+#   pod/random-generator-1   1/1     Running   0          18s
+#   pod/random-generator-2   1/1     Running   0          10s
+  
+# Please Note:
+# We can predict the identity of every Pod before creating it and use that knowledge in the application itself if needed. In our task they always would be:
+#   random-generator-0
+#   random-generator-1
+#   random-generator-2
+  
+# Pods have names that have an ordinal suffix (starting from 0), and that Pod creation order also defines the order in which Pods are scaled up and scaled down (in reverse order, from n – 1 to 0).
+# If we created a ReplicaSet with multiple replicas, Pods would be scheduled and started together without waiting for the first one to start successfully.
+# To allow proper data synchronization during scale-up and -down, StatefulSet by default performs sequential startup and shutdown. That means Pods start from the first one (with index 0), and only when that Pod has successfully started, is the next one scheduled (with index 1), and the sequence continues. During scaling down, the order reverses-first shutting down the Pod with the highest index, and only when it has shut down successfully is the Pod with the next lower index stopped. This sequence continues until the Pod with index 0 is terminated.
+
+
+
+
