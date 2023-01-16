@@ -99,6 +99,76 @@ spec:
 # If we created a ReplicaSet with multiple replicas, Pods would be scheduled and started together without waiting for the first one to start successfully.
 # To allow proper data synchronization during scale-up and -down, StatefulSet by default performs sequential startup and shutdown. That means Pods start from the first one (with index 0), and only when that Pod has successfully started, is the next one scheduled (with index 1), and the sequence continues. During scaling down, the order reverses-first shutting down the Pod with the highest index, and only when it has shut down successfully is the Pod with the next lower index stopped. This sequence continues until the Pod with index 0 is terminated.
 
+#######################################################################################################################################
+
+# 3. StatefulSet Pod Name
+# A headless Service creates Endpoint records in the API Server, and creates DNS entries to return A records (addresses) that point directly to the Pods backing the Service.
+
+# Each Pod gets a DNS entry where clients can directly reach out to it in a predictable way.
+
+# For example, if our random-generator Service belongs to the default namespace, we can reach our random-generator-0 Pod through its fully qualified domain name: random-generator-0.random-generator.default.svc.cluster.local, where the Pod’s name is prepended to the Service name. This mapping allows other members of the clustered application or other clients to reach specific Pods if they wish to.
+
+# Task:
+# Run test pod based on alpine:3
+# Using nslookup check the record of random-generator service
+# # kubectl run test --rm -it --image=alpine:3 -- sh 
+# If you don't see a command prompt, try pressing enter.
+# / # nslookup random-generator.default.svc.cluster.local
+# Server:         10.43.0.10
+# Address:        10.43.0.10:53
 
 
+# Name:   random-generator.default.svc.cluster.local
+# Address: 10.42.0.3
+# Name:   random-generator.default.svc.cluster.local
+# Address: 10.42.2.3
+# Name:   random-generator.default.svc.cluster.local
+# Address: 10.42.1.2
 
+# / # nslookup random-generator-0.random-generator.default.svc.cluster.local
+# Server:         10.43.0.10
+# Address:        10.43.0.10:53
+
+
+# Name:   random-generator-0.random-generator.default.svc.cluster.local
+# Address: 10.42.0.3
+
+################################################################################################################################
+
+# 4. volumeClaimTemplates
+# While it is not always necessary, the majority of stateful applications store state and thus require per-instance-based dedicated persistent storage. The way to request and associate persistent storage with a Pod in Kubernetes is through PVs and PVCs. To create PVCs the same way it creates Pods, StatefulSet uses a volumeClaimTemplates element. This extra property is one of the main differences between a StatefulSet and a ReplicaSet, which has a persistentVolumeClaim element.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: random-generator
+spec:
+  serviceName: random-generator
+  replicas: 3
+  ...
+  template:
+    ...
+    spec:
+      containers:
+      - ...
+        volumeMounts:
+        - name: logs
+          mountPath: /logs
+  volumeClaimTemplates:                    
+  - metadata:
+      name: logs
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Mi
+          
+# Rather than referring to a predefined PVC, StatefulSets create PVCs by using volumeClaimTemplates on the fly during Pod creation. This mechanism allows every Pod to get its own dedicated PVC during initial creation as well as during scaling up by changing the replicas count of the StatefulSets.
+
+# As you probably realize, we said PVCs are created and associated with the Pods, but we didn’t say anything about PVs. That is because StatefulSets do not manage PVs in any way. The storage for the Pods must be provisioned in advance by an admin, or provisioned on-demand by a PV provisioner based on the requested storage class and ready for consumption by the stateful Pods.
+
+# Note the asymmetric behavior here:
+# Scaling up a StatefulSet (increasing the replicas count) creates new Pods and associated PVCs. Moreover, scaling down deletes the Pods, but it does not delete any PVCs (nor PVs), which means the PVs cannot be recycled or deleted, and Kubernetes cannot free the storage. This behavior is by design and driven by the presumption that the storage of stateful applications is critical and that an accidental scale-down should not cause data loss. If you are sure the stateful application has been scaled down on purpose and has replicated/drained the data to other instances, you can delete the PVC manually, which allows subsequent PV recycling.
+
+# Task:
+# Add volumeClaimTemplates from the example above to random-generator sts. Recreate statefulset if it’s needed.
