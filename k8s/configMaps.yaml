@@ -1,0 +1,46 @@
+# 1. ConfigMaps in Kubernetes
+# What is a ConfigMap in Kubernetes?
+# A ConfigMap is a dictionary of configuration settings. This dictionary consists of key-value pairs of strings. Kubernetes provides these values to your containers. Like with other dictionaries (maps, hashes, …) the key lets you get and set the configuration value.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: game-demo
+data:
+  # property-like keys; each key maps to a simple value
+  player_initial_lives: "3"
+  ui_properties_file_name: "user-interface.properties"
+
+  # file-like keys
+  game.properties: |
+    enemy.types=aliens,monsters
+    player.maximum-lives=5    
+  user-interface.properties: |
+    color.good=purple
+    color.bad=yellow
+    allow.textmode=true 
+Why would you use a ConfigMap in Kubernetes?
+Use a ConfigMap to keep your application code separate from your configuration.
+
+It is an important part of creating a Twelve-Factor Application.
+
+This lets you change easily configuration depending on the environment (development, production, testing) and to dynamically change configuration at runtime.
+
+What is ConfigMap used for?
+A ConfigMap stores configuration settings for your code. Store connection strings, public credentials, hostnames, and URLs in your ConfigMap.
+
+
+https://youtu.be/ZatNT_oSlyc
+Documentation
+https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/
+https://unofficial-kubernetes.readthedocs.io/en/latest/tasks/configure-pod-container/configmap/
+https://itnext.io/learn-how-to-configure-your-kubernetes-apps-using-the-configmap-object-d8f30f99abeb
+https://medium.com/google-cloud/kubernetes-configmaps-and-secrets-68d061f7ab5b
+
+
+-Ivan ~ % brew install ubuntu/microk8s/microk8s
+
+
+(base) Ivan_Fedorov2@MacBook-Pro-Ivan ~ % ssh -p 54323 root@18.192.116.210
+(base) Ivan_Fedorov2@MacBook-Pro-Ivan ~ % 
+(base) Ivan_Fedorov2@MacBook-Pro-Ivan ~ % >....                                                                               
