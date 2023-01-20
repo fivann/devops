@@ -3,6 +3,9 @@
 timeout=1800 # 30 minutes in seconds
 start_time=$(date +%s)
 
+# Run the checkbackups command
+checkbackups &
+
 while true; do
     status=$(checkbackups -s)
 
