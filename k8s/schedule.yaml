@@ -1,0 +1,299 @@
+## https://youtu.be/rDCWxkvPlAw
+
+# 1. Scheduling Pod on a Specific Node
+
+# Problem
+# The primarily responsibility of kube-scheduler is to find a node where to place a pod. But how can we control this process?
+# We’d like to run a pod on specific node by its name.
+
+# Using nodeName Property
+# It’s the simplest form of node selection constraint, but due to its limitations it is typically not used.
+
+# Documentation:
+# https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodename
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+
+# Example:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox
+spec:
+  nodeName: << node hostname >>
+  containers:
+  - name: main
+    image: busybox:1.34
+    command:
+    - sleep
+    - infinity
+    
+# Task:
+# Please, update exercise deployment so that it runs pods on node01 host using nodeName only
+
+# Verify:
+# $ kubectl get pods -o wide
+# NAME                        READY   STATUS    RESTARTS   AGE   IP          NODE     NOMINATED NODE   READINESS GATES
+# exercise-6b4cb7c4cb-bp2hf   1/1     Running   0          61s   10.42.0.3   node01   <none>           <none>
+
+####################################################################################################################################
+
+# 2. Scheduling Pod on a Node by its Label
+# Problem
+# We’d like to run pods on any host from “a pool of suitable hosts”.
+
+# Using nodeSelector Property
+# The nodeSelector is the simplest recommended form of node selection constraint. nodeSelector is a field of PodSpec. It specifies a map of key-value pairs. For the pod to be eligible to run on a node, the node must have each of the indicated key-value pairs as labels (it can have additional labels as well). The most common usage is one key-value pair.
+
+# Built-in node labels
+# In addition to the labels you attach, nodes come pre-populated with a standard set of labels. These labels are:
+#   kubernetes.io/hostname
+#   failure-domain.beta.kubernetes.io/zone
+#   failure-domain.beta.kubernetes.io/region
+#   topology.kubernetes.io/zone
+#   topology.kubernetes.io/region
+#   beta.kubernetes.io/instance-type
+#   node.kubernetes.io/instance-type
+#   kubernetes.io/os
+#   kubernetes.io/arch
+
+# Documentation:
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector
+
+# Example
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox
+spec:
+  nodeSelector:
+    kubernetes.io/os: linux
+  containers:
+  - name: busybox
+    image: busybox:1.34
+    command:
+    - sleep
+    - "300"
+    
+# In that case, Pod will be assigned to the node with kubernetes.io/os=linux label. 
+# There’s a list of predefined labels, but you can also use your custom labels on hosts.
+
+# Task:
+# We’ve already created exercise deployment for you.
+
+# Let’s split nodes of our cluster to zones:
+
+# master node: topology.kubernetes.io/zone=eu-east-1a label
+# node01 node: topology.kubernetes.io/zone=eu-east-1b label
+# node02 node: topology.kubernetes.io/zone=eu-east-1c label
+
+# Update exercise deployment:
+# All replicas should run on the node(s) with topology.kubernetes.io/zone=eu-east-1c label
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exercise-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: exercise-app
+  template:
+    metadata:
+      labels:
+        app: exercise-app
+    spec:
+      nodeSelector:
+        topology.kubernetes.io/zone: eu-east-1c
+      containers:
+      - name: exercise-container
+        image: exercise-image
+        
+# Solution:
+
+        
+# # For example, to label the master node with topology.kubernetes.io/zone=eu-east-1a:
+# $ kubectl label nodes master topology.kubernetes.io/zone=eu-east-1a
+# # For node01 node with topology.kubernetes.io/zone=eu-east-1b:
+# $ kubectl label nodes node01 topology.kubernetes.io/zone=eu-east-1b
+# # For node02 node with topology.kubernetes.io/zone=eu-east-1c:
+# $ kubectl label nodes node02 topology.kubernetes.io/zone=eu-east-1c
+
+# Once the nodes are labeled, you can then update your deployment to schedule pods on specific nodes based on the topology.kubernetes.io/zone label by using nodeSelector.
+# $ kubectl patch deployment exercise -p '{"spec": {"template": {"spec": {"nodeSelector": {"topology.kubernetes.io/zone": "eu-east-1c"}}}}}'
+
+# Verify:
+# Checking Node Topology Lables:
+
+# $ kubectl get nodes --label-columns=topology.kubernetes.io/region,topology.kubernetes.io/zone
+# NAME     STATUS   ROLES                         AGE   VERSION        REGION      ZONE
+# node01   Ready    worker                        15m   v1.21.5+k3s2   eu-east-1   eu-east-1b
+# node02   Ready    worker                        15m   v1.21.5+k3s2   eu-east-1   eu-east-1c
+# master   Ready    control-plane,master,worker   15m   v1.21.5+k3s2   eu-east-1   eu-east-1a
+
+# Checking all pods scheduled to the proper zone:
+
+# $ kubectl describe pod exercise-... | grep 'Node'
+# Node:         node02/172.31.0.4
+# Node-Selectors:  topology.kubernetes.io/zone=eu-east-1c
+# ...
+
+# $ kubectl get pods -o wide
+# NAME                        READY   STATUS    RESTARTS   AGE   IP          NODE     NOMINATED NODE   READINESS GATES
+# exercise-6b89dc68f9-qxg9j   1/1     Running   0          18s   10.42.1.6   node02   <none>           <none>
+# exercise-6b89dc68f9-dldbj   1/1     Running   0          19s   10.42.1.5   node02   <none>           <none>
+# exercise-6b89dc68f9-hm7tm   1/1     Running   0          18s   10.42.1.7   node02   <none>           <none>
+
+########################################################################################################################################
+
+# 3. Node Affinity
+# Brief overview:
+# https://youtu.be/6ZHjqpn9dck
+# The nodeSelector provides a very simple way to constrain pods to nodes with particular labels.
+
+# The affinity/anti-affinity feature greatly expands the types of constraints you can express. The key enhancements are
+# - The affinity/anti-affinity language offers more matching rules besides exact matches created with a logical AND operation
+# - You can indicate that the rule is “soft” / “preference” rather than a hard requirement, so if the scheduler can’t satisfy it, the pod will still be scheduled
+# - You can constrain against labels on other pods running on the node (or other topological domain), rather than against labels on the node itself, which allows rules about which pods can and cannot be co-located
+
+# The Affinity feature consists of two types of affinity:
+# - “node affinity” - like the existing nodeSelector (but with the first two benefits listed above)
+# - “inter-pod affinity/anti-affinity” - constrains against pod labels rather than node labels, as described in the 3rd item listed above, in addition to having the 1st and 2nd properties listed above
+
+# Node affinity
+# Node affinity is conceptually similar to nodeSelector – it allows you to constrain which nodes your pod is eligible to be scheduled on, based on labels on the node.
+
+# There are currently two types of node affinity:
+# - requiredDuringSchedulingIgnoredDuringExecution (hard)
+# - preferredDuringSchedulingIgnoredDuringExecution (soft)
+
+# You can think of them as hard and soft respectively, in the sense that the former specifies rules that must be met for a pod to be scheduled onto a node (just like nodeSelector but using a more expressive syntax), while the latter specifies preferences that the scheduler will try to enforce but will not guarantee.
+
+# The IgnoredDuringExecution part of the names means that, similar to how nodeSelector works, if labels on a node change at runtime such that the affinity rules on a pod are no longer met, the pod will still continue to run on the node
+
+# Node affinity is specified as field affinity.nodeAffinity in the PodSpec
+# Example:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: with-node-affinity
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: topology.kubernetes.io/region
+            operator: In
+            values:
+            - us-west-1
+            - us-east-1
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: node.kubernetes.io/instance-type
+            operator: In
+            values:
+            - m5.4xlarge
+  containers:
+  - name: with-node-affinity
+    image: k8s.gcr.io/pause:3.3
+    
+# This node affinity rule says the pod can only be placed on a node with a label whose key is topology.kubernetes.io/region and whose value is either us-west-1 or us-east-1. In addition, among nodes that meet that criteria, nodes with a label whose key is node.kubernetes.io/instance-type and whose value is m5.4xlarge should be preferred.
+
+# The weight field in preferredDuringSchedulingIgnoredDuringExecution is in the range 1-100. For each node that meets all of the scheduling requirements (resource request, RequiredDuringScheduling affinity expressions, etc.), the scheduler will compute a sum by iterating through the elements of this field and adding “weight” to the sum if the node matches the corresponding MatchExpressions. This score is then combined with the scores of other priority functions for the node. 
+# The node(s) with the highest total score are the most preferred.
+
+# Task:
+# As far as you know, all the hosts of our cluster are split by zones:
+
+# $ kubectl get nodes -o custom-columns=NAME:.metadata.name,ZONE:'.metadata.labels.topology\.kubernetes\.io/zone'
+# NAME     ZONE
+# node02   eu-east-1c
+# master   eu-east-1a
+# node01   eu-east-1b
+# We have also added performance label
+
+# Rework exercise deployment to spread pods across the hosts from eu-east-1b and eu-east-1c zones with the preferred best performance (good is also acceptable)
+
+#  Don’t change Nodes’ labels
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{"deployment.kubernetes.io/revision":"1"},"creationTimestamp":"2023-01-23T08:52:53Z","generation":1,"labels":{"app":"exercise"},"name":"exercise","namespace":"task-1","resourceVersion":"533","uid":"ca0287b4-fb51-4e7d-9fb1-ec4eb52de704"},"spec":{"progressDeadlineSeconds":600,"replicas":1,"revisionHistoryLimit":10,"selector":{"matchLabels":{"app":"exercise"}},"strategy":{"rollingUpdate":{"maxSurge":"25%","maxUnavailable":"25%"},"type":"RollingUpdate"},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"exercise"}},"spec":{"containers":[{"image":"k8s.gcr.io/pause:3.3","imagePullPolicy":"IfNotPresent","name":"exercise","resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File"}],"dnsPolicy":"ClusterFirst","nodeSelector":{"topology.kubernetes.io/zone":"eu-east-1c"},"restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{},"terminationGracePeriodSeconds":30}}},"status":{"availableReplicas":1,"conditions":[{"lastTransitionTime":"2023-01-23T08:52:54Z","lastUpdateTime":"2023-01-23T08:52:54Z","message":"Deployment has minimum availability.","reason":"MinimumReplicasAvailable","status":"True","type":"Available"},{"lastTransitionTime":"2023-01-23T08:52:54Z","lastUpdateTime":"2023-01-23T08:52:54Z","message":"ReplicaSet \"exercise-76cb7f6c4f\" has successfully progressed.","reason":"NewReplicaSetAvailable","status":"True","type":"Progressing"}],"observedGeneration":1,"readyReplicas":1,"replicas":1,"updatedReplicas":1}}
+  creationTimestamp: "2023-01-23T09:08:32Z"
+  generation: 2
+  labels:
+    app: exercise
+  name: exercise
+  namespace: task-3
+  resourceVersion: "2001"
+  uid: a2551beb-fd24-400e-b554-0a0da51b55a2
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: exercise
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: exercise
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: performance
+                operator: In
+                values:
+                - best
+                - good
+            weight: 1
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                - eu-east-1b
+                - eu-east-1c
+      containers:
+      - image: k8s.gcr.io/pause:3.3
+        imagePullPolicy: IfNotPresent
+        name: exercise
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        topology.kubernetes.io/zone: eu-east-1c
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+
+
+# Verify:
+# Use these commands:
+# $ kubectl get nodes --label-columns=topology.kubernetes.io/zone,performance
+# $ kubectl get pods -o wide
+
+# Documentation:
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
+
