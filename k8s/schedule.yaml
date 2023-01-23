@@ -442,3 +442,152 @@ spec:
 # https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
 # https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#always-co-located-in-the-same-node
 
+##################################################################################################################################
+
+# 5. Pod Anti-Affinity
+
+# https://youtu.be/0OXX14DUMcI
+# Problem
+# We need to make sure all replicas (pods) of our application are running on different nodes (for high availability if the host goes down accidentally, or to spread the load across nodes, etc)
+
+# Theory
+# Inter-pod affinity and anti-affinity allow you to constrain which nodes your pod is eligible to be scheduled based on labels on pods that are already running on the node rather than based on labels on nodes.
+
+# As with node affinity, there are currently two types of pod affinity and anti-affinity:
+#   requiredDuringSchedulingIgnoredDuringExecution
+#   preferredDuringSchedulingIgnoredDuringExecution
+
+# An example of requiredDuringSchedulingIgnoredDuringExecution affinity would be “co-locate the pods of service A and service B in the same zone, since they communicate a lot with each other” and an example preferredDuringSchedulingIgnoredDuringExecution anti-affinity would be “spread the pods from this service across zones” (a hard requirement wouldn’t make sense, since you probably have more pods than zones).
+
+# Inter-pod affinity is specified as the field affinity.podAffinity in the PodSpec. And inter-pod anti-affinity is specified as the field affinity.podAntiAffinity in the PodSpec.
+
+# Example
+# Hard:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: with-pod-affinity
+spec:
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - exercise
+        topologyKey: "kubernetes.io/hostname"
+  containers:
+  - name: with-pod-anti-affinity
+    image: k8s.gcr.io/pause:3.3
+    
+# Soft:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: with-pod-affinity
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: security
+              operator: In
+              values:
+              - S2
+          topologyKey: failure-domain.beta.kubernetes.io/zone
+  containers:
+  - name: with-pod-anti-affinity
+    image: k8s.gcr.io/pause:3.3
+    
+# The pod anti-affinity rule says that the pod cannot be scheduled onto a node if that node is in the same zone as a pod with label having key “security” and value “S2”.
+
+# Task:
+# There’s rival deployment with 2 pods
+
+# Add to the deployment above pod anti-affinity rules with the following requirements:
+
+# Both deployment pods should always avoid app deployment and run in different (to app) zones
+# Choose the only “hard” or “soft” requirement (type)
+# Choose proper topologyKey
+#  Do not change app deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "11"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"labels":{"app":"rival"},"name":"rival","namespace":"task-5"},"spec":{"replicas":2,"selector":{"matchLabels":{"app":"rival"}},"template":{"metadata":{"labels":{"app":"rival"}},"spec":{"containers":[{"image":"k8s.gcr.io/pause:3.3","name":"main"}]}}}}
+  creationTimestamp: "2023-01-23T10:08:07Z"
+  generation: 11
+  labels:
+    app: rival
+  name: rival
+  namespace: task-5
+  resourceVersion: "5560"
+  uid: 960c9494-ed45-4666-a6dc-6a4c55b44c3b
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: rival
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: rival
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - app-server
+            topologyKey: topology.kubernetes.io/zone
+      containers:
+      - image: k8s.gcr.io/pause:3.3
+        imagePullPolicy: IfNotPresent
+        name: main
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+
+# Verify:
+# Before (uncontrolled):
+
+# $ kubectl get pods -o custom-columns=NAME:.metadata.name,NODE:.spec.nodeName,STATUS:.status.phase
+# NAME                     NODE     STATUS
+# app-766d6bf6b5-qq498     master   Running
+# rival-56c7d6bb5f-dhpg2   master   Running
+# rival-56c7d6bb5f-qcxh7   node02   Running
+# After (now we’re sure that all pods are running on different nodes):
+
+# $ kubectl get pods -o custom-columns=NAME:.metadata.name,NODE:.spec.nodeName,STATUS:.status.phase
+# NAME                     NODE     STATUS
+# app-766d6bf6b5-qq498     master   Running
+# rival-56c7d6bb5f-dhpg2   node01   Running
+# rival-56c7d6bb5f-qcxh7   node02   Running
+# Documentation:
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#never-co-located-in-the-same-node
