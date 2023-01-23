@@ -740,3 +740,25 @@ spec:
 # Documentation:
 # https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
 
+
+##########################################################################################
+
+8. Taints and Tolerations Troubleshooting
+
+# Task:
+# Please troubleshoot and fix stranger “production” deployment
+
+# $ kubectl get deploy
+# NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+# stranger   0/2     2            0           38s
+
+# $ kubectl get po
+# NAME                        READY   STATUS    RESTARTS   AGE
+# stranger-759f9cc947-h2w4j   0/1     Pending   0          38s
+# stranger-759f9cc947-d9zrz   0/1     Pending   0          38s
+# Hint:
+#  Start from describing its pod(s) - “Events” section. Do not change nodes settings. Your goal is to fix the pods
+
+# Documentation:
+# https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+
