@@ -591,3 +591,152 @@ spec:
 # Documentation:
 # https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
 # https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#never-co-located-in-the-same-node
+
+
+####################################################################################################################################
+
+# 6. Taints and Tolerations
+# https://youtu.be/mo2UrkjA7FE
+
+# Theory
+# Node affinity is a property of Pods that attracts them to a set of nodes (either as a preference or a hard requirement).
+# Taints are the opposite - they allow a node to repel a set of pods.
+# Tolerations are applied to pods, and allow (but do not require) the pods to schedule onto nodes with matching taints.
+# Taints and Tolerations work together to ensure that pods are not scheduled onto inappropriate nodes. One or more taints are applied to a node; this marks that the node should not accept any pods that do not tolerate the taints.
+# Tolerations are often combined with node affinity or node selector parameters to guarantee that only the matched nodes are used for pod scheduling.
+
+# Brief Summary
+#   Node Affinity is a property of Pod - where to run
+#   Taint is a property of Node - what is allowed to run (schedule/execute) on it
+#   Tolerations is a property of Pod - how to satisfy Node’s taint
+
+# Taints Configuration
+
+# On Node Side:
+# You can add a taint to a node using kubectl taint. For example,
+
+# $ kubectl taint nodes node1 key1=value1:NoSchedule
+
+# It sets a taint on node node1. This taint has key1 key, value1 value, and taint effect of NoSchedule. This means that no pod will be able to schedule onto node1 unless it matches toleration.
+
+# To remove the taint from node, you can run:
+
+# $ kubectl taint nodes node1 key1:NoSchedule-
+# To get all tains on all nodes use the command:
+
+# $ kubectl get nodes -o json | jq '.items[].spec.taints'
+# $ kubectl get node << node name >> -o json | jq '.spec.taints'
+
+# Task:
+# Create taints according to the following rules:
+# on "master" node: taint with a key of robot, value of starwars and effect of NoSchedule
+# on "node01" node: taint with a key of robot, value of terminator and effect of NoSchedule
+
+# SOLUTION 
+
+# To create a taint with a key of robot, value of starwars, and effect of NoSchedule on the "master" node, you would run the following command:
+# $ kubectl taint nodes master robot=starwars:NoSchedule
+
+# Similarly, to create a taint with a key of robot, value of terminator, and effect of NoSchedule on the "node01" node, you would run the following command:
+# $ kubectl taint nodes node01 robot=terminator:NoSchedule
+# This will create a taint on the specified node, and any pods that do not tolerate the taint will not be scheduled on that node.
+
+# Documentation:
+# https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+
+##############################################################################################################################
+
+# 7. Taints and Tolerations
+# https://youtu.be/mo2UrkjA7FE
+
+# Toleration Configuration
+# Taints and Tolerations work together to ensure that pods are not scheduled onto inappropriate nodes. 
+# One or more taints are applied to a node; this marks that the node should not accept any pods that do not tolerate the taints.
+
+# Tolerations are often combined with node affinity or node selector parameters to guarantee that only the matched nodes are used for pod scheduling.
+
+# On Node Side:
+# You can add a taint to a node using kubectl taint. For example:
+# $ kubectl taint nodes node1 key1=value1:NoSchedule
+
+# On Pod Side:
+# You specify a toleration for a pod in the PodSpec. Both of the following tolerations “match” the taint created by the kubectl taint line above, and thus a pod with either toleration would be able to schedule onto node1:
+
+tolerations:
+- key: "key1"
+  operator: "Equal"
+  value: "value1"
+  effect: "NoSchedule"
+Full Pod Definition Example:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    env: test
+spec:
+  containers:
+  - name: nginx
+    image: nginx:alpine
+  tolerations:
+  - key: "key1"
+    operator: "Equal"
+    value: "value1"
+    effect: "NoSchedule"
+    
+Taint and Toleration Components:
+
+# key	
+# The key is any string, up to 253 characters. The key must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores
+
+# value	
+# The value is any string, up to 63 characters. The value must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores
+
+# effect	
+# The effect is one of the following:
+# - NoSchedule - New pods that do not match the taint are not
+# scheduled onto that node.
+# - PreferNoSchedule - is a “preference” or “soft” version of NoSchedule
+# - NoExecute - New pods that do not match the taint cannot be scheduled onto that node
+
+# operator	
+# One of the following:
+# - Equal - The key/value/effect parameters must match. This is the default.
+# - Exists - The key/effect parameters must match. You must leave a blank value parameter, which matches any
+# For more details, please look at the documentation section.
+
+# Task:
+# Please investigate what taint is set on node01 and add corresponding toleration to the current deployment exercise (/tasks/7/app.yml). Deploy it.
+
+# SOLUTION
+# $ kubectl describe node node01 | grep Taint
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: exercise
+  name: exercise
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: exercise
+  template:
+    metadata:
+      labels:
+        app: exercise
+    spec:
+      tolerations:
+      - key: "env"
+        operator: "Equal"
+        value: "production"
+        effect: "NoSchedule"
+      containers:
+      - image: k8s.gcr.io/pause:3.3
+        name: main
+
+# Documentation:
+# https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+
