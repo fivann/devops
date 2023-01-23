@@ -297,3 +297,148 @@ spec:
 # Documentation:
 # https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
 
+
+########################################################################################################################################
+
+
+# 4. Inter-Pod Affinity
+
+# https://youtu.be/0OXX14DUMcI
+
+# Problem
+# We need to run application pod(s) where other application pods are running already.
+# For example, a web application has in-memory cache such as redis. We want the web-servers to be co-located with the cache as much as possible.
+
+# Theory
+# Inter-pod affinity and anti-affinity allow you to constrain which nodes your pod is eligible to be scheduled based on labels on pods that are already running on the node rather than based on labels on nodes.
+
+# As with node affinity, there are currently two types of pod affinity and anti-affinity:
+# - requiredDuringSchedulingIgnoredDuringExecution
+# - preferredDuringSchedulingIgnoredDuringExecution
+
+# An example of requiredDuringSchedulingIgnoredDuringExecution affinity would be “co-locate the pods of service A and service B in the same zone, since they communicate a lot with each other” and an example preferredDuringSchedulingIgnoredDuringExecution anti-affinity would be “spread the pods from this service across zones” (a hard requirement wouldn’t make sense, since you probably have more pods than zones).
+
+# Inter-pod affinity is specified as field affinity.podAffinity in the PodSpec. And inter-pod anti-affinity is specified as field affinity.podAntiAffinity in the PodSpec.
+
+# Example
+# The below yaml snippet of the webserver deployment has podAffinity configured. This informs the scheduler that all its replicas are to be co-located with pods that have selector label app=store. This will also ensure that each web-server replica does not co-locate on a single node.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-server
+spec:
+  selector:
+    matchLabels:
+      app: web-app
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - store
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: web-app
+        image: nginx:alpine
+        
+# What is a topologyKey?
+# It is the key of node labels. If two Nodes are labeled with this key and have identical values for that label, the scheduler treats both Nodes as being in the same topology. The scheduler tries to place a balanced number of Pods into each topology domain.
+
+# Just a reminder: Built-in node labels
+# In addition to the labels you attach, nodes come pre-populated with a standard set of labels. These labels are:
+#   kubernetes.io/os
+#   kubernetes.io/arch
+#   kubernetes.io/hostname
+#   topology.kubernetes.io/zone
+#   topology.kubernetes.io/region
+#   node.kubernetes.io/instance-type
+
+# Task:
+# We have cache and app deployments running in the cluster. Need to make sure app’s pods are always collocated with cache’s pods on the same nodes.
+# Please update app deployment specification with Inter-pod affinity settings.
+# Do not change cache deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "3"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{"deployment.kubernetes.io/revision":"3"},"creationTimestamp":"2023-01-23T09:56:45Z","generation":3,"labels":{"app":"app"},"name":"app","namespace":"task-4","resourceVersion":"3168","uid":"bede3260-d722-4b80-8ae6-6469edacd844"},"spec":{"progressDeadlineSeconds":600,"replicas":1,"revisionHistoryLimit":10,"selector":{"matchLabels":{"app":"app"}},"strategy":{"rollingUpdate":{"maxSurge":"25%","maxUnavailable":"25%"},"type":"RollingUpdate"},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"app"}},"spec":{"affinity":{"podAntiAffinity":{"requiredDuringSchedulingIgnoredDuringExecution":[{"labelSelector":{"matchExpressions":[{"key":"app","operator":"In","values":["cache"]}]},"topologyKey":"kubernetes.io/hostname"}]}},"containers":[{"image":"k8s.gcr.io/pause:3.3","imagePullPolicy":"IfNotPresent","name":"app-server","resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File"}],"dnsPolicy":"ClusterFirst","restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{},"terminationGracePeriodSeconds":30}}},"status":{"availableReplicas":1,"conditions":[{"lastTransitionTime":"2023-01-23T09:56:46Z","lastUpdateTime":"2023-01-23T09:56:46Z","message":"Deployment has minimum availability.","reason":"MinimumReplicasAvailable","status":"True","type":"Available"},{"lastTransitionTime":"2023-01-23T09:56:45Z","lastUpdateTime":"2023-01-23T10:10:27Z","message":"ReplicaSet \"app-7c8c5f4db5\" has successfully progressed.","reason":"NewReplicaSetAvailable","status":"True","type":"Progressing"}],"observedGeneration":3,"readyReplicas":1,"replicas":1,"updatedReplicas":1}}
+  creationTimestamp: "2023-01-23T10:11:20Z"
+  generation: 3
+  labels:
+    app: app
+  name: app
+  namespace: task-4
+  resourceVersion: "3824"
+  uid: d2ad2414-27b5-4222-8dd0-aa8c4cc74927
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: app
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: app
+    spec:
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: cache
+                operator: In
+                values:
+                - "yes"
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - image: k8s.gcr.io/pause:3.3
+        imagePullPolicy: IfNotPresent
+        name: app-server
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+
+# Verify:
+# ### Before
+# $ kubectl get pods -o wide
+# NAME                     READY   STATUS    RESTARTS   AGE   IP           NODE     NOMINATED NODE   READINESS GATES
+# app-6cc9885d55-mmccq     1/1     Running   0          17s   10.42.1.13   master   <none>           <none>
+# cache-76786b5cbb-kl272   1/1     Running   0          17s   10.42.2.12   node02   <none>           <none>
+
+# ### After
+# $ kubectl get pods -o wide
+# NAME                     READY   STATUS    RESTARTS   AGE   IP           NODE     NOMINATED NODE   READINESS GATES
+# cache-76786b5cbb-kl272   1/1     Running   0          35s   10.42.2.12   node02   <none>           <none>
+# app-5d59f4bb45-wnpqn     1/1     Running   0          8s    10.42.2.13   node02   <none>           <none>
+
+# Documentation:
+# https://kubernetes.io/docs/reference/labels-annotations-taints/
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#always-co-located-in-the-same-node
+
