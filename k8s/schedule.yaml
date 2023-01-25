@@ -759,6 +759,20 @@ spec:
 # Hint:
 #  Start from describing its pod(s) - “Events” section. Do not change nodes settings. Your goal is to fix the pods
 
+# SOLUTION:
+# Check if TAINTS on NODES matches with TOLERATIONS on PODS/DEPLOYMENT:
+# on podes:
+#       tolerations:
+#       - effect: NoSchedule
+#         key: env
+#         value: production
+#       - effect: NoSchedule
+#         key: protect
+#         value: critical
+# on node:
+# Taints:             env=production:NoSchedule
+#                     protect=critical:NoSchedule
+
 # Documentation:
 # https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
 
