@@ -354,5 +354,168 @@ subjects:
 
 #####################################################################################
 
+# 7. Setting (“Namespace Level”) Permissions
+
+# Problem:
+# root@client ~ # kubectl get pods
+# Error from server (Forbidden): pods is forbidden: User "ifedorov2" cannot list resource "pods" in API group "" in the namespace "default"
+
+# Solution:
+# Allow listing Pods in default namespaces
+# root@master ~ # kubectl create -n default role pod-viewer \
+#   --resource=pods \
+#   --verb=list,get,watch
+
+# root@master ~ # kubectl create -n default rolebinding pod-viewer \
+#   --role=pod-viewer \
+#   --user=ifedorov2
+  
+# These commands from above create following definitions:
+## Role pod-viewer
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pod-viewer
+  namespace: default
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - list
+  - get
+  - watch
+## RoleBinding pod-viewer
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pod-viewer
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pod-viewer
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: ifedorov2
+  
+# Checking Permissions (Admin side):
+# root@master ~ # cd /requests/ifedorov2
+# root@master /requests/ifedorov2 # kubectl --kubeconfig=ifedorov2.kubeconfig get pods
+
+# # Using Client Config
+# root@master /requests/ifedorov2 # kubectl --kubeconfig=ifedorov2.kubeconfig auth can-i list pods
+# yes
+
+# # Using Admin Config, default namespace
+# root@master ~ # kubectl auth can-i list pods --as=ifedorov2
+# yes
+
+# root@master ~ # kubectl auth can-i list pods --as=ifedorov2 -n kube-system
+# no
+
+# # trying to create a pod
+# root@master /requests/ifedorov2 # kubectl --kubeconfig=ifedorov2.kubeconfig run simple-pod \
+#   --image=busybox:1.34 \
+#   --command sleep infinity
+
+# Error from server (Forbidden): pods is forbidden: User "ifedorov2" cannot create resource "pods" in API group "" in the namespace "default"
+# Checking Permissions (Client side):
+# root@client ~ # kubectl get pods
+# NAME   READY   STATUS    RESTARTS   AGE
+# test   1/1     Running   0          24s
+
+# Documentation:
+# https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+
+
 #####################################################################################
+
+# 8. Setting (“Namespace Level”) Permissions
+
+# Problem:
+# root@client ~ # kubectl get deployment
+# Error from server (Forbidden): deployments.apps is forbidden: User "ifedorov2" cannot list resource "deployments" in API group "apps" in the namespace "default"
+
+# root@client ~ # kubectl create deployment test --image busybox:1.34 -- sleep infinity
+# error: failed to create deployment: deployments.apps is forbidden: User "ifedorov2" cannot create resource "deployments" in API group "apps" in the namespace "default"
+
+# Solution:
+# Allow managing Deployments in default namespaces
+# root@master ~ # kubectl create -n default role developer \
+#   --resource=deployments \
+#   --verb=get,list,watch,create,update,patch,delete
+
+# root@master ~ # kubectl create -n default rolebinding developer \
+#   --role=developer \
+#   --user=ifedorov2
+  
+# These commands above create following definitions:
+## Role developer
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: developer
+  namespace: default
+rules:
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+## RoleBinding developer
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: developer
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: developer
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: ifedorov2
+  
+# Checking Permissions (Admin side):
+# root@master ~ # cd /requests/ifedorov2
+# root@master /requests/ifedorov2 # kubectl --kubeconfig=ifedorov2.kubeconfig create deployment sample-deployemnt --image nginx:1.19-alpine 
+# deployment.apps/sample-deployemnt created
+
+# root@master /requests/ifedorov2 # kubectl --kubeconfig=ifedorov2.kubeconfig auth can-i create pods
+# no
+
+# root@master /requests/ifedorov2 # kubectl --kubeconfig=ifedorov2.kubeconfig auth can-i create deployment
+# yes
+
+# # Using Admin Config
+# root@master ~ # kubectl auth can-i create pods --as=ifedorov2
+# no
+
+# root@master ~ # kubectl auth can-i create deployment --as=ifedorov2
+# yes
+# Checking Permissions (Client side):
+# root@client ~ # kubectl create deployment test --image busybox:1.34 -- sleep infinity
+# deployment.apps/test created
+
+# root@client ~ # kubectl get deployment
+# NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+# test   1/1     1            1           10s
+
+# root@client ~ # kubectl delete deployment test 
+# deployment.apps "test" deleted
+# Documentation:
+# https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+
+
 #####################################################################################
