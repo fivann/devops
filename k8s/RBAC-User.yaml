@@ -519,3 +519,40 @@ subjects:
 
 
 #####################################################################################
+
+
+# 9. Removing User from the Cluster
+
+# The problem is that there’re a lot of resources you should wipe out.
+# Good habit is to follow naming convention (something better than here)
+
+# Admin’s routine:
+# root@master ~ # kubectl delete clusterrolebindings.rbac.authorization.k8s.io node-viewer
+# root@master ~ # kubectl delete rolebindings.rbac.authorization.k8s.io node-viewer
+
+# root@master ~ # kubectl delete clusterrole node-viewer
+# root@master ~ # kubectl delete clusterrolebinding node-viewer
+
+# root@master ~ # kubectl delete -n default role pod-viewer
+# root@master ~ # kubectl delete -n default rolebinding pod-viewer
+
+# root@master ~ # kubectl delete -n default role developer
+# root@master ~ # kubectl delete -n default rolebinding developer
+
+# root@master ~ # kubectl delete csr ifedorov2
+# Checking from client side:
+# root@client ~ # kubectl get nodes
+# Error from server (Forbidden): nodes is forbidden: User "ifedorov2" cannot list resource "nodes" in API group "" at the cluster scope
+
+# root@client ~ # kubectl get pods
+# Error from server (Forbidden): pods is forbidden: User "ifedorov2" cannot list resource "pods" in API group "" in the namespace "default"
+
+
+# Please find more details here:
+# https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+# https://www.adaltas.com/en/2019/08/07/users-rbac-kubernetes/
+# https://medium.com/@danielckv/what-is-rbac-in-kubernetes-c54457eff2dc
+# https://www.magalix.com/blog/kubernetes-rbac-101
+
+
+
