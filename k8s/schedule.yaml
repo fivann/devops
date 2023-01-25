@@ -849,5 +849,36 @@ spec:
 # r2d2-9b95dcf57-97gc8   0/1     Pending   0          59s
 # r2d2-9b95dcf57-tqws9   0/1     Pending   0          59s
 
-Documentation:
-https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+# Documentation:
+# https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+
+
+###################
+
+# 11. Node Maintenance
+
+# You can use kubectl drain to safely evict all of your pods (simply, making it disabled for scheduling) from a node before you perform maintenance on the node (e.g. kernel upgrade, hardware maintenance, etc.).
+
+# kubectl drain {%node name%}
+# kubectl drain {%node name%} --ignore-daemonsets
+# This keeps new pods from landing on the node while you are trying to get them off.
+
+# For pods with a replica set, the pod will be replaced by a new pod which will be scheduled to a new node. Additionally, if the pod is part of a service, then clients will automatically be redirected to the new pod.
+
+# For pods with no replica set, you need to bring up a new copy of the pod, and assuming it is not part of a service, redirect clients to it. Once it returns (without giving an error), you can power down the node (or equivalently, if on a cloud platform, delete the virtual machine backing the node).
+
+# Task:
+# Turn off scheduling on node02 (it will trigger rescheduling of all pods running on this node)
+
+# SOLUTION
+# $ kubectl cordon node02
+
+# Sample result:
+# $ kubectl get nodes
+# NAME     STATUS                     ROLES                         AGE   VERSION
+# master   Ready                      control-plane,master,worker   37m   v1.20.0+k3s2
+# node01   Ready                      worker                        37m   v1.20.0+k3s2
+# node02   Ready,SchedulingDisabled   worker                        37m   v1.20.0+k3s2
+
+# Documentation:
+# https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/
