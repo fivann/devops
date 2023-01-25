@@ -119,71 +119,240 @@ spec:
 
 #####################################################################################
 
-4. Kubeconfig file for user “ifedorov2”
+# 4. Kubeconfig file for user “ifedorov2”
 
-Generate cluster configuration (/requests/ifedorov2/ifedorov2.kubeconfig file):
-1. We need to find Cluster’s CA Certificate:
-1.1 From kube-public namespace
-root@master ~ # kubectl get cm -n kube-public kube-root-ca.crt -o jsonpath='{.data.ca\.crt}'
------BEGIN CERTIFICATE-----
-MIIBdzCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy
-dmVyLWNhQDE2MDk5NDk4MjIwHhcNMjEwMTA2MTYxNzAyWhcNMzEwMTA0MTYxNzAy
-WjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE2MDk5NDk4MjIwWTATBgcqhkjO
-PQIBBggqhkjOPQMBBwNCAASuNrNOpkLlSuD3YbCFTalxfYuQdOqezcThcEIILSPq
-sjZQ42WAfa+wWhMyxdJ2l+Grgt4GOlMisPT1wlml2Tt5o0IwQDAOBgNVHQ8BAf8E
-BAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUYJ0XF6acCrRro7EeX5e/
-Ciw5K6owCgYIKoZIzj0EAwIDSAAwRQIhAI+p/pM3ayymmmmw3HAQ0S6CQAvbMcyL
-CLo//vDocpkvAiAZ9TCxp7YijoHQmXFzS1fcm9zb6uT6Kijqs52yuW+5Tg==
------END CERTIFICATE-----
+# Generate cluster configuration (/requests/ifedorov2/ifedorov2.kubeconfig file):
+# 1. We need to find Cluster’s CA Certificate:
+# 1.1 From kube-public namespace
+# root@master ~ # kubectl get cm -n kube-public kube-root-ca.crt -o jsonpath='{.data.ca\.crt}'
+# -----BEGIN CERTIFICATE-----
+# MIIBdzCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy
+# dmVyLWNhQDE2MDk5NDk4MjIwHhcNMjEwMTA2MTYxNzAyWhcNMzEwMTA0MTYxNzAy
+# WjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE2MDk5NDk4MjIwWTATBgcqhkjO
+# PQIBBggqhkjOPQMBBwNCAASuNrNOpkLlSuD3YbCFTalxfYuQdOqezcThcEIILSPq
+# sjZQ42WAfa+wWhMyxdJ2l+Grgt4GOlMisPT1wlml2Tt5o0IwQDAOBgNVHQ8BAf8E
+# BAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUYJ0XF6acCrRro7EeX5e/
+# Ciw5K6owCgYIKoZIzj0EAwIDSAAwRQIhAI+p/pM3ayymmmmw3HAQ0S6CQAvbMcyL
+# CLo//vDocpkvAiAZ9TCxp7YijoHQmXFzS1fcm9zb6uT6Kijqs52yuW+5Tg==
+# -----END CERTIFICATE-----
 
-root@master ~ # kubectl get cm -n kube-public kube-root-ca.crt -o jsonpath='{.data.ca\.crt}' > ca.crt
-1.2 Or from Admin’s kubeconfig file:
-root@master ~ # kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d
------BEGIN CERTIFICATE-----
-MIIBdzCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy
-dmVyLWNhQDE2MDk5NDk4MjIwHhcNMjEwMTA2MTYxNzAyWhcNMzEwMTA0MTYxNzAy
-WjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE2MDk5NDk4MjIwWTATBgcqhkjO
-PQIBBggqhkjOPQMBBwNCAASuNrNOpkLlSuD3YbCFTalxfYuQdOqezcThcEIILSPq
-sjZQ42WAfa+wWhMyxdJ2l+Grgt4GOlMisPT1wlml2Tt5o0IwQDAOBgNVHQ8BAf8E
-BAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUYJ0XF6acCrRro7EeX5e/
-Ciw5K6owCgYIKoZIzj0EAwIDSAAwRQIhAI+p/pM3ayymmmmw3HAQ0S6CQAvbMcyL
-CLo//vDocpkvAiAZ9TCxp7YijoHQmXFzS1fcm9zb6uT6Kijqs52yuW+5Tg==
------END CERTIFICATE-----
+# root@master ~ # kubectl get cm -n kube-public kube-root-ca.crt -o jsonpath='{.data.ca\.crt}' > ca.crt
+# 1.2 Or from Admin’s kubeconfig file:
+# root@master ~ # kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d
+# -----BEGIN CERTIFICATE-----
+# MIIBdzCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy
+# dmVyLWNhQDE2MDk5NDk4MjIwHhcNMjEwMTA2MTYxNzAyWhcNMzEwMTA0MTYxNzAy
+# WjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE2MDk5NDk4MjIwWTATBgcqhkjO
+# PQIBBggqhkjOPQMBBwNCAASuNrNOpkLlSuD3YbCFTalxfYuQdOqezcThcEIILSPq
+# sjZQ42WAfa+wWhMyxdJ2l+Grgt4GOlMisPT1wlml2Tt5o0IwQDAOBgNVHQ8BAf8E
+# BAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUYJ0XF6acCrRro7EeX5e/
+# Ciw5K6owCgYIKoZIzj0EAwIDSAAwRQIhAI+p/pM3ayymmmmw3HAQ0S6CQAvbMcyL
+# CLo//vDocpkvAiAZ9TCxp7YijoHQmXFzS1fcm9zb6uT6Kijqs52yuW+5Tg==
+# -----END CERTIFICATE-----
 
-root@master ~ # kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d > ca.crt
-2. Setting Cluster name, Server, Cluster CA:
-root@master ~ # kubectl config --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig \
-  set-cluster $(kubectl config view -o jsonpath='{.clusters[0].name}') \
-  --server=$(kubectl config view -o jsonpath='{.clusters[0].cluster.server}') \
-  --certificate-authority=ca.crt \
-  --embed-certs=true
-3. Setting Context, Username:
-# context, username
-root@master ~ # kubectl config --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig \
-  set-context ifedorov2 \
-  --user=ifedorov2 \
-  --cluster=$(kubectl config view -o jsonpath='{.clusters[0].name}')
+# root@master ~ # kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d > ca.crt
+# 2. Setting Cluster name, Server, Cluster CA:
+# root@master ~ # kubectl config --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig \
+#   set-cluster $(kubectl config view -o jsonpath='{.clusters[0].name}') \
+#   --server=$(kubectl config view -o jsonpath='{.clusters[0].cluster.server}') \
+#   --certificate-authority=ca.crt \
+#   --embed-certs=true
+# 3. Setting Context, Username:
+# # context, username
+# root@master ~ # kubectl config --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig \
+#   set-context ifedorov2 \
+#   --user=ifedorov2 \
+#   --cluster=$(kubectl config view -o jsonpath='{.clusters[0].name}')
 
-root@master ~ # kubectl config --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig \
-  use-context ifedorov2
-Add user’s certificate signed by Cluster:
-root@master ~ # kubectl get csr ifedorov2 -o jsonpath='{.status.certificate}' | base64 -d > ifedorov2.pem
-root@master ~ # kubectl --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig config \
-  set-credentials ifedorov2 \
-  --client-certificate=ifedorov2.pem \
-  --client-key=ifedorov2.key \
-  --embed-certs=true
-Copy ifedorov2.kubeconfig file to the client host:
-On master node:
+# root@master ~ # kubectl config --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig \
+#   use-context ifedorov2
+# Add user’s certificate signed by Cluster:
+# root@master ~ # kubectl get csr ifedorov2 -o jsonpath='{.status.certificate}' | base64 -d > ifedorov2.pem
+# root@master ~ # kubectl --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig config \
+#   set-credentials ifedorov2 \
+#   --client-certificate=ifedorov2.pem \
+#   --client-key=ifedorov2.key \
+#   --embed-certs=true
+# Copy ifedorov2.kubeconfig file to the client host:
+# On master node:
 
-root@master ~ # scp ifedorov2.kubeconfig client:/tmp/
-On client node:
+# root@master ~ # scp ifedorov2.kubeconfig client:/tmp/
+# On client node:
 
-root@client ~ # mkdir -p ~/.kube
-root@client ~ # mv /tmp/ifedorov2.kubeconfig ~/.kube/config
-But user ifedorov2 has no permissions in the cluster yet
+# root@client ~ # mkdir -p ~/.kube
+# root@client ~ # mv /tmp/ifedorov2.kubeconfig ~/.kube/config
+# But user ifedorov2 has no permissions in the cluster yet
 
-root@client ~ # kubectl cluster-info 
+# root@client ~ # kubectl cluster-info 
 
-To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
-Error from server (Forbidden): services is forbidden: User "ifedorov2" cannot list resource "services" in API group "" in the namespace "kube-system"
+# To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+# Error from server (Forbidden): services is forbidden: User "ifedorov2" cannot list resource "services" in API group "" in the namespace "kube-system"
+
+#####################################################################################
+
+# 5. (Cluster)Roles and (Cluster)RoleBindings
+
+# The main idea behind Role-Based Access Control is to provide access to resources to those users who require and deny access to resources from users who do not require it.
+
+# Role
+# Role in Kubernetes Role-Based Access Control defines a notion of a verb like get or list and a set of nouns like pod, volumes etc. So, a role defines what you can do to a set of resources. It contains a set of rules which define a set of permission.
+
+# Here’s an example Role in the “default” namespace that can be used to grant read access to pods:
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: pod-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["pods"]
+  verbs: ["get", "watch", "list"]
+  
+# ClusterRole
+# Roles are used to assigning resources for a namespace, but if you need to assign resources on a cluster level, you need to use ClusterRole. It is similar to Roles, but it can grant permissions that are cluster-scoped such as giving resource permissions across all namespaces in the cluster.
+# Here is an example of a ClusterRole:
+
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: deployer
+rules:
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch", "create", "delete", "update", "patch"]
+
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch", "create", "delete", "update", "patch"]
+
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+  
+# RoleBinding
+# RoleBinding is used for granting permission to a Subject in a Kubernetes cluster. Subjects are nothing but a set of users, services or groups trying to access Kubernetes API. It defines what operations a user, service or group can perform. It provides privileges within the context of a particular namespace.
+
+# Here is an example of a RoleBinding that grants the “pod-reader” Role to the user “jane” within the “default” namespace. This allows “jane” to read pods in the “default” namespace.
+
+apiVersion: rbac.authorization.k8s.io/v1
+# This role binding allows "jane" to read pods in the "default" namespace.
+# You need to already have a Role named "pod-reader" in that namespace.
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: default
+subjects:
+# You can specify more than one "subject"
+- kind: User
+  name: jane # "name" is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  # "roleRef" specifies the binding to a Role / ClusterRole
+  kind: Role #this must be Role or ClusterRole
+  name: pod-reader # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+  
+# ClusterRoleBinding
+# ClusterRoleBinding is used to grant permission to a subject on a cluster-level in all the namespaces.
+
+# It can provide you with permissions for cluster resources and it can also provide you with permissions for resources within any namespace within a cluster. Obviously clusterRoleBindings are very powerful and you want to be careful with how you apply them because they apply not only to any existing namespaces but to any future namespaces that you might create as well.
+
+# The following ClusterRoleBinding allows any user in the group “manager” to read secrets in any namespace.
+
+apiVersion: rbac.authorization.k8s.io/v1
+# This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.
+kind: ClusterRoleBinding
+metadata:
+  name: read-secrets-global
+subjects:
+- kind: Group
+  name: manager # Name is case sensitive
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: secret-reader
+  apiGroup: rbac.authorization.k8s.io
+  
+# Documentation:
+# https://medium.com/@danielckv/what-is-rbac-in-kubernetes-c54457eff2dc
+# https://kubernetes.io/blog/2017/04/rbac-support-in-kubernetes/
+
+#####################################################################################
+
+# 6. Setting (“Cluster Level”) Permissions
+
+# Task:
+# Let’s do the following:
+# From Admin side (master node)
+
+# Allowing to List Nodes
+# kubectl create clusterrole node-viewer \
+#   --resource=nodes \
+#   --verb=list,get
+
+# kubectl create clusterrolebinding node-viewer \
+#   --clusterrole=node-viewer \
+#   --user=ifedorov2
+  
+# The commands above create following manifests:
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: node-viewer
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - list
+  - get
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node-viewer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: node-viewer
+subjects:
+- apiGroup: rbac.authorization.k8s.io
+  kind: User
+  name: ifedorov2
+  
+# # Checking Permissions (Admin side):
+# kubectl --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig get nodes
+
+# # Using Client Config
+# kubectl --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig auth can-i list nodes
+# yes
+
+# # Using Admin Config
+# kubectl auth can-i list nodes --as=ifedorov2
+# yes
+# Checking Permissions (Client side):
+# root@client ~ # kubectl get nodes
+# NAME     STATUS   ROLES                         AGE   VERSION
+# master   Ready    control-plane,master,worker   14m   v1.20.0+k3s2
+# node01   Ready    worker                        14m   v1.20.0+k3s2
+# node02   Ready    worker                        14m   v1.20.0+k3s2
+# Just an Advice
+# How to know if you need to use Role or ClusterRole?
+
+# All Kubernetes resources can be namespaced or not.
+
+# # In a namespace
+# kubectl api-resources --namespaced=true
+
+# # Not in a namespace
+# kubectl api-resources --namespaced=false
+# So, if you need to grant privileges on namespaced resources - use Role, otherwise use ClusterRole
+
+# Documentation:
+# https://kubernetes.io/docs/reference/access-authn-authz/rbac/
+
+#####################################################################################
+
+#####################################################################################
+#####################################################################################
