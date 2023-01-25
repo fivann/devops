@@ -776,3 +776,78 @@ spec:
 # Documentation:
 # https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
 
+###########################################################
+
+# Taints and Tolerations Eviction Control
+
+# Normally, if a taint with effect NoExecute is added to a node, then any pods that do not tolerate the taint will be evicted immediately, and pods that do tolerate the taint will never be evicted. However, a toleration with NoExecute effect can specify an optional tolerationSeconds field that dictates how long the pod will stay bound to the node after the taint is added. For example,
+
+tolerations:
+- key: "key1"
+  operator: "Equal"
+  value: "value1"
+  effect: "NoExecute"
+  tolerationSeconds: 3600
+# means that if this pod is running and a matching taint is added to the node, then the pod will stay bound to the node for 3600 seconds, and then be evicted. If the taint is removed before that time, the pod will not be evicted.
+
+# Task:
+# Follow these steps:
+
+# 1. Create r2d2 deployment as required below:
+# image: k8s.gcr.io/pause:3.3
+# replicas: 2
+# should run on node01 (tolerate node01 taints)
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: r2d2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: r2d2
+  template:
+    metadata:
+      labels:
+        app: r2d2
+    spec:
+      containers:
+      - name: r2d2
+        image: k8s.gcr.io/pause:3.3
+      tolerations:
+      - key: env
+        value: starwars
+        effect: NoSchedule
+
+# 2. Check that its pods are running
+# Expected Result:
+
+# $ kubectl get pods
+# NAME                   READY   STATUS    RESTARTS   AGE
+# r2d2-9b95dcf57-27pc5   1/1     Running   0          5s
+# r2d2-9b95dcf57-5xh4r   1/1     Running   0          5s
+
+# 3. Add taint robots=any with effect NoExecute to node01
+
+# $ kubectl taint nodes node01 robots=any:NoExecute
+
+# 4. Check what happens
+# Expected Result:
+
+# Pods Evicting:
+# $ kubectl get pods
+# NAME                   READY   STATUS        RESTARTS   AGE
+# r2d2-9b95dcf57-27pc5   0/1     Terminating   0          88s
+# r2d2-9b95dcf57-5xh4r   1/1     Terminating   0          88s
+# r2d2-9b95dcf57-97gc8   0/1     Pending       0          3s
+# r2d2-9b95dcf57-tqws9   0/1     Pending       0          3s
+# Pods Evicted, but there’s no node where they can be scheduled to:
+
+# $ kubectl get pods
+# NAME                   READY   STATUS    RESTARTS   AGE
+# r2d2-9b95dcf57-97gc8   0/1     Pending   0          59s
+# r2d2-9b95dcf57-tqws9   0/1     Pending   0          59s
+
+Documentation:
+https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
