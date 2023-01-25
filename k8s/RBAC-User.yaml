@@ -85,4 +85,105 @@ spec:
 
 #####################################################################################
 
+# 3. Approving CSR
 
+# Once the CSR has been created, it enters a ‘Pending’ condition as seen from the output below:
+#     root@master ~/ifedorov2 # kubectl get csr ifedorov2
+#     ifedorov2   11s   kubernetes-admin   Pending
+
+# Then we should approve this request:
+#     root@master ~/ifedorov2 # kubectl certificate approve ifedorov2
+#     certificatesigningrequest.certificates.k8s.io/ifedorov2 approved
+    
+# Check it again:
+#     root@master ~/ifedorov2 # kubectl get csr ifedorov2
+#     ifedorov2   14s   kubernetes-admin   Approved,Issued
+
+#     root@master ~/ifedorov2 # kubectl describe csr ifedorov2
+#     kubectl describe csr ifedorov2
+#     Name:         ifedorov2
+#     Labels:       <none>
+#     Annotations:  ...
+
+#     CreationTimestamp:  Wed, 06 Jan 2021 16:38:23 +0000
+#     Requesting User:    system:admin
+#     Signer:             kubernetes.io/kube-apiserver-client
+#     Status:             Approved,Issued
+#     Subject:
+#              Common Name:          ifedorov2
+#              ...
+#     Events:  <none>
+    
+# Documentation:
+# https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/#approve-certificate-request
+
+#####################################################################################
+
+4. Kubeconfig file for user “ifedorov2”
+
+Generate cluster configuration (/requests/ifedorov2/ifedorov2.kubeconfig file):
+1. We need to find Cluster’s CA Certificate:
+1.1 From kube-public namespace
+root@master ~ # kubectl get cm -n kube-public kube-root-ca.crt -o jsonpath='{.data.ca\.crt}'
+-----BEGIN CERTIFICATE-----
+MIIBdzCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy
+dmVyLWNhQDE2MDk5NDk4MjIwHhcNMjEwMTA2MTYxNzAyWhcNMzEwMTA0MTYxNzAy
+WjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE2MDk5NDk4MjIwWTATBgcqhkjO
+PQIBBggqhkjOPQMBBwNCAASuNrNOpkLlSuD3YbCFTalxfYuQdOqezcThcEIILSPq
+sjZQ42WAfa+wWhMyxdJ2l+Grgt4GOlMisPT1wlml2Tt5o0IwQDAOBgNVHQ8BAf8E
+BAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUYJ0XF6acCrRro7EeX5e/
+Ciw5K6owCgYIKoZIzj0EAwIDSAAwRQIhAI+p/pM3ayymmmmw3HAQ0S6CQAvbMcyL
+CLo//vDocpkvAiAZ9TCxp7YijoHQmXFzS1fcm9zb6uT6Kijqs52yuW+5Tg==
+-----END CERTIFICATE-----
+
+root@master ~ # kubectl get cm -n kube-public kube-root-ca.crt -o jsonpath='{.data.ca\.crt}' > ca.crt
+1.2 Or from Admin’s kubeconfig file:
+root@master ~ # kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d
+-----BEGIN CERTIFICATE-----
+MIIBdzCCAR2gAwIBAgIBADAKBggqhkjOPQQDAjAjMSEwHwYDVQQDDBhrM3Mtc2Vy
+dmVyLWNhQDE2MDk5NDk4MjIwHhcNMjEwMTA2MTYxNzAyWhcNMzEwMTA0MTYxNzAy
+WjAjMSEwHwYDVQQDDBhrM3Mtc2VydmVyLWNhQDE2MDk5NDk4MjIwWTATBgcqhkjO
+PQIBBggqhkjOPQMBBwNCAASuNrNOpkLlSuD3YbCFTalxfYuQdOqezcThcEIILSPq
+sjZQ42WAfa+wWhMyxdJ2l+Grgt4GOlMisPT1wlml2Tt5o0IwQDAOBgNVHQ8BAf8E
+BAMCAqQwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUYJ0XF6acCrRro7EeX5e/
+Ciw5K6owCgYIKoZIzj0EAwIDSAAwRQIhAI+p/pM3ayymmmmw3HAQ0S6CQAvbMcyL
+CLo//vDocpkvAiAZ9TCxp7YijoHQmXFzS1fcm9zb6uT6Kijqs52yuW+5Tg==
+-----END CERTIFICATE-----
+
+root@master ~ # kubectl config view --raw -o jsonpath='{.clusters[0].cluster.certificate-authority-data}' | base64 -d > ca.crt
+2. Setting Cluster name, Server, Cluster CA:
+root@master ~ # kubectl config --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig \
+  set-cluster $(kubectl config view -o jsonpath='{.clusters[0].name}') \
+  --server=$(kubectl config view -o jsonpath='{.clusters[0].cluster.server}') \
+  --certificate-authority=ca.crt \
+  --embed-certs=true
+3. Setting Context, Username:
+# context, username
+root@master ~ # kubectl config --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig \
+  set-context ifedorov2 \
+  --user=ifedorov2 \
+  --cluster=$(kubectl config view -o jsonpath='{.clusters[0].name}')
+
+root@master ~ # kubectl config --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig \
+  use-context ifedorov2
+Add user’s certificate signed by Cluster:
+root@master ~ # kubectl get csr ifedorov2 -o jsonpath='{.status.certificate}' | base64 -d > ifedorov2.pem
+root@master ~ # kubectl --kubeconfig=/requests/ifedorov2/ifedorov2.kubeconfig config \
+  set-credentials ifedorov2 \
+  --client-certificate=ifedorov2.pem \
+  --client-key=ifedorov2.key \
+  --embed-certs=true
+Copy ifedorov2.kubeconfig file to the client host:
+On master node:
+
+root@master ~ # scp ifedorov2.kubeconfig client:/tmp/
+On client node:
+
+root@client ~ # mkdir -p ~/.kube
+root@client ~ # mv /tmp/ifedorov2.kubeconfig ~/.kube/config
+But user ifedorov2 has no permissions in the cluster yet
+
+root@client ~ # kubectl cluster-info 
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+Error from server (Forbidden): services is forbidden: User "ifedorov2" cannot list resource "services" in API group "" in the namespace "kube-system"
