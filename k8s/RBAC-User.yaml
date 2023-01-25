@@ -1,0 +1,88 @@
+# Kubernetes User Access
+
+# All Kubernetes clusters have two categories of users:
+# service accounts (managed by Kubernetes)
+# normal users (managed by an outside)
+# Normal users are assumed to be managed by an outside, independent service. An admin distributing private keys, a user store like Keystone or Google Accounts, even a file with a list of usernames and passwords. In this regard, Kubernetes does not have objects which represent normal user accounts. Normal users cannot be added to a cluster through an API call.
+
+# In contrast, service accounts are users managed by the Kubernetes API. They are bound to specific namespaces, and created automatically by the API server or manually through API calls. Service accounts are tied to a set of credentials stored as Secrets, which are mounted into pods allowing in-cluster processes to talk to the Kubernetes API.
+
+# API requests are tied to either a normal user or a service account, or are treated as anonymous requests. This means every process inside or outside the cluster, from a human user typing kubectl on a workstation, to kubelets on nodes, to members of the control plane, must authenticate when making requests to the API server, or be treated as an anonymous user.
+
+# In this LAB we are going to discover the process of authenticating “normal users”, sorting out the mess with their privileges and troubleshooting fine grained levels of their access.
+
+#####################################################################################
+
+# 1. Creating CSR File
+
+# Kubernetes doesn’t manage users. Normal users are assumed to be managed by an outside, independent service like LDAP or Active Directory. In a standard installation of Kubernetes (i.e., using kubeadm), authentication is done via standard transport level security (TLS) certificates.
+
+# Any user that presents a valid certificate signed by the cluster’s certificate authority (CA) is considered authenticated. In this configuration, Kubernetes determines the username from the common name field in the ‘subject’ of the cert (e.g., /CN=ifedorov2). From there, the Role Based Access Control (RBAC) sub-system would determine whether the user is authorized to perform a specific operation on a resource.
+
+# The first step is to create a key and certificate signing request (CSR) for ifedorov2’s access to the cluster using openssl:
+
+# On client node:
+
+# root@client ~ # mkdir ~/ifedorov2
+# root@client ~ # cd ~/ifedorov2
+# root@client ~/ifedorov2 # openssl req -new -newkey rsa:2048 -nodes -days 3650 \
+#     -subj "/C=AM/ST=Yerevan/L=Yerevan/O=Playpit Labs Corp PLC/OU=IT/CN=ifedorov2" \
+#     -keyout ifedorov2.key \
+#     -out ifedorov2.csr
+    
+# And give these two files to Cluster Admin (copy to master host):
+
+# root@client ~ # scp ~/ifedorov2/ifedorov2.csr master:/requests/ifedorov2/
+# root@client ~ # scp ~/ifedorov2/ifedorov2.key master:/requests/ifedorov2/
+
+# Documentation:
+# https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/#create-private-key
+
+#####################################################################################
+
+# 2. Creating CSR in Kubernetes
+
+# Now that we have a CSR, we need to have it signed by the cluster CA. For that, we create a CertificateSigningRequest object within Kubernetes containing the CSR we generated above. For this, I use a ‘template’ CSR manifest and a neat trick using the –edit parameter to kubectl that allows you to edit the manifest before submitting it to the API server:
+
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: ifedorov2
+spec:
+  signerName: kubernetes.io/kube-apiserver-client
+  request: <<<put base64 encoded ifedorov2.csr here>>>
+  groups:
+  - system:authenticated
+  usages:
+  - digital signature
+  - key encipherment
+  - client auth
+  
+# To encode ifedorov2.csr with base64 use following command (on master host, “Admin” tab):
+# $ cat /requests/ifedorov2/ifedorov2.csr | base64 | tr -d '\n'
+
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: ifedorov2
+spec:
+  signerName: kubernetes.io/kube-apiserver-client
+  request: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ3R6Q0NBWjhDQVFBd2NqRUxNQWtHQTFVRUJoTUNRVTB4RURBT0JnTlZCQWdNQjFsbGNtVjJZVzR4RURBTwpCZ05WQkFjTUIxbGxjbVYyWVc0eEhqQWNCZ05WQkFvTUZWQnNZWGx3YVhRZ1RHRmljeUJEYjNKd0lGQk1RekVMCk1Ba0dBMVVFQ3d3Q1NWUXhFakFRQmdOVkJBTU1DV2xtWldSdmNtOTJNakNDQVNJd0RRWUpLb1pJaHZjTkFRRUIKQlFBRGdnRVBBRENDQVFvQ2dnRUJBTlU4MGFuRWVTNStJTlVOMjQ0Tm5DWXdTRUpBWEpCVzhJUkVWekszVEkxcwp4SFZLcngrL1dZUmJsY25VN2d4dERSQllNZE4xSGMzMUFtbDhCdm0zZ29qT1lkOUNpRmpuanNFa2RtaTQ4cXp0CmpsN05ramhTKytXSTBnSFI5ckZZZ0E0T0lNYmt6STlqT1ZLaHE3NFNEZUxROUZQY3dSY2laeTY5eGYrcWxpVFUKZTdYSUw2dlhOYnhSb3dCLzdoRjhxV1lnVEVDMnlCTEZVWGVUTFoxMHdYd2hOZkZOcDkzTlNabUgyNWZFOXhFawpXWTJ5ZXpKRFJOQ0pXUHExQVpXZVRodlpJS3NPUWtzNWJRVGl3NDRSczlTQUpLZ3VkVGkrZmIwN2QySFJMa1ZNCnl2R0JqRmZGa3RybVpHL0tRTXVTTGZHN2Q5N1Nsb05ZdWJuR3NSRlU3UHNDQXdFQUFhQUFNQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFDcm9FNVV4K2NpdFY3eGZ2RVkrbVVVNmNCYWdCbVNtUUNSU1h2Z0o1anNObHN4Z2ZPbApCcUtKR2NxNHNHbi9hK0QzeWdUVTNTeUY1Q1ZtcGtlUmF6OXAzZDh2Rmx5bW5vWVBlcDJwNTlCbGpDZzNyWGV2CnY3ODdJeDhFNzJKeWh1ZzJnK20vNVVpOGpyWU1kZHVxalVyUEFZZXhSTk1VcCtsYlNrWkxIZlFyOFFCQUFXangKclRPcU1QRnhCSy9vbGFyb2lIMDQxa2pkdTdUVFFJZytKdVFWMmJNRVV1amdVY0tKRUsxQ1d4dWNQa1NqRWliYgpsWUpMWjV2ektPQVdzVGNDV05YaHQ1TWlVTEsxTVFZak8rdkFoMmxWUEtsLzhqSjVkT2tkdFpMNmxRV3pvVVBuCmdiUkUzaS8vTDFOYVN3Sjh5WnJvbDFxTE1MUm5ycEYvOWlJYgotLS0tLUVORCBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0K
+  groups:
+  - system:authenticated
+  usages:
+  - digital signature
+  - key encipherment
+  - client auth
+  
+# Checking CSR
+#   master:~# kubectl get csr ifedorov2
+#   NAME        ...   REQUESTOR      CONDITION
+#   ifedorov2   ...   system:admin   Pending
+
+# Documentation:
+# https://kubernetes.io/docs/reference/access-authn-authz/certificate-signing-requests/#create-certificate-request-kubernetes-object
+
+#####################################################################################
+
+
