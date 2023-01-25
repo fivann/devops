@@ -882,3 +882,55 @@ spec:
 
 # Documentation:
 # https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/
+
+
+#######################################################################################################################
+
+
+# 12. Node Maintenance
+
+# So, we have disabled workloads to run on node02 cluster member. Once you finish with all maintenance activities, you should bring the node back to the cluster - means to remove SchedulingDisabled.
+
+# Just run:
+
+# kubectl uncordon {%node name%}
+# afterwards to tell Kubernetes that it can resume scheduling new pods onto the node
+
+# Task:
+# Bring back node02 to “schedulable” state.
+
+# SOLUTION
+# $ kubectl uncordon node02
+
+# Sample result:
+# $ kubectl get nodes
+# NAME     STATUS   ROLES                         AGE   VERSION
+# master   Ready    control-plane,master,worker   39m   v1.20.0+k3s2
+# node01   Ready    worker                        39m   v1.20.0+k3s2
+# node02   Ready    worker                        39m   v1.20.0+k3s2
+
+# Documentation:
+# https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/
+
+#######################################################################################################################
+
+# TL;DR
+# The Kubernetes Scheduler is the component in charge of determining which node is most suitable for running pods.
+
+# The Kubernetes Scheduler also honors user-defined factors that affect its decision:
+
+# Node Selector: the .spec.nodeSelector parameter in the pod definition narrows down node selection to those having the labels defined in the nodeSelector.
+# Node affinity and anti-affinity: those are used for greater flexibility in node selection as they allow for more expressive selection criteria. Node affinity can be used to guarantee that only the matching nodes are used or only to set a preference.
+# Taints and tolerations work in the same manner as node affinity. However, their default action is to repel pods from the tainted nodes unless the pods have the necessary tolerations (which are just a key, a value, and an effect). Tolerations are often combined with node affinity or node selector parameters to guarantee that only the matched nodes are used for pod scheduling.
+
+# Please find more details here:
+# https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodename
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#always-co-located-in-the-same-node
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#never-co-located-in-the-same-node
+# https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+# https://kubernetes.io/docs/tasks/administer-cluster/cluster-management/#maintenance-on-a-node
+# https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/
+
