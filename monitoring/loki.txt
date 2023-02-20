@@ -1,0 +1,88 @@
+Для установки Loki и настройки его подключения к сбору метрик кластера Kubernetes можно выполнить следующие шаги:
+
+Установить и настроить Prometheus, который будет собирать метрики Kubernetes и передавать их в Loki. 
+Для этого можно использовать Helm-чарт, например:
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm install prometheus prometheus-community/prometheus
+
+Установить Loki. Для этого можно использовать также Helm-чарт:
+
+helm repo add grafana https://grafana.github.io/helm-charts
+helm install loki grafana/loki
+
+Настроить Prometheus для передачи метрик в Loki. Для этого нужно добавить следующий блок конфигурации в файл prometheus.yaml:
+
+scrape_configs:
+  - job_name: 'loki'
+    static_configs:
+      - targets: ['loki:3100']
+  - job_name: 'kubernetes-apiservers'
+    kubernetes_sd_configs:
+      - role: endpoints
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+        action: keep
+        regex: default;kubernetes;https
+      - target_label: __address__
+        replacement: loki:3100
+      - target_label: __scheme__
+        replacement: http
+        
+После этого нужно применить конфигурацию Prometheus:
+
+kubectl apply -f prometheus.yaml
+
+Теперь Loki настроен и готов к приему метрик из Prometheus. Чтобы увидеть логи в Loki, 
+нужно настроить свои приложения, чтобы они отправляли логи в стандартный вывод, который будет собираться Fluentd или Fluent Bit. 
+Конфигурация сбора логов может выглядеть следующим образом:
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-config
+  namespace: kube-system
+  labels:
+    k8s-app: fluent-bit
+data:
+  fluent-bit.conf: |
+    [SERVICE]
+        Flush         1
+        Log_Level     info
+        Daemon        off
+        Parsers_File  parsers.conf
+
+    [INPUT]
+        Name              tail
+        Tag               kube.*
+        Path              /var/log/containers/*.log
+        Parser            docker
+        DB                /var/log/flb_kube.db
+        Mem_Buf_Limit     50MB
+        Skip_Long_Lines   On
+        Refresh_Interval  10
+
+    [OUTPUT]
+        Name            loki
+        Match           kube.*
+        url             http://loki:3100/loki/api/v1/push
+        tenant_id       kube
+        flush_interval  1s
+        
+        
+Конфигурация Fluent Bit с помощью Helm Chart будет выглядеть следующим образом:
+
+Установка Tiller (если еще не установлен):
+
+kubectl -n kube-system create sa tiller
+kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+helm init --service-account tiller
+
+Установка Fluent Bit с помощью Helm Chart:
+
+helm repo add fluent https://fluent.github.io/helm-charts
+helm repo update
+helm install fluent-bit fluent/fluent-bit --set output.loki.enabled=true,output.loki.url=http://loki:3100,extraVolumeMounts[0].name=varlog,extraVolumeMounts[0].mountPath=/var/log,extraVolumeMounts[0].readOnly=true,extraVolumeMounts[1].name=varlibdockercontainers,extraVolumeMounts[1].mountPath=/var/lib/docker/containers,extraVolumeMounts[1].readOnly=true,extraVolumeMounts[2].name=kubernetes,extraVolumeMounts[2].mountPath=/var/log/pods,extraVolumeMounts[2].readOnly=true
+
+После успешной установки Fluent Bit будет запущен в кластере и будет собирать логи из стандартного вывода приложений и передавать их в Loki.
+
