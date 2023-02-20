@@ -1,4 +1,4 @@
-### в чем разница между deployment и perlicaset в k8s?
+### в чем разница между Deployments и StatefulSets в k8s?
 
 В Kubernetes и Deployments, и StatefulSets (ранее известные как PetSets) являются контроллерами, которые управляют жизненным циклом pods, 
 но между ними есть некоторые ключевые различия.
