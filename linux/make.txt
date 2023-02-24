@@ -1,0 +1,28 @@
+# Define the name of the binary
+BINARY_NAME=mybinary
+
+# Define the source files for the binary
+SOURCE_FILES=myscript.sh
+
+# Define the build rule for the binary
+$(BINARY_NAME): $(SOURCE_FILES)
+        cat $(SOURCE_FILES) > $(BINARY_NAME)
+        chmod +x $(BINARY_NAME)
+
+# Define the "clean" rule to remove the binary
+clean:
+        rm -f $(BINARY_NAME)
+
+
+#################
+
+In this Makefile, we define the name of the binary (BINARY_NAME) and the source files for the binary (SOURCE_FILES). 
+The build rule for the binary concatenates the source files into a single file, sets the executable bit 
+on the resulting file using chmod, and renames the file to the desired binary name.
+
+To use this Makefile, you would simply run make in the directory containing the Makefile and the source files. 
+This will build the binary according to the rules specified in the Makefile. To clean up, you can run make clean, which will remove the binary.
+
+Note that this method simply concatenates the source files into a single file, 
+so it may not work for more complex scripts with multiple dependencies. 
+In general, it's better to compile code written in a compiled language like C or C++ to create a binary, rather than using a shell script.
