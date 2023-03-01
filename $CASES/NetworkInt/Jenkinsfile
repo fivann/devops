@@ -1,0 +1,167 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/myuser/myapp.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Deploy to Artifactory') {
+            steps {
+                rtUpload(
+                    serverId: 'artifactory-server', 
+                    spec: """{
+                        "files": [
+                            {
+                                "pattern": "target/*.jar",
+                                "target": "my-repo-local/"
+                            }
+                        ]
+                    }"""
+                )
+            }
+        }
+    }
+}
+// #### положим это в докер например
+
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/myuser/myapp.git'
+            }
+        }
+        stage('Build Jar') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerfile = '''
+                    FROM openjdk:11-jre-slim
+                    COPY target/myapp.jar /app.jar
+                    ENTRYPOINT ["java", "-jar", "/app.jar"]
+                    '''
+                    writeFile file: 'Dockerfile', text: dockerfile
+                    docker.build('my-docker-image:latest')
+                }
+            }
+        }
+        stage('Push Docker Image to Artifactory') {
+            steps {
+                script {
+                    docker.withRegistry('https://my-artifactory-server/artifactory', 'artifactory-credentials') {
+                        def dockerImage = docker.image('my-docker-image:latest')
+                        dockerImage.push('my-docker-repo/my-docker-image:latest')
+                    }
+                }
+            }
+        }
+    }
+}
+
+// и запустим это безобразие на AKS:
+
+pipeline {
+    agent any
+    environment {
+        DOCKER_REGISTRY = "https://my-artifactory-server/artifactory"
+        DOCKER_REGISTRY_CREDENTIALS = "artifactory-credentials"
+        AKS_CLUSTER_NAME = "my-aks-cluster"
+        AKS_RESOURCE_GROUP = "my-aks-resource-group"
+        AKS_NAMESPACE = "my-aks-namespace"
+        AKS_DEPLOYMENT_NAME = "my-aks-deployment"
+        AKS_SERVICE_NAME = "my-aks-service"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/myuser/myapp.git'
+            }
+        }
+        stage('Pull Docker Image from Artifactory') {
+            steps {
+                script {
+                    docker.withRegistry(DOCKER_REGISTRY, DOCKER_REGISTRY_CREDENTIALS) {
+                        def dockerImage = docker.image('my-docker-repo/my-docker-image:latest')
+                        dockerImage.pull()
+                    }
+                }
+            }
+        }
+        stage('Deploy to AKS') {
+            steps {
+                script {
+                    def kubeconfig = credentials('aks-kubeconfig')
+                    sh "kubectl config use-context ${AKS_CLUSTER_NAME} --kubeconfig=${kubeconfig}"
+                    sh "kubectl apply -f kubernetes/myapp-deployment.yaml --namespace=${AKS_NAMESPACE}"
+                    sh "kubectl apply -f kubernetes/myapp-service.yaml --namespace=${AKS_NAMESPACE}"
+                    sh "kubectl scale deployment/${AKS_DEPLOYMENT_NAME} --replicas=5 --namespace=${AKS_NAMESPACE}"
+                    sh "kubectl port-forward service/${AKS_SERVICE_NAME} 8888:80 --namespace=${AKS_NAMESPACE} &"
+                }
+            }
+        }
+    }
+}
+
+
+// ИЛИ
+// взять манифест
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        image: registry.example.com/my-app:latest
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service
+spec:
+  selector:
+    app: my-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+
+/// и запустить такой стейдж вместо предыдущего с тем же названием:
+stage('Deploy to AKS') {
+    steps {
+        script {
+            def kubeconfig = readFile "${env.HOME}/.kube/config"
+            def kubectl = docker.image('bitnami/kubectl').inside("--kubeconfig=<(echo '${kubeconfig}')") 
+            {
+                sh "curl -O https://raw.githubusercontent.com/username/repo/main/deployment.yaml"
+                kubectl.withRun('-v $(pwd):/workdir -w /workdir') {
+                    sh 'kubectl apply -f deployment.yaml'
+                }
+            }
+        }
+    }
+}
+
