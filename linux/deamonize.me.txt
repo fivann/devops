@@ -90,3 +90,372 @@ This will create a symlink to your service file in the appropriate systemd targe
 That's it! Your daemon is now set up to start automatically on Linux startup. 
 You can customize the behavior of your service by modifying the service file or adding additional directives.
 
+################
+
+DAEMONIZE PYTHON STUFF
+
+To create your own daemon in Linux using systemd, you can follow these steps:
+
+Create a script or program that will be run as a daemon. For example, let's say you want 
+to create a daemon that periodically prints the current time to a log file. 
+You could create a simple Python script called mydaemon.py that does this:
+
+while True:
+    with open('/var/log/mydaemon.log', 'a') as f:
+        f.write(f'{time.strftime("%Y-%m-%d %H:%M:%S")}\n')
+    time.sleep(60)
+
+
+Create a systemd service file. 
+This file tells systemd how to start and stop your daemon. 
+Create a file called /etc/systemd/system/mydaemon.service with the following contents:
+
+[Unit]
+Description=My Daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /path/to/mydaemon.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+This service file defines a unit called mydaemon, which depends on the network being available. 
+It specifies that the service should be run as a simple process using the ExecStart directive, which runs the mydaemon.py script using Python 3. 
+The Restart directive tells systemd to restart the daemon automatically if it crashes or stops running for any reason. 
+Finally, the Install section specifies that the daemon should be started automatically when the system boots up.
+
+Reload the systemd configuration and start the service. Run the following commands as root:
+
+systemctl daemon-reload
+systemctl start mydaemon.service
+
+This will reload the systemd configuration and start your daemon. 
+You can check the status of the daemon using systemctl status mydaemon.service.
+
+(Optional) Enable the service to start automatically at boot time:
+
+systemctl enable mydaemon.service
+
+Now your daemon should be up and running, and will continue to run in the background even after you log out. 
+Any output from the daemon will be logged to /var/log/mydaemon.log.
+
+######### 
+DAEMONIZE JAVA TOOL
+
+To create a daemon from a Java application, you can use the Apache Commons Daemon library, 
+which provides a set of tools for creating and managing daemons on Unix and Windows systems.
+
+Here's how you can create a daemon from a Java application using the Apache Commons Daemon library:
+
+Add the Apache Commons Daemon library to your project. 
+You can download the library from the Apache Commons Daemon website or include 
+it as a dependency in your build tool (e.g., Maven, Gradle).
+
+Create a class that implements the org.apache.commons.daemon.Daemon interface. 
+This class should contain the code for your daemon.
+
+public class MyDaemon implements Daemon {
+
+    private Thread thread;
+
+    @Override
+    public void init(DaemonContext context) throws DaemonInitException, Exception {
+        // Initialization code goes here
+        thread = new Thread(() -> {
+            while (true) {
+                // Daemon code goes here
+                Thread.sleep(1000);
+            }
+        });
+    }
+
+    @Override
+    public void start() throws Exception {
+        // Start the daemon thread
+        thread.start();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        // Stop the daemon thread
+        thread.interrupt();
+        thread.join();
+    }
+
+    @Override
+    public void destroy() {
+        // Cleanup code goes here
+    }
+
+}
+
+
+To create a daemon from a Java application, you can use the Apache Commons Daemon library, which provides a set of tools for creating and managing daemons on Unix and Windows systems.
+
+Here's how you can create a daemon from a Java application using the Apache Commons Daemon library:
+
+Add the Apache Commons Daemon library to your project. You can download the library from the Apache Commons Daemon website or include it as a dependency in your build tool (e.g., Maven, Gradle).
+
+Create a class that implements the org.apache.commons.daemon.Daemon interface. This class should contain the code for your daemon.
+
+java
+Copy code
+public class MyDaemon implements Daemon {
+
+    private Thread thread;
+
+    @Override
+    public void init(DaemonContext context) throws DaemonInitException, Exception {
+        // Initialization code goes here
+        thread = new Thread(() -> {
+            while (true) {
+                // Daemon code goes here
+                Thread.sleep(1000);
+            }
+        });
+    }
+
+    @Override
+    public void start() throws Exception {
+        // Start the daemon thread
+        thread.start();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        // Stop the daemon thread
+        thread.interrupt();
+        thread.join();
+    }
+
+    @Override
+    public void destroy() {
+        // Cleanup code goes here
+    }
+
+}
+In this example, the init() method initializes the daemon by creating a new thread that runs the daemon code (in this case, a simple infinite loop that sleeps for one second). The start() method starts the thread, and the stop() method stops the thread by interrupting it and waiting for it to finish. The destroy() method cleans up any resources used by the daemon.
+
+Create a shell script that runs your Java application as a daemon using the jsvc command. jsvc is a command-line tool provided by the Apache Commons Daemon library that allows you to run a Java application as a daemon. Create a file called mydaemon.sh with the following contents:
+
+#!/bin/sh
+
+# Set the path to your Java installation
+JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+
+# Set the path to your application JAR file
+APP_HOME=/path/to/your/application
+
+# Set the path to the Apache Commons Daemon library
+DAEMON_HOME=/path/to/commons-daemon
+
+# Set the classpath
+CLASSPATH=$APP_HOME/myapp.jar:$DAEMON_HOME/commons-daemon-1.2.2.jar
+
+# Set the name of your daemon
+DAEMON_NAME=mydaemon
+
+# Set the path to the PID file
+PID_FILE=/var/run/$DAEMON_NAME.pid
+
+# Run the daemon
+$DAEMON_HOME/jsvc \
+    -home $JAVA_HOME \
+    -cp $CLASSPATH \
+    -pidfile $PID_FILE \
+    -outfile /var/log/$DAEMON_NAME.log \
+    -errfile /var/log/$DAEMON_NAME.log \
+    MyDaemon
+
+This script sets the necessary environment variables and then runs the jsvc command, passing in the classpath, PID file, and other options. Note that the class name (MyDaemon) should match the name of the class you created in step 2.
+
+Make the shell script executable:
+bash
+Copy code
+chmod +x mydaemon.sh
+Start the daemon using the shell script:
+bash
+Copy code
+./mydaemon.sh start
+
+To create a daemon from a Java application, you can use the Apache Commons Daemon library, which provides a set of tools for creating and managing daemons on Unix and Windows systems.
+
+Here's how you can create a daemon from a Java application using the Apache Commons Daemon library:
+
+Add the Apache Commons Daemon library to your project. You can download the library from the Apache Commons Daemon website or include it as a dependency in your build tool (e.g., Maven, Gradle).
+
+Create a class that implements the org.apache.commons.daemon.Daemon interface. This class should contain the code for your daemon.
+
+java
+Copy code
+public class MyDaemon implements Daemon {
+
+    private Thread thread;
+
+    @Override
+    public void init(DaemonContext context) throws DaemonInitException, Exception {
+        // Initialization code goes here
+        thread = new Thread(() -> {
+            while (true) {
+                // Daemon code goes here
+                Thread.sleep(1000);
+            }
+        });
+    }
+
+    @Override
+    public void start() throws Exception {
+        // Start the daemon thread
+        thread.start();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        // Stop the daemon thread
+        thread.interrupt();
+        thread.join();
+    }
+
+    @Override
+    public void destroy() {
+        // Cleanup code goes here
+    }
+
+}
+
+In this example, the init() method initializes the daemon by creating a new thread that runs the daemon code 
+(in this case, a simple infinite loop that sleeps for one second). 
+The start() method starts the thread, and the stop() method stops the thread by interrupting it and waiting for it to finish. 
+The destroy() method cleans up any resources used by the daemon.
+
+Create a shell script that runs your Java application as a daemon using the jsvc command. 
+jsvc is a command-line tool provided by the Apache Commons Daemon library that allows you to run a Java application as a daemon. 
+Create a file called mydaemon.sh with the following contents:
+
+#!/bin/sh
+
+# Set the path to your Java installation
+JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+
+# Set the path to your application JAR file
+APP_HOME=/path/to/your/application
+
+# Set the path to the Apache Commons Daemon library
+DAEMON_HOME=/path/to/commons-daemon
+
+# Set the classpath
+CLASSPATH=$APP_HOME/myapp.jar:$DAEMON_HOME/commons-daemon-1.2.2.jar
+
+# Set the name of your daemon
+DAEMON_NAME=mydaemon
+
+# Set the path to the PID file
+PID_FILE=/var/run/$DAEMON_NAME.pid
+
+# Run the daemon
+$DAEMON_HOME/jsvc \
+    -home $JAVA_HOME \
+    -cp $CLASSPATH \
+    -pidfile $PID_FILE \
+    -outfile /var/log/$DAEMON_NAME.log \
+    -errfile /var/log/$DAEMON_NAME.log \
+    MyDaemon
+    
+This script sets the necessary environment variables and then runs the jsvc command, passing in the classpath, 
+PID file, and other options. Note that the class name (MyDaemon) should match the name of the class you created in step 2.
+
+Make the shell script executable:
+
+chmod +x mydaemon.sh
+
+Start the daemon using the shell script:
+
+./mydaemon.sh start
+
+This will start your Java application as a daemon. 
+You can check the status of the daemon using the ./mydaemon.sh status command, and you can stop the daemon using the ./mydaemon.sh stop command.
+
+##########
+
+To set the daemon created using the Apache Commons Daemon library to start automatically when the system boots up, 
+you can create a systemd service file.
+
+Here's how to create a systemd service file for your daemon:
+
+Create a file called mydaemon.service in the /etc/systemd/system/ directory with the following contents:
+
+[Unit]
+Description=My Daemon
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/path/to/mydaemon.sh start
+ExecStop=/path/to/mydaemon.sh stop
+PIDFile=/var/run/mydaemon.pid
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+
+#########
+
+Here are the commands to start, stop, and check the status of the daemon:
+
+Start the daemon:
+
+./mydaemon.sh start
+
+This will start the daemon as a background process.
+
+Stop the daemon:
+
+./mydaemon.sh stop
+
+This will stop the daemon.
+Check the status of the daemon:
+
+./mydaemon.sh status
+
+This will show the status of the daemon, including whether it is running or not, and the PID of the process if it is running.
+
+Note that you should be in the same directory as the mydaemon.sh script when you run these commands, 
+or provide the full path to the script if it is located elsewhere. 
+Also, make sure that you have the necessary permissions to start, stop, and check the status of the daemon.
+
+
+############
+
+To stop/start a daemon using systemd commands only, you can use the following commands:
+
+To stop the daemon:
+
+sudo systemctl stop <daemon_name>
+
+Replace <daemon_name> with the name of the daemon you want to stop.
+
+To start the daemon:
+
+sudo systemctl start <daemon_name>
+
+Replace <daemon_name> with the name of the daemon you want to start.
+
+You can also use the restart command to stop and start the daemon in one step:
+
+sudo systemctl restart <daemon_name>
+
+Note that you may need to have root or sudo privileges to execute these commands. 
+Also, make sure you have the correct name of the daemon you want to stop/start. You can use the status command to check the status of a daemon:
+
+sudo systemctl status <daemon_name>
+
+This will display information about the current state of the daemon, including whether it is running or not.
+
+
+
+
+
