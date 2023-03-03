@@ -1,0 +1,72 @@
+Here's an example of a 2-stage Dockerfile that builds a jar file from source code from Github and then runs it using nginx on port 8888:
+
+################
+# Dockerfile
+################
+
+# Stage 1: Build the jar file
+FROM maven:3.6.3-openjdk-11 AS build
+WORKDIR /app
+RUN git clone https://github.com/your-github-repo.git
+WORKDIR /app/your-github-repo
+RUN mvn clean install
+
+# Stage 2: Run the jar file with nginx
+FROM openjdk:11-jre-slim
+COPY --from=build /app/your-github-repo/target/your-app.jar /app/your-app.jar
+RUN apt-get update && apt-get install -y nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+EXPOSE 8888
+CMD ["nginx", "-g", "daemon off;"]
+
+In the first stage, we use a Maven image to clone the repository from Github, build the jar file using Maven, 
+and set the jar file as the entrypoint for the next stage.
+
+In the second stage, we use an OpenJDK image to run the jar file, install nginx, copy the jar file from the previous stage, 
+copy the nginx configuration file, and expose port 8888. Finally, we start nginx with the CMD command.
+
+Note that you will need to create a nginx.conf file in the same directory as your Dockerfile 
+that contains the necessary configuration for nginx to proxy requests to your application.
+
+Here's an example nginx.conf file that you can use with the Dockerfile example I provided:
+
+
+################
+# nginx.conf
+################
+
+worker_processes 1;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    upstream app {
+        server localhost:8080;
+    }
+
+    server {
+        listen 8888;
+
+        location / {
+            proxy_pass http://app;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        }
+    }
+}
+
+This configuration sets up an upstream block named "app" that points to the localhost on port 8080. 
+Then, it sets up a server block that listens on port 8888 and proxies requests to the "app" upstream. 
+The proxy_set_header directives add headers to the proxied request that will allow your application 
+to identify the original client IP address and hostname.
+
+Note that you should adjust the proxy_pass parameter to match the name of your application's jar 
+file or the port that your application is listening on if it's not on port 8080. Also, make sure 
+that your application is configured to listen on the appropriate network interface and port inside the container.
+
+
+
+
