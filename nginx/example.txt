@@ -1,0 +1,50 @@
+To serve the /opt/web/sample.html file using Nginx, you can follow these steps:
+
+Open the Nginx configuration file located at /etc/nginx/nginx.conf in a text editor.
+In the http section of the configuration file, add a new server block:
+
+server {
+    listen 80;
+    server_name example.com; # replace with your server name
+    root /opt/web;
+
+    location / {
+        try_files $uri $uri/ /sample.html;
+    }
+}
+
+In this example, we are telling Nginx to listen on port 80 and serve requests for example.com. 
+The root directive specifies the root directory for the website, which in this case is /opt/web.
+
+The location block specifies how to handle requests for the website. The try_files directive tells Nginx to try to serve the requested file, and if it doesn't exist, try to serve the file with the name sample.html.
+
+Save the configuration file and restart Nginx:
+
+sudo systemctl restart nginx
+
+After completing these steps, Nginx will serve the sample.html file when a user visits the website. 
+Note that you may need to adjust the permissions of the /opt/web directory to allow Nginx to access the files. 
+Additionally, you may need to configure your DNS or hosts file to point example.com to the IP address of your server.
+
+If your server only has an IP address, you can use the IP address as the server_name in the Nginx configuration. For example:
+
+server {
+    listen 80;
+    server_name 192.0.2.123; # replace with your server IP address
+    root /opt/web;
+
+    location / {
+        try_files $uri $uri/ /sample.html;
+    }
+}
+
+In this example, we're telling Nginx to listen on port 80 and serve requests for the IP address 192.0.2.123. 
+The root directive specifies the root directory for the website, which in this case is /opt/web.
+
+The location block specifies how to handle requests for the website. 
+The try_files directive tells Nginx to try to serve the requested file, and if it doesn't exist, try to serve the file with the name sample.html.
+
+After you've saved the configuration file and restarted Nginx, you can access the sample.html file 
+by visiting http://192.0.2.123/ in a web browser. Note that you may need to open port 80 in your server's 
+firewall to allow incoming traffic to Nginx.
+
