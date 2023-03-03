@@ -9,7 +9,7 @@ Building relationships with your team is key to success.
 Schedule one-on-one meetings with team members to learn about their roles, responsibilities, and pain points. 
 This will help you understand how you can best support them.
 
-Establish communication channels: 
+#### Establish communication channels: 
 Communication is vital in DevOps. 
 Establish communication channels such as a dedicated Slack channel or video conferencing 
 to ensure that everyone is on the same page.
