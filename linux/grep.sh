@@ -148,4 +148,53 @@ grep -r --max-depth=2 "string" *
 # Search for a string in a specific file type and exclude certain files from the search:
 grep -r --exclude="file.txt" "string" *
 
+#####################
+#### KEYS
+#####################
+
+
+# -i (ignore case): Ignores case when searching for a pattern.
+grep -i "example" file.txt
+
+# -w (whole word): Only matches whole words instead of partial matches.
+grep -w "example" file.txt
+
+# -v (invert match): Displays all lines that do not match the pattern.
+grep -v "example" file.txt
+
+# -c (count): Displays the count of lines that match the pattern.
+grep -c "example" file.txt
+
+# -l (list files): Displays the file names that contain the pattern.
+grep -l "example" *.txt
+
+# -n (line number): Displays the line number of the matched pattern.
+grep -n "example" file.txt
+
+# -r (recursive): Searches all files in the specified directory and its subdirectories.
+grep -r "example" /path/to/directory/
+
+# --include and --exclude: Include or exclude specific files from the search.
+grep "example" --include=*.txt --exclude=*~ /path/to/directory/
+
+# -e (expression): Allows for multiple patterns to be searched for at once.
+grep -e "example1" -e "example2" file.txt
+
+# -A (after-context) and -B (before-context): Display a specific number of lines before or after the matched pattern.
+grep -A 2 -B 2 "example" file.txt
+
+# -m (max count): Limit the number of matches that will be displayed.
+grep -m 5 "example" file.txt
+
+# -f (file): Use a file as the pattern instead of a string.
+grep -f pattern.txt file.txt
+
+# -q (quiet): Suppress the output and only return the exit status.
+grep -q "example" file.txt
+
+# --color: Highlight the matched pattern in color.
+grep --color "example" file.txt
+
+# -z (null data): Treat input files as null data-separated.
+grep -z "example" file.txt
 
