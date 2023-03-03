@@ -1,0 +1,83 @@
+# Example 1: Installing a package
+
+---
+- name: Install a package
+  hosts: all
+  become: true
+  tasks:
+    - name: Install the package
+      apt:
+        name: nginx
+        state: present
+        
+# In this example, we have a playbook that installs the nginx package on all hosts specified in the inventory file. 
+# The become keyword allows us to execute tasks with escalated privileges. The tasks section defines the tasks to be performed, which in this case is to use the apt module to install the nginx package.
+
+# Example 2: Deploying a web application
+
+---
+- name: Deploy web application
+  hosts: webservers
+  become: true
+  tasks:
+    - name: Copy application files
+      copy:
+        src: /path/to/app
+        dest: /var/www/html/
+    - name: Start web server
+      service:
+        name: nginx
+        state: started
+        
+# This playbook deploys a web application to the hosts specified in the webservers group. 
+# The copy module is used to copy the application files to the /var/www/html/ directory on the remote hosts, 
+# and the service module is used to start the nginx web server.
+
+# Example 3: Creating a user
+
+---
+- name: Create user
+  hosts: all
+  become: true
+  tasks:
+    - name: Create user
+      user:
+        name: john
+        password: "{{ 'mypassword' | password_hash('sha512') }}"
+        shell: /bin/bash
+        groups: sudo
+        
+# This playbook creates a new user with the name john on all hosts in the inventory file. 
+# The password_hash filter is used to encrypt the user's password with the SHA-512 algorithm, 
+# and the shell and groups options are used to specify the user's shell and group membership.
+
+
+# Deploying a web application example that uses an S3 bucket as the source for the application files:
+---
+- name: Deploy web application from S3
+  hosts: webservers
+  become: true
+  tasks:
+    - name: Download application files from S3
+      aws_s3:
+        bucket: myappbucket
+        object: myapp.tar.gz
+        dest: /tmp/myapp.tar.gz
+        mode: get
+        aws_access_key: ACCESS_KEY
+        aws_secret_key: SECRET_KEY
+    - name: Extract application files
+      unarchive:
+        src: /tmp/myapp.tar.gz
+        dest: /var/www/html/
+        remote_src: true
+    - name: Start web server
+      service:
+        name: nginx
+        state: started
+        
+# In this example, we have a playbook that deploys a web application to the hosts specified in the webservers group. 
+# The aws_s3 module is used to download the myapp.tar.gz file from the myappbucket S3 bucket to the /tmp directory on the remote hosts. 
+# The unarchive module is then used to extract the contents of the myapp.tar.gz file to the /var/www/html/ directory on the remote hosts. 
+# Finally, the service module is used to start the nginx web server. Note that you will need to replace ACCESS_KEY and SECRET_KEY 
+# with your actual AWS access and secret keys.
