@@ -27,10 +27,10 @@ ssh-keygen [options]
 # This allows you to authenticate with the remote system without having to enter a password. The syntax is 
 ssh-copy-id [user@]hostname
 
-sshfs: 
-This command is used to mount a remote file system over SSH. 
-This allows you to access files on a remote system as if they were on your local system. 
-The syntax is sshfs [user@]hostname:/remote/path /local/path.
+# sshfs: 
+# This command is used to mount a remote file system over SSH. 
+# This allows you to access files on a remote system as if they were on your local system. The syntax is 
+sshfs [user@]hostname:/remote/path /local/path.
 
 # ssh-agent: 
 # This command is used to manage SSH keys in memory. 
