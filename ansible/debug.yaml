@@ -1,0 +1,30 @@
+# The debug module in Ansible is used to print out variables, expressions, and other information during playbook execution. 
+# It can be used to troubleshoot problems, test variables, and verify that your playbook is doing what you expect it to do.
+
+# The debug module takes a single argument, msg, which is the message to print. This message can be a simple string 
+# or a more complex expression that evaluates to a string. You can also use the var parameter to print out the value of a specific variable.
+
+# Here are a few examples of how you might use the debug module in your playbook:
+
+
+- name: Debug a variable
+  debug:
+    var: my_variable
+
+- name: Debug a message
+  debug:
+    msg: "This is a debug message"
+
+- name: Debug an expression
+  debug:
+    msg: "The sum of {{ num1 }} and {{ num2 }} is {{ num1 + num2 }}"
+    
+    
+# In the first example, we're using the var parameter to print out the value of the my_variable variable. 
+# This can be useful when you're not sure what value a variable is holding, or if you want to verify that the variable has been set correctly.
+
+# In the second example, we're printing a simple debug message. This can be useful for providing context 
+# during playbook execution or for printing out simple status messages.
+
+# In the third example, we're printing the result of an expression that adds two variables together. 
+# This can be useful when you need to perform calculations or manipulate data in your playbook.
