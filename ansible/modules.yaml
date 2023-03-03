@@ -71,3 +71,33 @@
 
 # These are just a few examples of the many Ansible modules that are available. 
 # By combining these and other modules, you can build complex automation tasks and manage your systems efficiently.
+
+
+# The setup module in Ansible is a built-in module that collects various system facts from the target hosts 
+# and makes them available to other Ansible modules as variables. When executed, the setup module collects 
+# information about the target hosts, such as the operating system, kernel version, available memory, 
+# CPU information, network interfaces, and much more.
+
+# The setup module is typically used at the beginning of an Ansible playbook to gather system information 
+# that can be used later in the playbook. For example, you can use the information gathered by the setup 
+# module to conditionally execute tasks based on the target host's characteristics.
+
+# Here's an example of how to use the setup module in Ansible:
+
+- name: Gather facts about all hosts
+  hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Display the gathered facts
+      debug:
+        var: ansible_facts
+        
+# In this example, the setup module is used to gather facts about all hosts in the inventory. 
+# The gather_facts parameter is set to yes to enable fact gathering. The debug module 
+# is then used to display the gathered facts by referencing the ansible_facts variable.
+
+
+
+
+
+
