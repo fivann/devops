@@ -1,0 +1,43 @@
+# In Ansible, handlers are tasks that are only executed when a particular event occurs. 
+# Handlers are typically used to restart services, reload configurations, or perform other tasks 
+# that are only necessary after a change has been made to the system.
+
+# Handlers are defined in the same way as tasks, but with a different keyword, "handler," instead of "task." 
+# Handlers are typically defined at the end of a playbook, after all of the tasks that trigger them.
+
+# Here is an example of how handlers might be used in an Ansible playbook:
+
+- name: Update Apache configuration
+  template:
+    src: /path/to/httpd.conf.j2
+    dest: /etc/httpd/conf/httpd.conf
+  notify: restart apache
+
+- name: Install Apache
+  yum:
+    name: httpd
+    state: present
+  notify: start apache
+
+handlers:
+  - name: restart apache
+    service:
+      name: httpd
+      state: restarted
+
+  - name: start apache
+    service:
+      name: httpd
+      state: started
+      
+# In this example, the first task updates the Apache configuration file using a Jinja2 template. 
+# The notify keyword is used to trigger the restart apache handler if the configuration file is updated.
+
+# The second task installs Apache using the yum package manager. The notify keyword is used 
+# to trigger the start apache handler if Apache is installed or updated.
+
+# Finally, the handlers section defines the two handlers. The restart apache handler uses the service module 
+# to restart the Apache service. The start apache handler uses the service module to start the Apache service.
+
+# Handlers provide a way to perform actions only when necessary, which can help to optimize the execution time of an Ansible playbook.
+
