@@ -66,7 +66,7 @@ scp /path/to/local/file.txt user@remotehost:/path/to/destination
 # Copy a file from a remote system to the local system:
 scp user@remotehost:/path/to/remote/file.txt /path/to/destination
 
-This command will copy the file "file.txt" from the remote system to the local system at "/path/to/destination".
+# This command will copy the file "file.txt" from the remote system to the local system at "/path/to/destination".
 
 # Copy a directory from the local system to a remote system:
 scp -r /path/to/local/directory user@remotehost:/path/to/destination
@@ -75,7 +75,8 @@ scp -r /path/to/local/directory user@remotehost:/path/to/destination
 
 # Copy a directory from a remote system to the local system:
 scp -r user@remotehost:/path/to/remote/directory /path/to/destination
-This command will copy the entire directory "directory" from the remote system to the local system at "/path/to/destination".
+
+# This command will copy the entire directory "directory" from the remote system to the local system at "/path/to/destination".
 
 # Copy a file from one remote system to another remote system via the local system:
 scp user1@remotehost1:/path/to/file.txt user2@remotehost2:/path/to/destination
