@@ -1,0 +1,73 @@
+# Ansible provides a wide range of modules that can be used to manage various aspects of system administration. 
+# Here are some of the main Ansible modules with examples of their usage:
+
+# apt: This module is used to manage packages on Debian or Ubuntu based systems. For example:
+
+
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+    
+# This will ensure that the nginx package is installed on the target system.
+
+# yum: This module is used to manage packages on Red Hat or CentOS based systems. For example:
+
+- name: Install Apache
+  yum:
+    name: httpd
+    state: present
+    
+# This will ensure that the httpd package (Apache) is installed on the target system.
+
+# service: This module is used to manage system services. For example:
+
+- name: Ensure Apache is running
+  service:
+    name: httpd
+    state: started
+    
+# This will ensure that the httpd service (Apache) is running on the target system.
+
+# file: This module is used to manage files and directories on the target system. For example:
+
+- name: Create a directory
+  file:
+    path: /path/to/directory
+    state: directory
+    
+# This will create the /path/to/directory directory on the target system.
+
+# copy: This module is used to copy files from the Ansible control node to the target system. For example:
+
+- name: Copy a file to the target system
+  copy:
+    src: /path/to/local/file
+    dest: /path/to/remote/file
+    
+# This will copy the /path/to/local/file file from the Ansible control node to the /path/to/remote/file path on the target system.
+
+# template: This module is used to copy files from the Ansible control node to the target system, 
+# while performing variable substitution on the file contents. For example:
+
+- name: Copy a template file to the target system
+  template:
+    src: /path/to/template.j2
+    dest: /path/to/remote/file
+    vars:
+      variable_name: variable_value
+      
+# This will copy the /path/to/template.j2 file from the Ansible control node to the /path/to/remote/file path 
+# on the target system, while performing variable substitution on the file contents using the variable_name and variable_value values.
+
+# lineinfile: This module is used to edit text files on the target system by adding, removing or replacing specific lines. For example:
+
+- name: Add a line to a file
+  lineinfile:
+    path: /path/to/file
+    line: 'new_line_to_add'
+    
+# This will add the new_line_to_add line to the /path/to/file file on the target system.
+
+# These are just a few examples of the many Ansible modules that are available. 
+# By combining these and other modules, you can build complex automation tasks and manage your systems efficiently.
