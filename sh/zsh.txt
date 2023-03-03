@@ -1,0 +1,67 @@
+To set up your zsh to show in color on which computer you are currently on and to be warned if you are in the middle of an SSH session, 
+you can modify your zsh prompt using the PROMPT variable and the %F{color} and %f escape sequences.
+
+Here is an example prompt that shows the hostname in red if you are not in an SSH session, and in yellow if you are:
+
+if [[ -n "$SSH_CLIENT" ]]; then
+  PROMPT='%F{red}%m%f:%~%# '
+else
+  PROMPT='%F{green}%m%f:%~%# '
+fi
+
+
+This sets the prompt to display the hostname (%m), the current working directory (%~), 
+and the prompt symbol (%#), separated by colons. The hostname is colored red if you are not in an SSH session, and yellow if you are.
+
+You can add this code to your ~/.zshrc file to make it permanent. Be sure to source the file 
+(. ~/.zshrc) or start a new terminal session for the changes to take effect.
+
+#######################################################################################################################
+
+This will help you to clearly see on which computer you are currently on and be warned if you are in the middle of an SSH session.
+
+Autocorrect typos: 
+  Zsh can autocorrect typos using the CORRECT option. 
+  To enable it, add setopt correct to your ~/.zshrc file. 
+  This will prompt you with a suggested correction if you mistype a command.
+
+Autosuggestions: 
+  Zsh can provide autosuggestions for commands as you type using the zsh-autosuggestions plugin. 
+  Install the plugin and add zsh-autosuggestions to your plugins list in ~/.zshrc.
+
+Customize prompt: 
+  Zsh's prompt can be customized using the PROMPT variable. 
+  You can add various escape sequences to show information like the current working directory, git branch, and more. 
+  Check out the Zsh documentation for a full list of escape sequences.
+
+Directory stack: 
+  Zsh has a built-in directory stack that can be accessed using the dirs command. 
+  You can use pushd and popd to add and remove directories from the stack, and cd -<number> to quickly jump to a directory in the stack.
+
+Extended globbing: 
+  Zsh supports extended globbing, which allows for more powerful file matching. 
+  For example, you can use **/*.txt to match all .txt files in the current directory and its subdirectories. 
+  Enable extended globbing with setopt extended_glob.
+
+Fuzzy matching: 
+  Zsh can do fuzzy matching of file and directory names using the fzf plugin. 
+  Install the plugin and add fzf to your plugins list in ~/.zshrc.
+
+History search: 
+  Zsh's history can be searched using the history-search-backward and history-search-forward widgets. 
+  Bind these widgets to up and down arrow keys using bindkey '^[[A' history-search-backward and bindkey '^[[B' history-search-forward.
+
+Repeat last command: 
+  Zsh can repeat the last command using the !! shortcut. 
+  You can also repeat a command with a specific string replaced using !string.
+
+Spell checking: 
+  Zsh can spell check command arguments using the spelling plugin. 
+  Install the plugin and add spelling to your plugins list in ~/.zshrc.
+
+Word splitting: 
+  Zsh can split a command argument into words based on whitespace using the $=word syntax. 
+  For example, echo $=PATH will split the PATH environment variable into a list of directories.
+
+#######################################################################################################################
+
