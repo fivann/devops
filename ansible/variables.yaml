@@ -37,14 +37,14 @@ roles/
     vars/
       main.yml
       
-In main.yml, you can define your variables:
+# In main.yml, you can define your variables:
 
 ---
 app_name: myapp
 app_port: 8080
 
-Once you've defined your variables, you can use them in your playbook or role by enclosing the variable name 
-in double curly braces ({{ }}). For example:
+# Once you've defined your variables, you can use them in your playbook or role by enclosing the variable name 
+# in double curly braces ({{ }}). For example:
 
 
 - name: Start the app
@@ -53,3 +53,47 @@ in double curly braces ({{ }}). For example:
 # Variables can also be used in conditionals and loops to control the flow of your playbook or role. 
 # Ansible also provides many built-in variables that can be used to access information about your hosts and environment, 
 # such as ansible_hostname and ansible_distribution.
+
+# When you run an Ansible playbook, you can pass in additional variables or override existing 
+# ones using the -e option. Here's an example:
+
+ansible-playbook myplaybook.yml -e "env=prod"
+
+# In this example, we're running the myplaybook.yml playbook and passing in a variable called env with a value of prod. 
+# You can pass in multiple variables by separating them with spaces, like this:
+
+ansible-playbook myplaybook.yml -e "env=prod user=jdoe password=pass123"
+
+# If you want to pass in a variable that is a dictionary or a list, you can use YAML syntax to define the variable. For example:
+
+ansible-playbook myplaybook.yml -e "database={'host': 'db.example.com', 'port': 5432, 'name': 'mydb'}"
+
+# In this example, we're passing in a dictionary variable called database with three keys: host, port, and name.
+
+# You can also define variables in an external file and pass them in using the --extra-vars option. For example:
+
+ansible-playbook myplaybook.yml --extra-vars "@vars.yml"
+
+# In this example, we're passing in variables defined in a file called vars.yml. 
+# The @ symbol tells Ansible to read the variables from a file instead of passing them in directly on the command line. 
+# The contents of vars.yml might look something like this:
+
+---
+env: prod
+user: jdoe
+password: pass123
+database:
+  host: db.example.com
+  port: 5432
+  name: mydb
+  
+# Once you've defined your variables, you can reference them in your playbook using the {{ }} syntax. For example:
+
+- name: Print the environment
+  debug:
+    var: env
+
+
+
+
+
