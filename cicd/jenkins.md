@@ -3,7 +3,8 @@
     Use the GIT_BRANCH environment variable: 
     When Jenkins runs a job, it automatically sets a number of environment variables that you can use in your build steps. 
     One of these is GIT_BRANCH, which contains the name of the Git branch that the job is running from. 
-    You can use this variable to label the build by adding a build step that sets the build description or label to the value of GIT_BRANCH.
+    You can use this variable to label the build by adding a build step that sets the build description 
+    or label to the value of GIT_BRANCH.
 
     Use the git command: You can use the git command to fetch the name of the current branch and use it to label the build. 
     To do this, you can add a build step that runs a shell script that uses the git rev-parse --abbrev-ref HEAD command 
