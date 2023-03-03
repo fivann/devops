@@ -1,0 +1,51 @@
+Ansible facts are variables that contain information about the system being managed by Ansible. 
+These variables are automatically discovered by Ansible and can be used in your playbooks and roles.
+
+Ansible facts provide a way to access information about the system being managed, such as the hostname, 
+IP address, operating system, kernel version, and hardware information. 
+This information can be useful in tasks such as configuring software based on the operating system, 
+installing packages based on the system architecture, or configuring network settings based on the hostname or IP address.
+
+Ansible facts are gathered by default when Ansible runs a playbook, but you can also manually 
+gather facts using the gather_facts module. This module allows you to specify which facts you 
+want to gather and can be useful in situations where you need to gather additional information that is not automatically collected.
+
+Here are some examples of how you might use Ansible facts in your playbook or role:
+
+- name: Install packages based on the operating system
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - python
+      - java
+      - "{{ 'apache2' if ansible_distribution == 'Ubuntu' else 'httpd' }}"
+
+- name: Configure network settings based on hostname
+  network_interface:
+    name: eth0
+    address: "{{ ansible_default_ipv4.address }}"
+    netmask: "{{ ansible_default_ipv4.netmask }}"
+    gateway: "{{ '192.168.1.1' if 'web' in ansible_hostname else '10.0.0.1' }}"
+    
+In this first example, we're using an if/else statement to install the correct web server package based on the operating system. 
+We're checking the value of the ansible_distribution fact to determine whether the system is running Ubuntu or another distribution.
+
+In the second example, we're configuring the network interface based on the hostname. 
+We're using the ansible_default_ipv4 fact to get the IP address and netmask of the primary network interface, 
+and then using another if/else statement to set the default gateway based on the hostname.
+
+You can use the ansible command with the all inventory group and the setup module 
+to gather facts for all hosts in your inventory file. You can also use the grep command 
+to filter the output to only show IPv4 addresses.
+
+>>> ansible all -i inventory.ini -m setup | grep -E 'ipv4\:\s*address'
+
+In this command, we're running the setup module for all hosts in the all inventory group specified in the inventory.ini file. 
+The output of the setup module includes all facts gathered by Ansible, so we're using the grep command 
+to filter the output to only show lines that contain the ipv4: address fact.
+
+Note that the exact format of the ipv4: address fact may vary depending on the version of Ansible 
+you're using and the operating system of the target hosts. You may need to adjust the regular expression used 
+in the grep command to match the output of your version of Ansible.
