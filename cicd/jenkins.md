@@ -37,18 +37,22 @@
 
     Verify that all the installed plugins and pipelines are available on the new server.
     Run a few jobs to ensure that the new server is working properly.
-    Note: If the new server has a different operating system or architecture, some plugins may not work properly. It is recommended to test the migration on a test server before performing it on a production server.
+    Note: If the new server has a different operating system or architecture, some plugins may not work properly. 
+    It is recommended to test the migration on a test server before performing it on a production server.
     
 # To verify that all the installed plugins and pipelines are available on the new server after migrating Jenkins, you can follow these steps:
 
     Login to the Jenkins dashboard on the new server.
 
-    Check the "Manage Jenkins" section to confirm that all the required plugins are installed. You can do this by going to "Manage Jenkins" > "Manage Plugins" and checking the "Installed" tab. This should show you a list of all the installed plugins on the new server.
+    Check the "Manage Jenkins" section to confirm that all the required plugins are installed. You can do this by going to 
+    "Manage Jenkins" > "Manage Plugins" and checking the "Installed" tab. This should show you a list of all the installed plugins on the new server.
 
-    Check the "Jenkinsfile" of a few pipelines to ensure they are available on the new server. You can do this by going to a pipeline job, clicking on "Pipeline Syntax" in the left sidebar, and then checking the "Sample Step" dropdown to see if it includes the necessary steps.
+    Check the "Jenkinsfile" of a few pipelines to ensure they are available on the new server. You can do this by going to a pipeline job, 
+    clicking on "Pipeline Syntax" in the left sidebar, and then checking the "Sample Step" dropdown to see if it includes the necessary steps.
 
     Run a few jobs to ensure that they work properly on the new server. You can do this by running some simple test jobs that you are familiar with.
 
-    Finally, you can also compare the backup files of the old and new servers to ensure that all the required files and configurations have been properly migrated to the new server.
+    Finally, you can also compare the backup files of the old and new servers to ensure that all the required files and configurations 
+    have been properly migrated to the new server.
 
     By following these steps, you can verify that all the installed plugins and pipelines are available on the new server after migrating Jenkins.
