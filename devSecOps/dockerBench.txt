@@ -33,3 +33,40 @@ Now use the Linux diff command to compare the output from the first run in bench
 $ diff /tmp/bench1.out /tmp/bench2.out
 
 
+There are various tools available to check for vulnerabilities in a Dockerfile. 
+Here are a few options:
+
+Docker Bench Security: Docker Bench Security is a popular open-source tool that automates 
+the process of checking for common security issues in Docker containers. 
+It also provides guidance on how to fix any vulnerabilities that are found.
+
+Clair: Clair is an open-source vulnerability scanner for containers. 
+It analyzes Docker images and provides a list of vulnerabilities that can be sorted by severity. 
+It also integrates with Docker registry and Kubernetes.
+
+Anchore: Anchore is an open-source tool for analyzing container images for vulnerabilities. 
+It can be integrated into your CI/CD pipeline to automatically scan your Docker images for security issues.
+
+Trivy: Trivy is an open-source vulnerability scanner that specializes in scanning container images. 
+It can detect vulnerabilities in both the operating system and application dependencies.
+
+To use any of these tools, you'll need to build your Docker image and then scan it using the tool of your choice. 
+For example, with Docker Bench Security, you can run:
+
+
+docker run --rm -it \
+    --name dockerbenchsecurity \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    docker/docker-bench-security
+    
+This command will run Docker Bench Security against your Docker installation and report any vulnerabilities that are found. 
+Similarly, for Clair, Anchore, and Trivy, you'll need to run a command that points to your Docker image and scans it for vulnerabilities.
+
+It's important to note that while these tools can help you identify vulnerabilities in your Docker images, they are not foolproof. 
+It's still important to follow best practices for secure Dockerfile creation and use reputable base images and libraries 
+to minimize the risk of vulnerabilities.
+
+
+
+
+
