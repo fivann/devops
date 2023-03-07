@@ -98,4 +98,51 @@ These plugins are just a few of the many useful and powerful plugins available f
 By installing and configuring these plugins, you can automate your build and deployment process, 
 and make your development workflow more efficient and streamlined.
 
+## SCHEDULE
 
+Jenkins is a powerful tool that allows you to automate your software development process, including running jobs on a schedule. To run Jenkins jobs by schedule, you can use the built-in scheduling feature of Jenkins called "Build Triggers". There are several types of build triggers in Jenkins, and in this answer, we will discuss some of the most commonly used triggers.
+
+#### Timer Trigger:
+
+The Timer Trigger allows you to schedule a job to run at a specific time or on a recurring basis. You can specify the time and frequency of the job using the "Build periodically" option in the job configuration.
+
+#### Examples:
+````
+Run a job every day at 2:30 AM: 30 2 * * *
+Run a job every Monday at 9:00 AM: 0 9 * * 1
+Run a job every hour: H * * * *
+```
+#### SCM Trigger:
+
+The SCM Trigger allows you to schedule a job to run when changes are detected in a source code management 
+(SCM) system such as Git or Subversion. You can specify the polling interval and the branches to monitor in the job configuration.
+
+Examples:
+```
+Poll for changes every 5 minutes: H/5 * * * *
+Monitor changes in the "master" branch: */5 * * * * */master
+```
+
+#### Build after other projects are built Trigger:
+
+The Build after other projects are built Trigger allows you to schedule a job to run after another job has finished.
+You can specify the name of the triggering job and whether to wait for the triggering job to complete successfully or not.
+
+Examples:
+```
+Run a job after the "build-and-test" job has completed successfully: build-and-test
+Run a job after the "deploy-to-staging" job has completed, regardless of the outcome: deploy-to-staging, false
+```
+
+#### Parameterized Trigger:
+
+The Parameterized Trigger allows you to schedule a job to run with specific parameters. 
+You can specify the values of the parameters in the job configuration or pass them in from another job.
+
+Examples:
+```
+Run a job with a parameter "env" set to "prod": env=prod
+Run a job with multiple parameters: env=prod&version=1.0
+```
+These are just a few examples of how to schedule jobs in Jenkins using Build Triggers. With the flexibility 
+and power of Jenkins, you can create complex scheduling patterns and workflows that fit your specific needs.
