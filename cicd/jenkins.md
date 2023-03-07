@@ -107,7 +107,7 @@ Jenkins is a powerful tool that allows you to automate your software development
 The Timer Trigger allows you to schedule a job to run at a specific time or on a recurring basis. You can specify the time and frequency of the job using the "Build periodically" option in the job configuration.
 
 #### Examples:
-````
+```
 Run a job every day at 2:30 AM: 30 2 * * *
 Run a job every Monday at 9:00 AM: 0 9 * * 1
 Run a job every hour: H * * * *
