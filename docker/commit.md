@@ -39,14 +39,14 @@ docker run -d -p 80:80 my-new-web-server-image
 and then use the docker commit command to create a new image that includes those changes. 
 Here are the general steps you can follow:
 
-Start a container from the image using docker run.
-Log into the container using docker exec -it <container-id> /bin/bash.
-Install any new software or make any necessary changes to the container. For example, you can use apt-get to install new software.
-Add any new files to the container using docker cp.
-Exit the container and stop it using docker stop <container-id>.
-Use the docker commit command to create a new image with your changes. For example:
-```docker commit <container-id> my-new-image-with-changes```
-Note that you need to specify the container ID and the new image name in this command.
+- Start a container from the image using docker run.
+- Log into the container using docker exec -it <container-id> /bin/bash.
+- Install any new software or make any necessary changes to the container. For example, you can use apt-get to install new software.
+- Add any new files to the container using docker cp.
+- Exit the container and stop it using docker stop <container-id>.
+- Use the docker commit command to create a new image with your changes. For example:
+- ```docker commit <container-id> my-new-image-with-changes```
+- Note that you need to specify the container ID and the new image name in this command.
 
 You can now use the new image to start a new container with the changes you made using docker run.
 ```docker run -it my-new-image-with-changes /bin/bash```
