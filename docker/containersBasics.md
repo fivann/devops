@@ -70,3 +70,5 @@ Cgroups can be used to control and limit the usage of system resources such as C
 
 In addition to resource limiting, cgroups can also be used for monitoring, accounting, and controlling access to system resources. Cgroups can also be used in conjunction with other Linux kernel features such as namespaces and containers to provide further isolation and control over system resources.
 
+### NAMESPACES limits what you can see
+### CGROUPS limits what you can access
