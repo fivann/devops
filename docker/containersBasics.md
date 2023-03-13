@@ -43,4 +43,30 @@ sudo chroot /mnt /bin/bash
 This will mount the damaged system's root partition at /mnt and then chroot into it. 
 You can then use standard Linux commands to repair the system from within the chroot environment.
 
+### LINUX NAMESPACES
+
+#### User namespace: 
+User namespaces isolate user and group IDs, which can prevent privilege escalation attacks by limiting the impact of a compromised process. With user namespaces, a process can have different UID/GID mappings inside and outside the namespace, allowing it to have different levels of privileges.
+
+#### IPC namespace: 
+IPC namespaces isolate interprocess communication (IPC) resources, such as System V IPC and POSIX message queues. This allows processes to have independent sets of IPC resources, which can improve security and prevent resource conflicts.
+
+#### UTS namespace: 
+UTS namespaces isolate the hostname and domain name of the system, allowing different processes to have different names inside and outside the namespace. This can be useful for running multiple instances of a service on the same machine, or for testing network applications.
+
+#### Mount namespace: 
+Mount namespaces isolate the mount points and file systems seen by a process, allowing different processes to have independent views of the file system. This can be used to create sandboxed environments with restricted file system access, or to allow different processes to use different versions of a shared library.
+
+#### PID namespace: 
+PID namespaces isolate process IDs, allowing different processes to have different PIDs inside and outside the namespace. This can be useful for managing process trees, allowing a process to see only its own children and preventing it from affecting other processes.
+
+#### Network namespace: 
+Network namespaces isolate network interfaces, routing tables, and other network-related resources, allowing different processes to have independent network stacks. This can be used to create virtualized network environments, such as containers or VPNs, or to prevent network conflicts between processes.
+
+#### Cgroups (short for "control groups") 
+are a feature in the Linux kernel that allow for fine-grained resource limiting and prioritization of processes and process groups.
+
+Cgroups can be used to control and limit the usage of system resources such as CPU, memory, disk I/O, and network bandwidth by individual processes or groups of processes. This can be useful for managing resource-intensive workloads, enforcing system-wide resource allocation policies, and preventing one process from monopolizing system resources and negatively impacting the performance of other processes.
+
+In addition to resource limiting, cgroups can also be used for monitoring, accounting, and controlling access to system resources. Cgroups can also be used in conjunction with other Linux kernel features such as namespaces and containers to provide further isolation and control over system resources.
 
