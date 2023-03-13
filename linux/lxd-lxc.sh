@@ -12,6 +12,7 @@ lxc network create <name> <type>: Creates a new network with the specified name 
 lxc config show <name>: Shows the configuration of the specified container.
 
 # LXC
+lxc remote list: Lists containers
 lxc-create -t <template> -n <name>: Creates a new container with the specified template and name.
 lxc-ls: Lists all running containers.
 lxc-info -n <name>: Shows information about the specified container.
