@@ -28,3 +28,43 @@ lxc-cgroup -n <name> memory.limit_in_bytes <value>: Sets the memory limit for th
 # Note that some commands may differ between LXD and LXC, as LXD is a newer, 
 # higher-level tool that provides a more user-friendly interface to LXC. 
 # However, both tools are compatible with each other and can be used together as needed.
+
+
+# Installing LXC/LXD
+
+# Determine which Linux distribution your server is running:
+
+cat /etc/issue
+# Install lxd and lxd-client:
+
+sudo apt install lxd lxd-client 
+# When prompted, enter the password provided on the lab page and hit Enter.
+
+# Initialize LXD:
+
+sudo lxd init
+
+# Accept the defaults for each of the prompts, except for configuring IPv6. Select No when prompted to set up an IPv6 subnet.
+
+# Create Your First Container
+# Create a container using Alpine 3.14 named my-alpine:
+
+sudo lxc launch images:alpine/3.14 my-alpine
+
+# List your containers:
+
+sudo lxc list 
+
+# Connect to a Container
+# Execute an ash shell in your my-alpine container:
+
+sudo lxc exec my-alpine -- /bin/ash
+
+# Create a file named hello.txt:
+
+echo hello world! > hello.txt
+
+# Type ls to see the file, or (optionally) type cat hello.txt to see the content of the file .
+
+
+
