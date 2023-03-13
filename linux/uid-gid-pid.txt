@@ -1,0 +1,34 @@
+In Linux, there are several predefined UID/GID/PID ranges that are reserved for specific purposes. 
+Here are some common ones:
+
+UIDs:
+0: The root user
+1-999: Reserved for system accounts and daemons
+1000-65534: Normal user accounts
+
+GIDs:
+0: The root group
+1-999: Reserved for system groups
+1000-65534: Normal user groups
+
+PIDs:
+0: The swapper process (which is part of the kernel)
+1: The init process
+2: The kthreadd process (which manages kernel threads)
+3-4: Used by the ksoftirqd and events workqueues
+5: Used by the kworker process (which manages kernel worker threads)
+6: The migration thread
+7: The rcu_sched process (which handles RCU callbacks)
+8: The rcu_bh process (which handles RCU callbacks in bottom halves)
+9: The watchdog process
+10: The watchdog/0 process (which monitors system activity)
+11: The events/0 process (which manages system events)
+12: The khelper process (which provides kernel-level helper functions)
+13: The kworker/u<cpu> process (which manages per-CPU kernel worker threads)
+14: The kworker/0:1 process (which manages a separate pool of kernel worker threads)
+15: The kdevtmpfs process (which manages device nodes for devtmpfs filesystems)
+
+Note that these ranges may vary depending on the Linux distribution and version.
+
+
+
