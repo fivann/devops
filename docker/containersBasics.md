@@ -72,3 +72,7 @@ In addition to resource limiting, cgroups can also be used for monitoring, accou
 
 ### NAMESPACES limits what you can see
 ### CGROUPS limits what you can access
+
+#### Examples
+```sudo ip netns exec sample1 iptables -L```
+Runs ```iptables -L``` in namespace "sample1"
