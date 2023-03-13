@@ -31,4 +31,44 @@ PIDs:
 Note that these ranges may vary depending on the Linux distribution and version.
 
 
+In Linux, a process is identified by a unique Process ID (PID). 
+The PID is a positive integer assigned by the kernel when the process is created. 
+
+The PID 0, also known as the "swapper" or "scheduler" process, is a special process 
+that is responsible for starting and scheduling other processes on the system.
+
+The PID 1 is also a special process called "init". It is the first process started by 
+the kernel during the boot process and is responsible for starting and stopping 
+all other processes on the system. In modern Linux distributions, "init" has been 
+replaced by systemd, which is responsible for system initialization and management.
+
+The PID 2 is the "kthreadd" process, which is responsible for managing kernel threads. 
+Kernel threads are lightweight processes that run in kernel space and are used for tasks 
+such as I/O and interrupt handling.
+
+The PIDs 3 to 5 are also kernel processes that are responsible for various tasks. 
+PID 3 is "ksoftirqd/0", which is responsible for handling software interrupts on the first CPU core. 
+PID 4 is "kworker/0:0", which is a kernel worker thread that handles various tasks. 
+PID 5 is "kworker/u:0", which is another kernel worker thread that handles tasks related to the system's memory management.
+
+
+PID 6 is "mtdblockd": This process is responsible for managing the flash memory devices on the system, 
+such as USB flash drives and solid-state drives.
+
+PID 7 is "khelper": This process is a helper process that is used by other kernel processes to perform various tasks.
+
+PID 8 is "kdevtmpfs": This process manages the creation and deletion of device nodes in the /dev filesystem.
+
+PID 9 is "kworker/u2:0": Another kernel worker thread that handles tasks related to the system's memory management.
+PID 10 is "kworker/u2:1": Another kernel worker thread that handles various tasks related to the system's performance.
+
+PID 11 is "rcu_sched": This process is responsible for implementing the Linux kernel's 
+Read-Copy-Update (RCU) mechanism, which is used to synchronize access to shared data structures.
+
+PID 12 is "rcuos/0": This process is part of the RCU mechanism and is responsible for handling certain types of system calls.
+PID 13 is "rcuos/1": Another RCU process that handles system calls on the second CPU core.
+PID 14 is "rcuos/2": Another RCU process that handles system calls on the third CPU core.
+PID 15 is "rcuos/3": Another RCU process that handles system calls on the fourth CPU core.
+
+
 
