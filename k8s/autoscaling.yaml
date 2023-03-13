@@ -1,0 +1,134 @@
+#################################################################
+# Autoscaling in Kubernetes
+#################################################################
+
+# Introduction
+# Begin by logging in to the lab master server using the credentials provided on the hands-on lab page.
+
+$ ssh cloud_user@PUBLIC_IP_ADDRESS
+
+# Install the Kubernetes Metrics API in the Cluster
+# Clone the Git repository.
+
+$ git clone https://github.com/kubernetes-incubator/metrics-server.git
+
+# Change to the metrics-server directory.
+
+$ cd metrics-server
+
+# Check out the appropriate version of the repository.
+
+$ git checkout ed0663b3b4ddbfab5afea166dfd68c677930d22e
+
+# Create the necessary objects.
+
+$ kubectl create -f deploy/1.8+/
+
+# Make sure the server is up and running.
+
+$ kubectl get pods -n kube-system
+
+# Verify everything is running as expected.
+
+$ kubectl get --raw /apis/metrics.k8s.io
+
+# Configure a Horizontal Pod Autoscaler to Autoscale the Train Schedule App
+# Open a new browser tab and navigate to https://github.com/linuxacademy/cicd-pipeline-train-schedule-autoscaling
+# In the upper-right corner, click Fork and create a fork in your local repository.
+# Click the link for the train-schedule-kube.yml file.
+# Click the pencil icon to edit the file.
+
+# Under the containers: section, add the following code to the bottom of that section. 
+# Make sure the spacing matches such that resources: is is even with the other top-level keys (i.e. image:, ports:, etc.)
+
+resources:
+  requests:
+    cpu: 200m
+    
+# At the very bottom of the file, add the following code.
+
+---
+
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: train-schedule
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: train-schedule-deployment
+  minReplicas: 1
+  maxReplicas: 4
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 50
+      
+      
+      
+# Here is a breakdown of the different sections:
+
+# apiVersion: autoscaling/v2beta1: This specifies the API version for the HPA resource.
+# kind: HorizontalPodAutoscaler: This specifies the type of resource that we are defining.
+# metadata: This section specifies metadata about the resource, such as the name and namespace.
+# scaleTargetRef: This specifies the deployment that the HPA should scale. In this case, 
+# it is a deployment named train-schedule-deployment.
+# minReplicas: This specifies the minimum number of replicas that should be running at all times. In this case, it is set to 1.
+# maxReplicas: This specifies the maximum number of replicas that the HPA should scale up to. In this case, it is set to 4.
+# metrics: This section specifies the metrics that the HPA should use to determine when to scale the deployment. 
+# In this case, it is set to use CPU utilization as the metric. The targetAverageUtilization is set to 50, 
+# which means that the HPA will try to keep the average CPU utilization of the pods at 50%. 
+# If the utilization goes above this threshold, the HPA will scale up the number of replicas until it reaches the maxReplicas value. 
+# If the utilization goes below the threshold, the HPA will scale down the number of replicas until it reaches the minReplicas value.
+      
+# Click Commit changes at the bottom of the window.
+# Select the entire contents of the file and copy them to the clipboard.
+# Back in the master server, return to the home directory. And create train-schedule-kube.yml.
+
+$ cd ~/
+$ vi train-schedule-kube.yml
+
+# Paste the text copied to the clipboard in a previous step.
+# Save the file and exit the editor.
+# Apply our changes.
+
+$ kubectl apply -f train-schedule-kube.yml
+
+# Make sure the pods are starting.
+
+$ kubectl get pods -w
+
+# Verify the autoscaler is running.
+
+$ kubectl get hpa
+
+# Test the System
+
+# Open a new browser tab and navigate to the public IP address associated with the 
+# Kubernetes node provided on the lab page. Specify the port on the address by using :8080.
+
+# Generate CPU load on the server by navigating to NODE_PUBLIC_IP:8080/generate-cpu-load, 
+# replacing NODE_PUBLIC_IP with the public IP address associated with the Kubernetes node provided on the lab page.
+
+# Back in the terminal for the lab master server, check the status of the autoscaler.
+
+$ kubectl get hpa
+
+# Set up a watch for the autoscaler.
+
+$ kubectl get hpa -w
+
+# Open a new terminal window and connect to the lab master server.
+# Run a busybox container.
+
+$ kubectl run -i --tty load-generator --image=busybox /bin/sh
+
+# Generate load on the server to verify the autoscaler. Make sure to replace NODE_PUBLIC_IP 
+# with the public IP address assocated with the Kubernetes node provided on the lab page.
+
+$ while true; do wget -q -O- http://NODE_PUBLIC_IP:8080/generate-cpu-load; done
+
+
