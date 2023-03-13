@@ -114,10 +114,12 @@ stage('CanaryDeploy') {
 }
 ```
 Modify the DeployToProduction section but adding the following between the when { and steps { section:
-```}
+```
+}
 environment {
   CANARY_REPLICAS = 0
-}```
+}
+```
 
 Select Commit changes
 Run a Successful Deployment
@@ -125,7 +127,6 @@ Run a Successful Deployment
 Run our set up to make sure everything is running correctly:
 
 Go to our Kubernetes server and review the following:
-
 ```kubectl get pods -w```
 Back on Jenkins, click Build Now to build our updated information.
 
