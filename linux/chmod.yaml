@@ -1,0 +1,58 @@
+linux:
+  - type: File Permissions
+    privileges:
+      - r: read permission
+      - w: write permission
+      - x: execute permission
+
+  - type: File Modes
+    modes:
+      - -rw-r--r--: read and write for owner, read-only for group and others
+      - -rwxr-xr-x: read, write, and execute for owner, read and execute for group and others
+      - -rwxrwxrwx: read, write, and execute for all users
+
+  - type: Directory Permissions
+    privileges:
+      - r: list contents of directory
+      - w: add, remove, and rename files and directories in directory
+      - x: access contents of directory and execute files within directory
+
+  - type: Special Permissions
+    privileges:
+      - s: setuid/setgid bit
+      - t: sticky bit
+      - +: additional permissions
+
+  - type: Setuid/Setgid Bit
+    meaning: Runs executable with privileges of the owner/group, not the user running it
+    example:
+      - -rwsr-xr-x: setuid bit set, executable is run with owner privileges
+      - -rwxr-sr-x: setgid bit set, executable is run with group privileges
+
+  - type: Sticky Bit
+    meaning: Prevents users from deleting or renaming files they do not own
+    example:
+      - drwxrwxrwt: sticky bit set, only owner can delete or rename files in directory
+      - drwxr-xr-x: sticky bit not set, any user can delete or rename files in directory
+
+  - type: Chmod Syntax
+    syntax:
+      - Numeric:
+          - 0: no permissions
+          - 1: execute only
+          - 2: write only
+          - 3: write and execute
+          - 4: read only
+          - 5: read and execute
+          - 6: read and write
+          - 7: read, write, and execute
+        example: "chmod 755 file.txt"
+      - Symbolic:
+          - u: user/owner
+          - g: group
+          - o: others
+          - a: all
+          - +: add permission
+          - -: remove permission
+          - =: set permission
+        example: "chmod u+x file.txt"
