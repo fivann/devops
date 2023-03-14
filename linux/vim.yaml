@@ -1,0 +1,48 @@
+vim:
+  - mode: Normal
+    keys:
+      - h, j, k, l: move cursor left, down, up, right
+      - w, e, b: move cursor forward by word, to end of word, backward by word
+      - 0, $: move cursor to beginning or end of line
+      - gg, G: move cursor to first or last line
+      - ^, _: move cursor to first non-blank character of line
+      - *, #: search for word under cursor forward or backward
+      - /, ?: search forward or backward
+      - n, N: repeat search in same or opposite direction
+      - :, ;: enter command-line mode, repeat last command
+      - :w, :q, :wq: save, quit, save and quit
+      - :set, :unset: set or unset option
+      - :help: open Vim help
+      - :split, :vsplit: split window horizontally or vertically
+      - :resize, :vertical resize: resize window horizontally or vertically
+      - Ctrl-w, Ctrl-w: switch between windows
+      - Ctrl-w, h, j, k, l: move to window left, down, up, right
+
+  - mode: Insert
+    keys:
+      - i, I: insert at cursor or beginning of line
+      - a, A: append after cursor or end of line
+      - o, O: open new line below or above cursor
+      - Esc: return to Normal mode
+
+  - mode: Visual
+    keys:
+      - v, V: start visual mode, start line-wise visual mode
+      - Ctrl-v: start block-wise visual mode
+      - y: yank selected text
+      - d: delete selected text
+      - >, <: indent or unindent selected lines
+      - =: auto-indent selected lines
+      - !: filter selected lines through an external command
+      - ~: swap case of selected text
+
+  - mode: Command-line
+    keys:
+      - <Tab>: auto-complete command or file name
+      - <Up>, <Down>: navigate through command history
+      - :w, :q, :wq: save, quit, save and quit
+      - :e, :split, :vsplit: edit file, split window horizontally or vertically
+      - :tabnew: open new tab
+      - :%s/old/new/g: substitute all occurrences of old with new
+      - :r filename: read contents of filename into current buffer
+      - :w filename: write buffer contents to filename
