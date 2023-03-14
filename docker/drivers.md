@@ -1,3 +1,5 @@
+## Storage drivers
+
 Docker supports different storage drivers that provide the underlying mechanism for managing the storage of images and containers. Here's an overview of the different storage drivers:
 
 ### aufs: 
@@ -54,3 +56,31 @@ After restarting, Docker should be using the new storage driver.
 Note that changing the storage driver may result in data loss, so it is important to backup any important data before making changes. Additionally, not all storage drivers are supported on all operating systems, so make sure to check the documentation and compatibility before making any changes.
   
   
+## Logging dirvers
+    
+In Docker, a logging driver is a plugin that defines how the container logs are collected and where they are sent. By default, Docker sends container logs to the standard output and standard error streams. However, using logging drivers, you can send the logs to other destinations like a file, a syslog daemon, a remote logging service, or an external logging system.
+
+Docker supports several logging drivers, including:
+
+#### json-file: 
+This driver writes container logs to a JSON-formatted file on the host file system.
+
+#### syslog: 
+    This driver sends container logs to the syslog daemon on the host.
+
+#### journald: 
+This driver sends container logs to the systemd-journald service on the host.
+
+#### fluentd: 
+This driver sends container logs to a Fluentd logging system.
+
+#### awslogs: 
+This driver sends container logs to Amazon CloudWatch Logs.
+
+#### gelf: 
+This driver sends container logs to a Graylog Extended Log Format (GELF) server.
+
+To specify a logging driver for a container, you can use the "--log-driver" option with the "docker run" command, followed by the name of the logging driver. For example, "docker run --log-driver=syslog myimage" specifies the syslog logging driver for the container. You can also specify additional options for the logging driver using the "--log-opt" option.
+
+
+
