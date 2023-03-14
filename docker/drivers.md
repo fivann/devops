@@ -23,3 +23,34 @@ When choosing a storage driver, you should consider factors such as performance,
 ```
 >>> docker info | grep Driver
 ```
+
+
+When you install Docker on a machine, a default storage driver will be used based on the operating system and kernel version. However, you can also specify a different storage driver if needed. Here's how to set up a Docker storage driver:
+
+Check the current storage driver: You can check the current storage driver by running the following command:
+```
+docker info | grep -i 'storage driver'
+```
+This will display the current storage driver being used.
+
+Choose a new storage driver: Based on your needs and the system requirements, you can choose a new storage driver that suits your needs. You can choose from the available drivers, such as aufs, overlay2, devicemapper, btrfs, and zfs.
+
+Configure the storage driver: To configure the new storage driver, you need to edit the Docker daemon configuration file, which is usually located at /etc/docker/daemon.json. If the file doesn't exist, create it.
+
+Set the storage driver: In the configuration file, add the following line to specify the new storage driver:
+```
+{
+    "storage-driver": "<driver-name>"
+}
+```
+Replace <driver-name> with the name of the storage driver you want to use, such as aufs, overlay2, devicemapper, btrfs, or zfs.
+
+Restart Docker: After making the changes to the configuration file, restart Docker to apply the new configuration. You can use the following command to restart Docker:
+```
+sudo systemctl restart docker
+```
+After restarting, Docker should be using the new storage driver.
+
+Note that changing the storage driver may result in data loss, so it is important to backup any important data before making changes. Additionally, not all storage drivers are supported on all operating systems, so make sure to check the documentation and compatibility before making any changes.
+  
+  
