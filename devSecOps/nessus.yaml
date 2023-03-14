@@ -1,0 +1,33 @@
+# Nessus Cheat Sheet
+
+# Basic Usage
+nessuscli fetch --challenge
+nessuscli fetch --key
+nessuscli ls-plugins
+nessuscli update
+
+# Scanning
+nessuscli scan new --name=<scan_name> --policy=<policy_name> --target=<target> --scanner=<scanner>
+nessuscli scan pause --uuid=<scan_uuid>
+nessuscli scan resume --uuid=<scan_uuid>
+nessuscli scan stop --uuid=<scan_uuid>
+nessuscli scan cancel --uuid=<scan_uuid>
+
+# Reporting
+nessuscli report list --scan-id=<scan_id>
+nessuscli report download --report=<report_id> --format=<format> --file=<output_file>
+
+# Policy Management
+nessuscli policy list
+nessuscli policy import --file=<policy_file>
+nessuscli policy export --policy=<policy_name> --file=<output_file>
+nessuscli policy delete --policy=<policy_name>
+nessuscli policy create --name=<policy_name> --file=<policy_file>
+
+# User Management
+nessuscli adduser --username=<username> --password=<password> --role=<role>
+nessuscli deleteuser --username=<username>
+
+# Misc
+nessuscli version
+nessuscli help
