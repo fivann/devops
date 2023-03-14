@@ -66,7 +66,7 @@ Docker supports several logging drivers, including:
 This driver writes container logs to a JSON-formatted file on the host file system.
 
 #### syslog: 
-    This driver sends container logs to the syslog daemon on the host.
+This driver sends container logs to the syslog daemon on the host.
 
 #### journald: 
 This driver sends container logs to the systemd-journald service on the host.
