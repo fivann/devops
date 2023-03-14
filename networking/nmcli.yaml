@@ -1,0 +1,52 @@
+# Display a summary of all active connections
+- nmcli connection show
+
+# Display detailed information about a specific connection
+- nmcli connection show <connection-name>
+
+# Activate a connection
+- nmcli connection up <connection-name>
+
+# Deactivate a connection
+- nmcli connection down <connection-name>
+
+# Edit a connection
+- nmcli connection edit <connection-name>
+
+# Add a new connection
+- nmcli connection add \
+      type <connection-type> \
+      ifname <interface-name> \
+      con-name <connection-name> \
+      <connection-settings>
+
+# Remove a connection
+- nmcli connection delete <connection-name>
+
+# Display a summary of available networking devices
+- nmcli device show
+
+# Display detailed information about a specific device
+- nmcli device show <device-name>
+
+# Display a summary of active network connections
+- nmcli device status
+
+# Display a summary of available Wi-Fi access points
+- nmcli device wifi list
+
+# Connect to a Wi-Fi access point
+- nmcli device wifi connect <SSID> \
+      password <password> \
+      name <connection-name>
+
+# Disconnect from a Wi-Fi access point
+- nmcli device disconnect <device-name>
+
+# Enable a networking device
+- nmcli device set <device-name> \
+      managed yes
+
+# Disable a networking device
+- nmcli device set <device-name> \
+      managed no
