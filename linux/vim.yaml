@@ -18,6 +18,10 @@ vim:
       - Ctrl-w, Ctrl-w: switch between windows
       - Ctrl-w, h, j, k, l: move to window left, down, up, right
 
+      - dd: delete current line
+      - u: undo last change
+      - Ctrl-r: redo last undone change
+
   - mode: Insert
     keys:
       - i, I: insert at cursor or beginning of line
