@@ -20,5 +20,6 @@ The vfs (Virtual File System) driver is the simplest storage driver and is mostl
 
 When choosing a storage driver, you should consider factors such as performance, stability, and the features that are most important to your use case. In general, the overlay2 driver is the recommended choice for most users, as it provides good performance and stability on modern Linux kernels.
 
-
+```
 >>> docker info | grep Driver
+```
