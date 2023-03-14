@@ -1,3 +1,35 @@
+######################################################################
+# DOCKERFILE COMPONENTS
+######################################################################
+
+# This is a Dockerfile for building a Docker image
+
+# Specify the base image
+FROM ubuntu:latest
+
+# Set environment variables
+ENV VAR1=value1 \
+    VAR2=value2
+
+# Set the working directory
+WORKDIR /app
+
+# Copy files into the image
+COPY file.txt /app/
+
+# Run a command inside the container
+RUN apt-get update && \
+    apt-get install -y curl
+
+# Expose a port to the host machine
+EXPOSE 8080
+
+# Define the entry point for the container
+ENTRYPOINT ["/app/start.sh"]
+
+
+
+
 Here are 5 examples of Dockerfiles that follow best practices:
 
 
