@@ -108,5 +108,42 @@ systemctl rescue
 In summary, systemctl targets provide a way to define different system states or levels and manage the state 
 of a Linux system by activating a specific set of systemd units.
 
+Here are some use cases of Linux systemctl targets with command examples:
 
+Changing the default target
+You can change the default target that is activated when the system boots by using the systemctl set-default command 
+followed by the name of the target. For example, to set the default target to the graphical target, you can use the following command:
+
+sudo systemctl set-default graphical.target
+
+Listing available targets
+You can list all available targets on the system by using the systemctl list-units command with the --type=target option. For example:
+
+systemctl list-units --type=target
+This will list all available targets on the system.
+
+Checking the current target
+You can check the current target that is active on the system by using the systemctl get-default command. For example:
+
+systemctl get-default
+This will show the name of the current default target.
+
+Switching to a specific target
+You can switch to a specific target by using the systemctl isolate command followed by the name of the target. For example, 
+to switch to the multi-user target, you can use the following command:
+
+sudo systemctl isolate multi-user.target
+This will activate the multi-user target and stop all services that are not required for multi-user mode.
+
+Restarting the system in rescue mode
+You can restart the system in rescue mode by using the systemctl rescue command. This will activate the rescue target and start only essential services that are needed to troubleshoot and repair the system. For example:
+
+sudo systemctl rescue
+This will restart the system in rescue mode.
+
+Activating emergency mode
+You can activate emergency mode by using the systemctl emergency command. This will activate the emergency target and start only a minimal set of services that are needed to debug and recover the system in case of severe problems. For example:
+
+sudo systemctl emergency
+This will activate emergency mode. Note that you should use emergency mode with caution and only if you know what you are doing, as it may result in data loss or system damage if not used properly.
 
