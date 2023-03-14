@@ -1,0 +1,112 @@
+runlevels:
+  0:
+    description: Halt
+    actions:
+      - Stop all running processes
+      - Unmount all filesystems
+      - Turn off the system
+  1:
+    description: Single-User Mode
+    actions:
+      - Stop all non-essential services
+      - Drop to a single-user command prompt
+  2:
+    description: Multi-User Mode
+    actions:
+      - Start the networking services
+      - Start the system log daemon
+      - Start other system services
+  3:
+    description: Full Multi-User Mode
+    actions:
+      - Start all services required for normal system operation
+  4:
+    description: Not Used/User-Definable
+    actions: []
+  5:
+    description: Graphical User Interface Mode
+    actions:
+      - Start the X Window System
+      - Start the desktop manager
+  6:
+    description: Reboot
+    actions:
+      - Stop all running processes
+      - Unmount all filesystems
+      - Reboot the system
+
+
+targets:
+  basic.target:
+    description: Basic System
+    units:
+      - sysinit.target
+      - sockets.target
+      - paths.target
+      - timers.target
+      - swap.target
+      - local-fs.target
+      - basic.target
+
+  multi-user.target:
+    description: Multi-User System
+    units:
+      - basic.target
+      - sockets.target
+      - paths.target
+      - timers.target
+      - slices.target
+      - syslog.socket
+      - systemd-journald.socket
+      - systemd-journald.service
+      - getty.target
+      - remote-fs.target
+      - multi-user.target
+
+  graphical.target:
+    description: Graphical User Interface
+    units:
+      - multi-user.target
+      - graphical.target
+      - display-manager.service
+
+  rescue.target:
+    description: Rescue System
+    units:
+      - rescue.target
+      - basic.target
+
+  emergency.target:
+    description: Emergency Mode
+    units:
+      - emergency.target
+      - basic.target
+
+
+Linux systemctl targets are predefined sets of systemd units that are used to define different system states or levels. 
+When a target is activated, all units that are listed under that target are started. Each target is designed to provide 
+a specific system configuration and functionality, such as basic system initialization, multi-user mode, 
+graphical user interface, rescue mode, and emergency mode.
+
+Targets are an important feature of the systemd init system, which is the default init system used by many 
+modern Linux distributions. Targets are defined in unit files that are stored in the 
+/usr/lib/systemd/system and /etc/systemd/system directories.
+
+Systemctl targets can be used to manage and control the state of a Linux system, for example, 
+by changing the default target or switching to a different target to perform specific tasks or operations. 
+The systemctl command can be used to list available targets, check the current target, and switch to a different target.
+
+For example, to list available targets on a Linux system, you can use the following command:
+
+systemctl list-units --type target
+To switch to the graphical target, you can use the following command:
+
+systemctl isolate graphical.target
+To switch to the rescue target, you can use the following command:
+
+systemctl rescue
+In summary, systemctl targets provide a way to define different system states or levels and manage the state 
+of a Linux system by activating a specific set of systemd units.
+
+
+
