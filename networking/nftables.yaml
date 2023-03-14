@@ -1,0 +1,46 @@
+# Define a table
+table:
+  name: mytable
+  family: ip
+
+# Define a chain
+chain:
+  table: mytable
+  name: input
+  hook: input
+  priority: 0
+
+# Define rules
+rule:
+  table: mytable
+  chain: input
+  handle: 1
+  expression: meta l4proto tcp tcp dport 22 counter accept
+  comment: Allow SSH traffic
+
+rule:
+  table: mytable
+  chain: input
+  handle: 2
+  expression: meta l4proto tcp tcp dport 80 counter accept
+  comment: Allow HTTP traffic
+
+rule:
+  table: mytable
+  chain: input
+  handle: 3
+  expression: meta l4proto udp udp dport 53 counter accept
+  comment: Allow DNS traffic
+
+rule:
+  table: mytable
+  chain: input
+  handle: 4
+  expression: counter drop
+  comment: Drop all other traffic
+
+# Define a policy
+policy:
+  table: mytable
+  chain: input
+  policy: drop
