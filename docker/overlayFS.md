@@ -1,3 +1,6 @@
+### Layer is a DELTA
+### You can share layets between images
+
 A layered file system is a type of file system that uses a layered approach to storing and accessing files. Each layer represents a set of changes to the file system, and these layers can be stacked on top of each other to create a complete view of the file system.
 
 The layers in a layered file system can be read-only or read-write, and they can be shared across multiple users or processes. Each layer can contain different types of files, such as directories, symbolic links, device files, and regular files.
