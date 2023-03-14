@@ -1,0 +1,35 @@
+# Creating a User
+- To create a user, use the "adduser" or "useradd" command followed by the username. For example:
+  command: adduser john
+  description: This will create a user with the username "john".
+- By default, this command will create a home directory for the user at "/home/username" and add them to a group with the same name as the user.
+- You can specify additional options such as a custom home directory or a different primary group for the user.
+
+# Modifying User Attributes
+- To modify user attributes, use the "usermod" command followed by the username and the options you want to modify. For example:
+  command: usermod -s /bin/bash john
+  description: This will change the shell for the user "john" to "/bin/bash".
+- You can modify various attributes of the user such as their default shell, home directory, and password.
+
+# Deleting a User
+- To delete a user, use the "deluser" or "userdel" command followed by the username. For example:
+  command: deluser john
+  description: This will delete the user "john".
+- By default, this command will delete the user's home directory and mail spool.
+
+# Creating a Group
+- To create a group, use the "addgroup" or "groupadd" command followed by the group name. For example:
+  command: addgroup mygroup
+  description: This will create a group with the name "mygroup".
+- By default, this command will create a group with the same name as the group name provided.
+
+# Modifying Group Attributes
+- To modify group attributes, use the "groupmod" command followed by the group name and the options you want to modify. For example:
+  command: groupmod -g 1000 mygroup
+  description: This will change the GID for the group "mygroup" to "1000".
+- You can modify various attributes of the group such as its GID and group name.
+
+# Deleting a Group
+- To delete a group, use the "delgroup" or "groupdel" command followed by the group name. For example:
+  command: delgroup mygroup
+  description: This will delete the group "mygroup".
