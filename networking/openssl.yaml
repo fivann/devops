@@ -1,0 +1,28 @@
+commands:
+  - name: Generate RSA Private Key
+    command: openssl genrsa -out <key-name>.pem <key-size>
+    description: Generates an RSA private key of the specified size in PEM format.
+
+  - name: Generate Certificate Signing Request (CSR)
+    command: openssl req -new -key <key-name>.pem -out <csr-name>.csr
+    description: Generates a new CSR using the specified private key.
+
+  - name: Generate Self-Signed Certificate
+    command: openssl req -x509 -newkey rsa:<key-size> -keyout <key-name>.pem -out <cert-name>.pem -days <validity-period>
+    description: Generates a new self-signed certificate using the specified private key.
+
+  - name: Generate Certificate from CSR
+    command: openssl x509 -req -in <csr-name>.csr -CA <ca-cert>.pem -CAkey <ca-key>.pem -CAcreateserial -out <cert-name>.pem -days <validity-period>
+    description: Generates a new certificate signed by the specified CA using the specified CSR.
+
+  - name: Verify Certificate
+    command: openssl x509 -in <cert-name>.pem -text -noout
+    description: Verifies the contents of the specified certificate.
+
+  - name: View Certificate Details
+    command: openssl x509 -in <cert-name>.pem -text
+    description: Displays the details of the specified certificate.
+
+  - name: Convert Certificate to Different Format
+    command: openssl x509 -in <cert-name>.pem -out <cert-name>.crt -outform <format>
+    description: Converts the specified certificate to a different format (PEM, DER, etc.).
