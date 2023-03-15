@@ -1,0 +1,20 @@
+commands:
+  - name: Initialize Docker Content Trust
+    command: docker trust key generate <key-name>
+    description: Generates a new key pair with the specified name for signing Docker images.
+
+  - name: Sign Docker Image
+    command: docker trust sign <image-name>
+    description: Signs the specified Docker image with your private key, generating a signature file.
+
+  - name: Push Signed Docker Image
+    command: docker trust push <image-name>
+    description: Pushes the signed Docker image to a Docker registry along with the signature file.
+
+  - name: Verify Docker Image Signature
+    command: docker trust verify <image-name>
+    description: Verifies the digital signature of the specified Docker image against its signature file.
+
+  - name: Remove Docker Content Trust Key
+    command: docker trust key remove <key-name>
+    description: Removes the specified key pair used for signing Docker images.
