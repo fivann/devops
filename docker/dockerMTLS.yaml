@@ -1,0 +1,24 @@
+commands:
+  - name: Create CA Certificate
+    command: openssl genrsa -aes256 -out ca-key.pem 4096 && openssl req -new -x509 -days 365 -key ca-key.pem -sha256 -out ca.pem
+    description: Generates a new CA (Certificate Authority) certificate and key.
+
+  - name: Create Server Certificate
+    command: openssl genrsa -out server-key.pem 4096 && openssl req -subj "/CN=<server-hostname>" -sha256 -new -key server-key.pem -out server.csr && openssl x509 -req -in server.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out server-cert.pem -days 365 -sha256
+    description: Generates a new server certificate signed by the CA.
+
+  - name: Create Client Certificate
+    command: openssl genrsa -out key.pem 4096 && openssl req -subj '/CN=<client-name>' -new -key key.pem -out client.csr && echo extendedKeyUsage = clientAuth > extfile.cnf && openssl x509 -req -in client.csr -CA ca.pem -CAkey ca-key.pem -CAcreateserial -out cert.pem -days 365 -sha256 -extfile extfile.cnf
+    description: Generates a new client certificate signed by the CA.
+
+  - name: Run Docker Daemon with MTLS Enabled
+    command: dockerd --tlsverify --tlscacert=ca.pem --tlscert=server-cert.pem --tlskey=server-key.pem -H=<docker-hostname>:<docker-port>
+    description: Starts the Docker daemon with MTLS enabled.
+
+  - name: Run Docker Client with MTLS Enabled
+    command: docker --tlsverify --tlscacert=ca.pem --tlscert=cert.pem --tlskey=key.pem -H=<docker-hostname>:<docker-port> <docker-command>
+    description: Runs the Docker client with MTLS enabled for a specific Docker command.
+
+  - name: Remove All Certificates
+    command: rm -v ca.pem ca-key.pem server-cert.pem server-key.pem client.csr cert.pem key.pem extfile.cnf *.srl
+    description: Removes all generated certificates and keys.
