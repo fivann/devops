@@ -1,0 +1,72 @@
+- Check if Docker network service is running:
+  - Command: systemctl status docker.service
+  - Output:
+    - Active: active (running) since Mon 2023-03-15 00:00:00 UTC; 10h ago
+
+- List all Docker networks:
+  - Command: docker network ls
+  - Output:
+    - NETWORK ID: abc123
+      NAME: bridge
+      DRIVER: bridge
+      SCOPE: local
+    - NETWORK ID: def456
+      NAME: host
+      DRIVER: host
+      SCOPE: local
+    - NETWORK ID: ghi789
+      NAME: overlay
+      DRIVER: overlay
+      SCOPE: swarm
+    - NETWORK ID: jkl012
+      NAME: none
+      DRIVER: null
+      SCOPE: local
+
+- Inspect a Docker network:
+  - Command: docker network inspect bridge
+  - Output:
+    - Name: bridge
+      Driver: bridge
+      Subnet: 172.17.0.0/16
+      Gateway: 172.17.0.1
+      Containers:
+        - ContainerID: abc123
+          IPv4Address: 172.17.0.2/16
+        - ContainerID: def456
+          IPv4Address: 172.17.0.3/16
+      ...
+  - Command: docker network inspect overlay
+  - Output:
+    - Name: overlay
+      Driver: overlay
+      ...
+  - Command: docker network inspect none
+  - Output:
+    - Name: none
+      Driver: null
+      ...
+
+- Check the IP addresses of Docker containers:
+  - Command: docker inspect container_name | grep IPAddress
+  - Output: "IPAddress": "172.17.0.2"
+
+- Check if a container is connected to a network:
+  - Command: docker inspect container_name | grep Networks
+  - Output: "Networks": {"bridge": {"IPAddress": "172.17.0.2"}}
+
+- Test connectivity between Docker containers:
+  - Command: docker exec container1 ping container2
+  - Output:
+    - PING container2 (172.17.0.3): 56 data bytes
+    - 64 bytes from 172.17.0.3: icmp_seq=0 ttl=64 time=0.065 ms
+    - 64 bytes from 172.17.0.3: icmp_seq=1 ttl=64 time=0.052 ms
+    - ...
+
+- Check Docker network logs:
+  - Command: journalctl -u docker.service
+  - Output:
+    - Mar 15 00:00:00 hostname dockerd[1234]: time="2023-03-15T00:00:00.000000000Z" level=info msg="Starting up"
+    - Mar 15 00:00:00 hostname dockerd[1234]: time="2023-03-15T00:00:00.000000000Z" level=info msg="libcontainerd: started new containerd process" pid=5678
+    - Mar 15 00:00:00 hostname dockerd[1234]: time="2023-03-15T00:00:00.000000000Z" level=info msg="parsed scheme: \"unix\"" module=grpc
+    - Mar 15 00:00:00 hostname dockerd[1234]: time="2023-03-15T00:00:00.000000000Z" level=info msg="scheme \"unix\" not
