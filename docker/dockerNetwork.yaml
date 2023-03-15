@@ -1,0 +1,56 @@
+- To create a new network:
+  command: docker network create mynetwork
+  output: |
+    mynetwork
+
+- To list all networks:
+  command: docker network ls
+  output: |
+    NETWORK ID     NAME          DRIVER    SCOPE
+    57c1f7e6d112   bridge        bridge    local
+    b6a8f6c17d6e   host          host      local
+    4aa4f2b4f4d4   mynetwork     bridge    local
+    a6d2629e03c3   none          null      local
+
+- To inspect a network:
+  command: docker network inspect mynetwork
+  output: |
+    - Name: mynetwork
+      Id: 4aa4f2b4f4d4b1938e84c5222eb1d9ccceddc8de8f43df72c0b74358e214d940
+      Created: "2022-04-01T14:21:35.83573102Z"
+      Scope: local
+      Driver: bridge
+      EnableIPv6: false
+      IPAM:
+        Driver: default
+        Options: {}
+        Config:
+          - Subnet: 172.20.0.0/16
+            Gateway: 172.20.0.1
+      Internal: false
+      Attachable: true
+      Ingress: false
+      ConfigFrom:
+        Network:
+      ConfigOnly: false
+      Containers:
+        9384a2164d4c4f1532e7e27c9d55a7cb9c3cfb3cb059e91f3d3d1cda1888b38f:
+          Name: mycontainer
+          EndpointID: 23dc1b7e73b3e3b7d139c69f1dbf0ecdc9c08c30d1b66c4b4f3908fb10525d7b
+          MacAddress: 02:42:ac:14:00:03
+          IPv4Address: 172.20.0.3/16
+          IPv6Address:
+
+- To remove a network:
+  command: docker network rm mynetwork
+
+- To connect a container to a network:
+  command: docker network connect mynetwork mycontainer
+  output: |
+    mycontainer
+
+- To disconnect a container from a network:
+  command: docker network disconnect mynetwork mycontainer
+
+- To create a new network with a specific IP address range:
+  command: docker network create --subnet=192.168.0.0/16 mynetwork
