@@ -1,0 +1,36 @@
+- title: Conda Cheat Sheet
+  content:
+    - command: conda create --name <env-name> [package]
+      description: Create a new Conda environment with the specified name and package(s)
+    - command: conda activate <env-name>
+      description: Activate the specified Conda environment
+    - command: conda deactivate
+      description: Deactivate the current Conda environment
+    - command: conda info --envs
+      description: List all Conda environments
+    - command: conda install <package>
+      description: Install the specified package(s) in the active Conda environment
+    - command: conda list
+      description: List all packages installed in the active Conda environment
+    - command: conda update --all
+      description: Update all packages in the active Conda environment to their latest versions
+    - command: conda remove <package>
+      description: Remove the specified package(s) from the active Conda environment
+    - command: conda clean --all
+      description: Remove all downloaded packages from the Conda cache
+    - command: conda config --show
+      description: Show the current Conda configuration
+    - command: conda config --add channels <channel>
+      description: Add the specified Conda channel to the list of available channels
+    - command: conda config --remove channels <channel>
+      description: Remove the specified Conda channel from the list of available channels
+    - command: conda search <package>
+      description: Search for the specified package(s) in the available Conda channels
+    - command: conda create --name <env-name> --file <file>
+      description: Create a new Conda environment with the specified name and packages listed in a file
+      example of fiele: | 
+        <package1>
+        <package2>
+        <package3>
+        ...
+
