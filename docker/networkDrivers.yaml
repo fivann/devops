@@ -1,0 +1,80 @@
+### Host Network Driver:
+# The Host network driver allows the container to use the host machine's network stack. 
+# This means that the container shares the host's network namespace, and the container's 
+# network interface is assigned the same IP address as the host machine. This network driver 
+# is useful when you want to give the container full access to the host network, such as 
+# when you want to run a network monitoring tool.
+
+version: '3'
+services:
+  myservice:
+    image: myimage
+    network_mode: host
+
+### Bridge Network Driver:
+# The Bridge network driver creates a virtual network bridge called docker0, and each container 
+# is attached to this network. This driver is used when you want to isolate the containers from 
+# the host network and from each other. By default, the containers can communicate with each other, 
+# but not with the host network.
+
+version: '3'
+services:
+  myservice:
+    image: myimage
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
+    driver: bridge
+
+### Overlay Network Driver:
+# The Overlay network driver is used when you have a distributed application that spans multiple Docker hosts. 
+# It allows containers to communicate with each other across multiple hosts using the same IP address range. 
+# The traffic is encapsulated in VXLAN packets. The Overlay driver requires a key-value store to manage the network 
+# configuration across multiple hosts, such as Docker Swarm.
+
+version: '3'
+services:
+  myservice:
+    image: myimage
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
+    driver: overlay
+    
+### MACVLAN Network Driver:
+# The MACVLAN network driver creates multiple virtual interfaces with unique MAC addresses and IP addresses. 
+# Each container is attached to a virtual interface, and the virtual interface is attached to the host network. 
+# This driver is useful when you want to assign a specific IP address or MAC address to each container.
+
+version: '3'
+services:
+  myservice:
+    image: myimage
+    networks:
+      mynetwork:
+        ipv4_address: 192.168.0.10
+        mac_address: "02:42:ac:11:00:0a"
+networks:
+  mynetwork:
+    driver: macvlan
+    driver_opts:
+      parent: eth0
+      
+### None Network Driver:
+# The None network driver disables networking for the container. This means that the container does not 
+# have a network interface, and cannot communicate with other containers or the host network. 
+# This driver is useful when you want to run a container without networking, such as when you want to perform a one-time task.
+
+version: '3'
+services:
+  myservice:
+    image: myimage
+    network_mode: none
+    
+# These are the main differences between the Host, Bridge, Overlay, MACVLAN, and None network drivers in Docker, 
+# along with examples in YAML format.
+
+
+
