@@ -1,0 +1,135 @@
+##########################
+Initializing a Swarm
+
+docker swarm init
+Initializes a new Docker Swarm.
+
+Keys:
+
+--advertise-addr: IP address or network interface that the manager uses to advertise itself to other nodes in the swarm.
+--listen-addr: IP address and port for the manager to listen on.
+Example 1: docker swarm init --advertise-addr 192.168.0.1
+Example 2: docker swarm init --listen-addr 0.0.0.0:2377
+
+##########################
+Joining a Swarm
+docker swarm join
+Joins a node to a Docker Swarm.
+
+Keys:
+
+--token: Token for joining the swarm.
+--advertise-addr: IP address or network interface that the worker uses to advertise itself to other nodes in the swarm.
+--listen-addr: IP address and port for the worker to listen on.
+Example 1: docker swarm join --token SWMTKN-1-2t2zuvbrstg9wx9u0o6a41jr0uun7zdw8kb1e7h0wprgtx89ic-97bcyz9u9bf0zo58ezepu0it7 192.168.0.1:2377
+Example 2: docker swarm join --advertise-addr 192.168.0.2 --listen-addr 0.0.0.0:2377 SWMTKN-1-2t2zuvbrstg9wx9u0o6a41jr0uun7zdw8kb1e7h0wprgtx89ic-97bcyz9u9bf0zo58ezepu0it7 192.168.0.1:2377
+
+##########################
+Managing Nodes
+docker node ls
+Lists the nodes in the Docker Swarm.
+
+Example: docker node ls
+
+docker node inspect
+Displays detailed information about a node in the Docker Swarm.
+
+Example: docker node inspect node-1
+
+##########################
+docker node update
+Updates the attributes of a node in the Docker Swarm.
+
+Keys:
+
+--label-add: Adds a label to the node.
+--label-rm: Removes a label from the node.
+Example 1: docker node update --label-add mylabel=node-1 node-1
+Example 2: docker node update --label-rm mylabel node-1
+
+##########################
+Managing Services
+docker service create
+Creates a new service in the Docker Swarm.
+
+Keys:
+
+--name: Name of the service.
+--replicas: Number of replicas of the service to create.
+--publish: Publishes a port for the service.
+--env: Sets an environment variable for the service.
+Example 1: docker service create --name myservice --replicas 3 myimage
+Example 2: docker service create --name myservice --publish 8080:80 myimage
+Example 3: docker service create --name myservice --env MYVAR=value myimage
+
+##########################
+docker service ls
+Lists the services in the Docker Swarm.
+
+Example: docker service ls
+
+##########################
+docker service inspect
+Displays detailed information about a service in the Docker Swarm.
+
+Example: docker service inspect myservice
+
+##########################
+docker service update
+Updates the attributes of a service in the Docker Swarm.
+
+Keys:
+
+--replicas: Sets the number of replicas of the service.
+--publish-add: Adds a published port to the service.
+--publish-rm: Removes a published port
+
+
+docker service update --image
+
+This command updates the image used by a service.
+
+Keys:
+
+--image specifies the new image to use
+Example 1: Update a service to use the latest version of an image
+
+docker service update --image myimage:latest myservice
+
+Example 2: Update a service to use a specific version of an image
+
+docker service update --image myimage:v1 myservice
+docker service update --replicas
+
+This command updates the number of replicas for a service.
+
+Keys:
+
+--replicas specifies the new number of replicas to use
+
+Example 1: Update a service to have 5 replicas
+
+docker service update --replicas 5 myservice
+
+Example 2: Update a service to have 10 replicas
+
+docker service update --replicas 10 myservice
+docker service update --constraint
+
+This command updates the node placement constraint for a service.
+
+Keys:
+
+--constraint specifies the new constraint to use
+
+Example 1: Update a service to only run on nodes with a specific label
+
+docker service update --constraint 'node.labels.env == prod' myservice
+
+Example 2: Update a service to only run on nodes with a specific hostname
+
+docker service update --constraint 'node.hostname == myhostname' myservice
+
+
+
+
