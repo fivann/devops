@@ -38,3 +38,29 @@ So to summarize, VOLUME creates a new data volume within the container's filesys
 
 By using these commands, you can easily manage volumes in Docker, create and remove volumes as needed, and mount them into containers to persist data even if the container is removed or recreated.
 
+
+
+```Volume mount```: This type of mount creates a volume in Docker and mounts it to the container. Volumes are managed by Docker and can be shared among multiple containers. The data in the volume persists even if the container is deleted. Here is an example of a volume mount:
+```
+docker run -v /path/on/host:/path/in/container myimage
+```
+This command mounts the directory /path/on/host from the host machine to /path/in/container in the container.
+
+```Bind mount```: This type of mount mounts a file or directory from the host machine to the container. The data is not managed by Docker and does not persist if the container is deleted. Here is an example of a bind mount:
+```
+docker run -v /path/on/host:/path/in/container:ro myimage
+```
+This command mounts the directory /path/on/host from the host machine to /path/in/container in the container in read-only mode.
+
+```tmpfs mount```: This type of mount creates a temporary file system in memory and mounts it to the container. The data in the tmpfs is lost when the container is deleted. Here is an example of a tmpfs mount:
+```
+docker run --mount type=tmpfs,destination=/path/in/container myimage
+```
+This command creates a tmpfs file system at /path/in/container in the container.
+
+```Named pipe mount```: This type of mount allows you to mount a named pipe (FIFO) from the host machine to the container. Here is an example of a named pipe mount:
+```
+docker run --mount type=npipe,source=\\.\pipe\mypipe,target=/path/in/container myimage
+```
+This command mounts the named pipe mypipe from the host machine to /path/in/container in the container.
+
