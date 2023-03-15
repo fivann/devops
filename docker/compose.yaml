@@ -1,0 +1,56 @@
+version: '3.8'  # Use the latest version of Docker Compose
+
+services:
+  app:
+    image: myapp:latest  # Use a specific image tag
+    container_name: myapp  # Use a specific container name
+    restart: always  # Ensure the container always restarts if it fails
+    environment:  # Set environment variables
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=mydb
+      - DB_USER=myuser
+      - DB_PASSWORD=mypassword
+    ports:  # Expose ports
+      - "8000:8000"
+    depends_on:  # Ensure dependent services are started first
+      - db
+    networks:  # Use a named network
+      - mynetwork
+
+  db:
+    image: postgres:13-alpine  # Use a specific image tag
+    container_name: mydb  # Use a specific container name
+    restart: always  # Ensure the container always restarts if it fails
+    environment:  # Set environment variables
+      - POSTGRES_DB=mydb
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+    volumes:  # Mount a volume for persistent data storage
+      - db_data:/var/lib/postgresql/data/
+    networks:  # Use the same named network as the app service
+      - mynetwork
+
+volumes:
+  db_data:  # Define the volume for persistent data storage
+    driver: local
+
+networks:
+  mynetwork:  # Define the named network
+    driver: bridge
+
+
+# Use the latest version of Docker Compose (version: '3.8'). This ensures that you have access to the latest features and bug fixes.
+# Use specific image tags (image: myapp:latest and image: postgres:13-alpine). This ensures that you are using 
+# a specific version of the image and can avoid unexpected changes.
+# Use specific container names (container_name: myapp and container_name: mydb). This makes it easier to identify and manage containers.
+# Ensure containers always restart if they fail (restart: always). This ensures that your application is always available.
+# Set environment variables (environment:) instead of hardcoding values in your application code. 
+# This makes your application more portable and easier to configure.
+# Expose ports (ports: - "8000:8000"). This makes your application accessible from outside the container.
+# Ensure dependent services are started first (depends_on: - db). This ensures that your application can connect to its dependencies.
+# Use named networks (networks:). This makes it easier to manage communication between containers.
+# Mount volumes for persistent data storage (volumes:). This ensures that your data is persisted even if the container is restarted or recreated.
+# Use a driver for the volume (driver: local). This ensures that the volume is stored locally on the host machine.
+# Use a bridge network driver (driver: bridge). This is the default network driver and is sufficient for most use cases.
+# By following these best practices, you can create a docker-compose.yml file that is easy to manage, scalable, and secure.
