@@ -1,0 +1,36 @@
+- title: Azure CLI Cheat Sheet
+  content:
+    - command: az login
+      description: Log in to your Azure account
+    - command: az account list
+      description: List all Azure subscriptions for the logged-in account
+    - command: az account set -s <subscription-id>
+      description: Set the default subscription for subsequent commands
+    - command: az group create -n <resource-group-name> -l <location>
+      description: Create a new resource group with the specified name and location
+    - command: az group list
+      description: List all resource groups in the default subscription
+    - command: az group show -n <resource-group-name>
+      description: Show details for the specified resource group
+    - command: az group delete -n <resource-group-name>
+      description: Delete the specified resource group and all resources within it
+    - command: az vm create -n <vm-name> -g <resource-group-name> --image <image-name> --admin-username <admin-username> --admin-password <admin-password>
+      description: Create a new virtual machine with the specified name, resource group, image, admin username, and password
+    - command: az vm list
+      description: List all virtual machines in the default subscription
+    - command: az vm show -n <vm-name> -g <resource-group-name>
+      description: Show details for the specified virtual machine
+    - command: az vm start -n <vm-name> -g <resource-group-name>
+      description: Start the specified virtual machine
+    - command: az vm stop -n <vm-name> -g <resource-group-name>
+      description: Stop the specified virtual machine
+    - command: az vm delete -n <vm-name> -g <resource-group-name>
+      description: Delete the specified virtual machine
+    - command: az storage account create -n <account-name> -g <resource-group-name> --sku <sku-name> --kind <kind>
+      description: Create a new storage account with the specified name, resource group, SKU, and kind
+    - command: az storage account list
+      description: List all storage accounts in the default subscription
+    - command: az storage account show -n <account-name> -g <resource-group-name>
+      description: Show details for the specified storage account
+    - command: az storage account delete -n <account-name> -g <resource-group-name>
+      description: Delete the specified storage account
