@@ -1,0 +1,167 @@
+Subnet Masks:
+  - CIDR: /32
+    Subnet Mask: 255.255.255.255
+    Wildcard Mask: 0.0.0.0
+    # of IP Addresses: 1
+    # of Usable IP Addresses: 1
+  - CIDR: /31
+    Subnet Mask: 255.255.255.254
+    Wildcard Mask: 0.0.0.1
+    # of IP Addresses: 2
+    # of Usable IP Addresses: 2
+  - CIDR: /30
+    Subnet Mask: 255.255.255.252
+    Wildcard Mask: 0.0.0.3
+    # of IP Addresses: 4
+    # of Usable IP Addresses: 2
+  - CIDR: /29
+    Subnet Mask: 255.255.255.248
+    Wildcard Mask: 0.0.0.7
+    # of IP Addresses: 8
+    # of Usable IP Addresses: 6
+  - CIDR: /28
+    Subnet Mask: 255.255.255.240
+    Wildcard Mask: 0.0.0.15
+    # of IP Addresses: 16
+    # of Usable IP Addresses: 14
+  - CIDR: /27
+    Subnet Mask: 255.255.255.224
+    Wildcard Mask: 0.0.0.31
+    # of IP Addresses: 32
+    # of Usable IP Addresses: 30
+  - CIDR: /26
+    Subnet Mask: 255.255.255.192
+    Wildcard Mask: 0.0.0.63
+    # of IP Addresses: 64
+    # of Usable IP Addresses: 62
+  - CIDR: /25
+    Subnet Mask: 255.255.255.128
+    Wildcard Mask: 0.0.0.127
+    # of IP Addresses: 128
+    # of Usable IP Addresses: 126
+  - CIDR: /24
+    Subnet Mask: 255.255.255.0
+    Wildcard Mask: 0.0.0.255
+    # of IP Addresses: 256
+    # of Usable IP Addresses: 254
+  - CIDR: /23
+    Subnet Mask: 255.255.254.0
+    Wildcard Mask: 0.0.1.255
+    # of IP Addresses: 512
+    # of Usable IP Addresses: 510
+  - CIDR: /22
+    Subnet Mask: 255.255.252.0
+    Wildcard Mask: 0.0.3.255
+    # of IP Addresses: 1,024
+    # of Usable IP Addresses: 1,022
+  - CIDR: /21
+    Subnet Mask: 255.255.248.0
+    Wildcard Mask: 0.0.7.255
+    # of IP Addresses: 2,048
+    # of Usable IP Addresses: 2,046
+  - CIDR: /20
+    Subnet Mask: 255.255.240.0
+    Wildcard Mask: 0.0.15.255
+    # of IP Addresses: 4,096
+    # of Usable IP Addresses: 4,094
+  - CIDR: /19
+    Subnet Mask: 255.255.224.0
+    Wildcard Mask: 0.0.31.255
+    # of IP Addresses: 8,192
+    # of Usable IP Addresses: 8,190
+  - CIDR: /18
+    Subnet Mask: 255.255.192.0
+    Wildcard Mask: 0.0.63.255
+    # of IP Addresses: 16,384
+    # of Usable IP Addresses: 16,382
+  - CIDR: /17
+    Subnet Mask: 255.255.128.0
+    Wildcard Mask: 0.0.127.255
+    # of IP Addresses: 32,768
+    # of Usable IP Addresses: 32,766
+  - CIDR: /16
+    Subnet Mask: 255.255.0.0
+    Wildcard Mask: 0.0.255.255
+    # of IP Addresses: 65,536
+    # of Usable IP Addresses: 65,534
+  - CIDR: /15
+    Subnet Mask: 255.254.0.0
+    Wildcard Mask: 0.1.255.255
+    # of IP Addresses: 131,072
+    # of Usable IP Addresses: 131,070
+  - CIDR: /14
+    Subnet Mask: 255.252.0.0
+    Wildcard Mask: 0.3.255.255
+    # of IP Addresses: 262,144
+    # of Usable IP Addresses: 262,142
+  - CIDR: /13
+    Subnet Mask: 255.248.0.0
+    Wildcard Mask: 0.7.255.255
+    # of IP Addresses: 524,288
+    # of Usable IP Addresses: 524,286
+  - CIDR: /12
+    Subnet Mask: 255.240.0.0
+    Wildcard Mask: 0.15.255.255
+    # of IP Addresses: 1,048,576
+    # of Usable IP Addresses: 1,048,574
+  - CIDR: /11
+    Subnet Mask: 255.224.0.0
+    Wildcard Mask: 0.31.255.255
+    # of IP Addresses: 2,097,152
+    # of Usable IP Addresses: 2,097,150
+  - CIDR: /10
+    Subnet Mask: 255.192.0.0
+    Wildcard Mask: 0.63.255.255
+    # of IP Addresses: 4,194,304
+    # of Usable IP Addresses: 4,194,302
+  - CIDR: /9
+    Subnet Mask: 255.128.0.0
+    Wildcard Mask: 0.127.255.255
+    # of IP Addresses: 8,388,608
+    # of Usable IP Addresses: 8,388,606
+  - CIDR: /8
+    Subnet Mask: 255.0.0.0
+    Wildcard Mask: 0.255.255.255
+    # of IP Addresses: 16,777,216
+    # of Usable IP Addresses: 16,777,214
+  - CIDR: /7
+    Subnet Mask: 254.0.0.0
+    Wildcard Mask: 1.255.255.255
+    # of IP Addresses: 33,554,432
+    # of Usable IP Addresses: 33,554,430
+  - CIDR: /6
+    Subnet Mask: 252.0.0.0
+    Wildcard Mask: 3.255.255.255
+    # of IP Addresses: 67,108,864
+    # of Usable IP Addresses: 67,108,862
+  - CIDR: /5
+    Subnet Mask: 248.0.0.0
+    Wildcard Mask: 7.255.255.255
+    # of IP Addresses: 134,217,728
+    # of Usable IP Addresses: 134,217,726
+  - CIDR: /4
+    Subnet Mask: 240.0.0.0
+    Wildcard Mask: 15.255.255.255
+    # of IP Addresses: 268,435,456
+    # of Usable IP Addresses: 268,435,454
+  - CIDR: /3
+    Subnet Mask: 224.0.0.0
+    Wildcard Mask: 31.255.255.255
+    # of IP Addresses: 536,870,912
+    # of Usable IP Addresses: 536,870,910
+  - CIDR: /2
+    Subnet Mask: 192.0.0.0
+    Wildcard Mask: 63.255.255.255
+    # of IP Addresses: 1,073,741,824
+    # of Usable IP Addresses: 1,073,741,822
+  - CIDR: /1
+    Subnet Mask: 128.0.0.0
+    Wildcard Mask: 127.255.255.255
+    # of IP Addresses: 2,147,483,648
+    # of Usable IP Addresses: 2,147,483,646
+  - CIDR: /0
+    Subnet Mask: 0.0.0.0
+    Wildcard Mask: 255.255.255.255
+    # of IP Addresses: 4,294,967,296
+    # of Usable IP Addresses: 4,294,967,294
+
