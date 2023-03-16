@@ -1,0 +1,124 @@
+# Linux Bash scripting cheat sheet
+
+# Print "Hello, world!"
+- echo "Hello, world!"
+
+# Assign a value to a variable
+- name="John"
+
+# Print the value of a variable
+- echo $name
+
+# Run a command and save its output to a variable
+- output=$(ls)
+
+# Use conditional statements
+- if [ $name == "John" ]; then
+    echo "Hello, John!"
+  else
+    echo "Hello, stranger!"
+  fi
+
+# Use loops
+- for i in {1..5}; do
+    echo $i
+  done
+
+# Use arrays
+- array=(apple banana orange)
+- echo ${array[0]}     # prints "apple"
+- echo ${array[@]}     # prints all elements in the array
+
+# Define a function
+- function hello {
+    echo "Hello, world!"
+  }
+
+# Call a function
+- hello
+
+# Read input from the user
+- echo "What is your name?"
+- read name
+- echo "Hello, $name!"
+
+
+# Special variables in Linux
+
+# $$ - The process ID (PID) of the current shell
+- echo $$
+
+# $! - The PID of the last background process that was executed
+- command &      # execute a command in the background
+- echo $!        # prints the PID of the background process
+
+# $? - The exit status of the last executed command
+- command        # execute a command
+- echo $?        # prints the exit status of the command (0 indicates success)
+
+# $0 - The name of the current shell or script
+- echo $0
+
+# $1, $2, ..., $n - The command line arguments passed to a script or function
+- echo $1        # prints the first argument
+- echo $2        # prints the second argument
+- echo $@        # prints all arguments as separate strings
+- echo $#        # prints the number of arguments
+
+# $USER - The username of the current user
+- echo $USER
+
+# $HOME - The home directory of the current user
+- echo $HOME
+
+# $PATH - The search path for commands
+- echo $PATH
+
+# Tips for creating Bash scripts
+
+# 1. Use a shebang line to specify the interpreter
+- #!/bin/bash
+
+# 2. Use descriptive names for variables, functions, and files
+- name="John"
+- function hello {
+    echo "Hello, $1!"
+  }
+- touch myfile.txt
+
+# 3. Use comments to explain your code and make it more readable
+- # This script prints a greeting to the user
+- echo "What is your name?"
+- read name
+- hello $name    # calls the hello function with the user's name
+
+# 4. Use error checking to handle unexpected input or errors
+- if [ $# -ne 1 ]; then
+    echo "Usage: $0 <file>"
+    exit 1
+  fi
+- if [ ! -f $1 ]; then
+    echo "Error: $1 is not a file"
+    exit 1
+  fi
+- cat $1         # prints the contents of the specified file
+
+# 5. Use functions to organize your code and make it reusable
+- function print_date {
+    echo "Today is $(date)"
+  }
+- print_date     # calls the print_date function to print the current date
+
+# 6. Use control structures like loops and conditionals to perform repetitive tasks
+- for i in {1..5}; do
+    echo "Number $i"
+  done
+- if [ $name == "John" ]; then
+    echo "Hello, John!"
+  else
+    echo "Hello, $name!"
+  fi
+
+# 7. Use environment variables to store configuration information or settings
+- export MYVAR="hello"   # sets the MYVAR variable to "hello"
+- echo $MYVAR           # prints the value of the MYVAR variable
