@@ -1,0 +1,55 @@
+# Linux SED cheat sheet
+
+# Substitute "old" with "new" on a specific line
+- sed '10s/old/new/' filename.txt
+
+# Substitute "old" with "new" on all lines
+- sed 's/old/new/g' filename.txt
+
+# Substitute "old" with "new" on all lines and create a backup of the original file
+- sed -i.bak 's/old/new/g' filename.txt
+
+# Delete lines matching a pattern
+- sed '/pattern/d' filename.txt
+
+# Print lines matching a pattern
+- sed '/pattern/p' filename.txt
+
+# Print only the first line
+- sed -n '1p' filename.txt
+
+# Print lines 10 to 20
+- sed -n '10,20p' filename.txt
+
+# Print all lines except the first
+- sed '1d' filename.txt
+
+# Print all lines except the last
+- sed '$d' filename.txt
+
+# Append a line after a specific line
+- sed '10a\new line' filename.txt
+
+# Insert a line before a specific line
+- sed '10i\new line' filename.txt
+
+# Replace the first occurrence of "old" with "new"
+- sed 's/old/new/' filename.txt
+
+# Replace the second occurrence of "old" with "new"
+- sed 's/old/new/2' filename.txt
+
+# Replace "old" with "new" only on lines matching a pattern
+- sed '/pattern/s/old/new/' filename.txt
+
+# Replace "old" with "new" only on lines not matching a pattern
+- sed '/pattern/!s/old/new/' filename.txt
+
+# Append a file after a specific line
+- sed '10r otherfile.txt' filename.txt
+
+# Replace tabs with spaces
+- sed 's/\t/ /g' filename.txt
+
+# Remove leading and trailing whitespace
+- sed 's/^[[:space:]]*//;s/[[:space:]]*$//' filename.txt
