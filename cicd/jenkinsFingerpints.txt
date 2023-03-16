@@ -1,0 +1,51 @@
+You can use Jenkins fingerprints to track the usage of files or artifacts in your Jenkins pipeline using Groovy. 
+Here's an example of how to use fingerprints in a Jenkins pipeline:
+
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                // Build your code here
+
+                // Archive the build artifacts and create fingerprints
+                archiveArtifacts artifacts: 'build/*.jar', fingerprint: true
+            }
+        }
+    }
+}
+
+In this example, the archiveArtifacts step archives any .jar files that are produced by the build and 
+creates fingerprints for them. By enabling the fingerprint option, Jenkins will automatically generate 
+fingerprints for the archived artifacts.
+
+Once you have created fingerprints for your artifacts, you can use them in various ways. For example:
+
+To display the fingerprints of an artifact in the Jenkins UI, you can use the following Groovy script:
+
+def fingerprints = currentBuild.getBuildVariables()['ITEM_ROOTDIR'].split('/')[1..-1].collect {
+    load("${JENKINS_HOME}/fingerprints/${it}.xml")
+}
+
+fingerprints.each { fingerprint ->
+    println "Artifact: ${fingerprint.getOriginalName()}"
+    println "Fingerprint: ${fingerprint.getHashString()}"
+    println "Builds that used this artifact: ${fingerprint.getUsages().collect { it.build.getNumber() }}"
+}
+
+To clean up artifacts that are no longer in use, you can use the Jenkins 
+FingerprintCleanupJob class to create a new job that will remove fingerprints for artifacts that 
+have not been used in a certain number of builds. Here's an example Groovy script that creates 
+a new cleanup job that will remove fingerprints for artifacts that haven't been used in the last 10 builds:
+
+import jenkins.model.Jenkins
+import hudson.plugins.fingerprint.FingerprintCleanupJob
+
+Jenkins jenkins = Jenkins.getInstance()
+FingerprintCleanupJob job = new FingerprintCleanupJob(jenkins, "My Cleanup Job")
+job.setDaysToKeep(10)
+job.setNumToKeep(-1)
+job.setFingerprintConfig(FingerprintCleanupJob.FingerprintConfig.SERIALIZE_ALL)
+job.save()
+These are just a few examples of how you can use Jenkins fingerprints in a Groovy pipeline. By tracking the usage of your artifacts with fingerprints, you can gain more insight into your build process and automate cleanup tasks to keep your Jenkins environment clean and efficient.
+
