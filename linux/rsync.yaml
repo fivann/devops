@@ -1,0 +1,43 @@
+# Linux rsync command cheat sheet
+
+# Copy files from local to remote
+- rsync /path/to/local username@remote:/path/to/remote
+
+# Copy files from remote to local
+- rsync username@remote:/path/to/remote /path/to/local
+
+# Copy only new or updated files
+- rsync -u /path/to/local username@remote:/path/to/remote
+
+# Copy files and preserve permissions and times
+- rsync -av /path/to/local username@remote:/path/to/remote
+
+# Copy files recursively
+- rsync -r /path/to/local username@remote:/path/to/remote
+
+# Copy files and delete files in the destination that don't exist in the source
+- rsync -av --delete /path/to/local username@remote:/path/to/remote
+
+# Copy files and compress during transfer
+- rsync -avz /path/to/local username@remote:/path/to/remote
+
+# Copy files and exclude certain files or directories
+- rsync -av --exclude="*.txt" /path/to/local username@remote:/path/to/remote
+
+# Copy files and use SSH tunnel
+- rsync -av -e "ssh -p 2222" /path/to/local username@remote:/path/to/remote
+
+# Copy files and show progress during transfer
+- rsync -av --progress /path/to/local username@remote:/path/to/remote
+
+# Copy files and resume interrupted transfer
+- rsync -av --partial /path/to/local username@remote:/path/to/remote
+
+# Copy files and limit the bandwidth used during transfer
+- rsync -av --bwlimit=1000 /path/to/local username@remote:/path/to/remote
+
+# Copy files and run command before/after transfer
+- rsync -av --rsync-path="sudo rsync" /path/to/local username@remote:/path/to/remote
+
+# Copy files and preserve hard links
+- rsync -avH /path/to/local username@remote:/path/to/remote
