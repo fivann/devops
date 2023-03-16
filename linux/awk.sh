@@ -58,4 +58,39 @@ awk '$2 == "value" { count++ } END { print count }' file.txt
 # Print the lines that have a specific value in a field and calculate the sum of another field:
 awk '$2 == "value" { sum += $3 } END { print sum }' file.txt
 
+##############################
+
+- name: Print the first column of a file
+  command: awk '{print $1}' filename.txt
+  
+- name: Print the second column of a file
+  command: awk '{print $2}' filename.txt
+  
+- name: Print the last column of a file
+  command: awk '{print $NF}' filename.txt
+  
+- name: Print lines that match a pattern
+  command: awk '/pattern/ {print}' filename.txt
+  
+- name: Print lines that do not match a pattern
+  command: awk '!/pattern/ {print}' filename.txt
+  
+- name: Print lines that have more than two fields
+  command: awk 'NF > 2 {print}' filename.txt
+  
+- name: Print lines that have less than two fields
+  command: awk 'NF < 2 {print}' filename.txt
+  
+- name: Print the sum of a column
+  command: awk '{sum+=$1} END {print sum}' filename.txt
+  
+- name: Print the average of a column
+  command: awk '{sum+=$1} END {print sum/NR}' filename.txt
+  
+- name: Print the highest value in a column
+  command: awk 'max<$1 {max=$1} END {print max}' filename.txt
+  
+- name: Print the lowest value in a column
+  command: awk 'min>$1 || NR==1 {min=$1} END {print min}' filename.txt
+
 
