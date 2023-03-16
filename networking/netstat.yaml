@@ -1,0 +1,40 @@
+# Linux netstat command cheat sheet
+
+# List all open sockets
+- netstat -a
+
+# List all listening sockets
+- netstat -l
+
+# List all established connections
+- netstat -e
+
+# Show statistics for each protocol
+- netstat -s
+
+# Show network routing table
+- netstat -r
+
+# Show process ID and name for each connection
+- netstat -p
+
+# Show all TCP connections
+- netstat -t
+
+# Show all UDP connections
+- netstat -u
+
+# Show all UNIX domain sockets
+- netstat -x
+
+# Show only IPv4 connections
+- netstat -4
+
+# Show only IPv6 connections
+- netstat -6
+
+# Show TCP connections that are in the TIME_WAIT state
+- netstat -t -a | grep TIME_WAIT
+
+# Show the process that is using a specific port
+- netstat -nlp | grep :<port_number>
