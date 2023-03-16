@@ -52,3 +52,32 @@ else:
     print('Request failed: HTTP status code', response.status_code)
 
 
+==================
+
+You can use the Jenkins REST API to check the build status of a Jenkins job using the requests library in Python. 
+Here's an example code snippet:
+
+
+import requests
+
+# Set the URL to the Jenkins job build status API
+job_url = 'http://jenkins-server/job/{job_name}/lastBuild/api/json'
+
+# Replace {job_name} with the actual name of the Jenkins job
+
+# Send an HTTP GET request to the API
+response = requests.get(job_url)
+
+# Check if the request was successful (HTTP status code 200)
+if response.status_code == 200:
+    # Parse the response JSON to get the build status
+    build_status = response.json()['result']
+
+    # Print the build status
+    print('Build status:', build_status)
+else:
+    # Print an error message if the request failed
+    print('Request failed: HTTP status code', response.status_code)
+
+    
+    
