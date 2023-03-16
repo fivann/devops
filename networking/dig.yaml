@@ -1,0 +1,46 @@
+# Linux dig command cheat sheet
+
+# Basic query for a domain
+- dig example.com
+
+# Query with specific DNS server
+- dig example.com @8.8.8.8
+
+# Query for a specific record type
+- dig example.com MX
+
+# Query for all record types
+- dig example.com ANY
+
+# Query for a specific nameserver
+- dig example.com NS @ns1.example.com
+
+# Query with verbose output
+- dig example.com +verbose
+
+# Query with a specific DNS port
+- dig example.com -p 5353
+
+# Trace the delegation path from the root server
+- dig example.com +trace
+
+# Set the query timeout (in seconds)
+- dig example.com +time=5
+
+# Query for IPv4 address
+- dig +short example.com A
+
+# Query for IPv6 address
+- dig +short example.com AAAA
+
+# Reverse lookup for an IP address
+- dig -x 192.0.2.1
+
+# Enable EDNS0
+- dig example.com +edns=0
+
+# Disable recursive queries
+- dig example.com +norecurse
+
+# Set the maximum number of hops for the query
+- dig example.com +maxhop=10
