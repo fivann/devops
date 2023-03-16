@@ -1,0 +1,37 @@
+# Linux curl cheat sheet
+
+# Make a GET request
+- curl http://example.com
+
+# Make a POST request with data
+- curl -d "param1=value1&param2=value2" -X POST http://example.com
+
+# Set a custom header
+- curl -H "Content-Type: application/json" http://example.com
+
+# Follow redirects
+- curl -L http://example.com
+
+# Save output to a file
+- curl -o output.txt http://example.com
+
+# Include headers in output
+- curl -i http://example.com
+
+# Show request and response details
+- curl -v http://example.com
+
+# Set a timeout
+- curl --max-time 5 http://example.com
+
+# Send a file in a POST request
+- curl -X POST -F "file=@/path/to/file" http://example.com
+
+# Use a specific HTTP method
+- curl -X PUT http://example.com
+
+# Ignore SSL errors
+- curl -k https://example.com
+
+# Authenticate with basic auth
+- curl -u username:password http://example.com
