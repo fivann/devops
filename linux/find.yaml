@@ -1,0 +1,58 @@
+# Linux find command cheat sheet
+
+# Find files by name
+- find /path/to/search -name "filename.txt"
+
+# Find files by extension
+- find /path/to/search -name "*.txt"
+
+# Find files by type
+- find /path/to/search -type f
+
+# Find directories
+- find /path/to/search -type d
+
+# Find empty files or directories
+- find /path/to/search -empty
+
+# Find files based on modification time
+- find /path/to/search -mtime -7
+
+# Find files based on access time
+- find /path/to/search -atime +7
+
+# Find files based on creation time
+- find /path/to/search -ctime 7
+
+# Find files by size
+- find /path/to/search -size +1M
+
+# Find files and execute a command on them
+- find /path/to/search -name "filename.txt" -exec command {} \;
+
+# Find files and delete them
+- find /path/to/search -name "filename.txt" -delete
+
+# Find files and move them
+- find /path/to/search -name "filename.txt" -exec mv {} /new/path/ \;
+
+# Find files and compress them
+- find /path/to/search -name "filename.txt" -exec gzip {} \;
+
+# Find files in multiple directories
+- find /path/to/search1 /path/to/search2 -name "filename.txt"
+
+# Find files with specific permissions
+- find /path/to/search -perm 0644
+
+# Find symbolic links
+- find /path/to/search -type l
+
+# Find files by owner
+- find /path/to/search -user username
+
+# Find files by group
+- find /path/to/search -group groupname
+
+# Find files by name with case-insensitivity
+- find /path/to/search -iname "filename.txt"
