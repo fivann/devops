@@ -1,0 +1,46 @@
+# Linux traceroute command cheat sheet
+
+# Trace the route to a host
+- traceroute example.com
+
+# Set the maximum number of hops
+- traceroute -m 30 example.com
+
+# Use IPv6 instead of IPv4
+- traceroute -6 example.com
+
+# Use TCP SYN packets instead of ICMP echo packets
+- traceroute -T example.com
+
+# Use UDP packets instead of ICMP echo packets
+- traceroute -U example.com
+
+# Use ICMP echo packets with increasing payload size
+- traceroute -z example.com
+
+# Set the source address
+- traceroute -s 192.168.1.1 example.com
+
+# Set the type-of-service (ToS) value of the packet
+- traceroute -Q 0x10 example.com
+
+# Use a specific port number for UDP or TCP packets
+- traceroute -p 80 example.com
+
+# Use verbose output
+- traceroute -v example.com
+
+# Print AS numbers for each hop
+- traceroute -A example.com
+
+# Set the initial time-to-live (TTL) value
+- traceroute -f 10 example.com
+
+# Print the time taken for each hop
+- traceroute -w 2 example.com
+
+# Set the time-to-live (TTL) value of the packet
+- traceroute -t 64 example.com
+
+# Use a specific network interface
+- traceroute -i eth0 example.com
