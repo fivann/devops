@@ -1,0 +1,28 @@
+- name: Clone the kernel source code
+  command: |
+    git clone https://github.com/torvalds/linux.git
+    cd linux
+
+- name: Configure the kernel
+  command: |
+    make menuconfig
+
+- name: Build the kernel
+  command: |
+    make -j$(nproc)
+
+- name: Install the kernel modules
+  command: |
+    sudo make modules_install
+
+- name: Install the new kernel
+  command: |
+    sudo make install
+
+- name: Update the bootloader
+  command: |
+    sudo update-grub
+
+- name: Reboot the system
+  command: |
+    sudo reboot
