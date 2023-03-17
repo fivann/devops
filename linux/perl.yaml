@@ -1,0 +1,62 @@
+---
+perl_use_cases:
+  - name: Print the contents of a file
+    command: perl -pe 1 file.txt
+    example: 'echo "Hello, world!" > file.txt && perl -pe 1 file.txt'
+
+  - name: Search and replace text in a file
+    command: perl -pi -e 's/search_text/replace_text/g' file.txt
+    example: 'echo "Hello, world!" > file.txt && perl -pi -e "s/world/Perl/g" file.txt && cat file.txt'
+
+  - name: Count the number of lines in a file
+    command: perl -ne 'END { print $. . "\n"; }' file.txt
+    example: 'echo "Line 1\nLine 2\nLine 3" > file.txt && perl -ne "END { print \$. . qq{\n}; }" file.txt'
+
+  - name: Generate a random password
+    command: perl -le 'print map { ("a".."z", "A".."Z", 0..9)[rand 62] } 1..16'
+    example: 'perl -le "print map { (\"a\"..\"z\", \"A\"..\"Z\", 0..9)[rand 62] } 1..16"'
+
+  - name: Concatenate two files
+    command: perl -pe 1 file1.txt file2.txt > combined.txt
+    example: 'echo "File 1" > file1.txt && echo "File 2" > file2.txt && perl -pe 1 file1.txt file2.txt > combined.txt && cat combined.txt'
+
+  - name: Extract columns from a CSV file
+    command: perl -F, -lane 'print "$F[0],$F[2]"' file.csv
+    example: 'echo "John,Doe,25\nJane,Smith,30" > file.csv && perl -F, -lane "print \"$F[0],$F[2]\"" file.csv'
+
+  - name: Reverse the order of lines in a file
+    command: perl -e 'print reverse <>' file.txt
+    example: 'echo -e "Line 1\nLine 2\nLine 3" > file.txt && perl -e "print reverse <>" file.txt'
+
+  - name: Sort the lines in a file
+    command: perl -e 'print sort <>' file.txt
+    example: 'echo -e "Line 3\nLine 1\nLine 2" > file.txt && perl -e "print sort <>" file.txt'
+
+  - name: Remove duplicate lines from a file
+    command: perl -ne 'print if ! $x{$_}++' file.txt
+    example: 'echo -e "Line 1\nLine 2\nLine 1" > file.txt && perl -ne "print if ! \$x{$_}++" file.txt'
+
+  - name: Split a string into an array
+    command: perl -le '@array = split(" ", "Hello, world!"); print join(",", @array);'
+    example: 'perl -le "@array = split(\" \", \"Hello, world!\"); print join(\",\", @array);"'
+
+  - name: Calculate the sum of a column in a CSV file
+    command: perl -F, -lane '$sum += $F[1]; END { print "$sum\n" }' file.csv
+    example: 'echo "Item 1,10\nItem 2,20\nItem 3,30" > file.csv && perl -F, -lane "$sum += $F[1]; END { print qq{\$sum\\n} }" file.csv'
+
+  - name: Print the longest line in a file
+    command: perl -ne 'if (length > length $longest) { $longest = $_ } END { print $longest }' file.txt
+    example: 'echo -e "Short\nLongest line\nMedium" > file.txt && perl -ne "if (length > length \$longest) { \$longest = \$_ } END { print \$longest }" file.txt'
+
+  - name: Remove lines containing a specific pattern from a file
+    command: perl -ne 'print unless /pattern/' file.txt
+    example: 'echo -e "Line 1\nLine with pattern\nLine 3" > file.txt && perl -ne "print unless /pattern/" file.txt'
+
+  - name: Print the first 10 lines of a file
+    command: perl -ne 'print && $. == 10 && exit' file.txt
+    example: 'echo -e "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8\nLine 9\nLine 10\nLine 11" > file.txt && perl -ne "print && \$. == 10 && exit" file.txt'
+
+  - name: Convert a string to uppercase
+    command: perl -ne 'print uc' file.txt
+    example: 'echo "hello, world!" > file.txt && perl -ne "print uc" file.txt'
+
