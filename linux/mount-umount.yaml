@@ -49,3 +49,32 @@ options:
   - name: --rbind-ro
     description: mount a directory as recursive read-only bind
     example: mount --rbind-ro /home/user/docs /mnt/docs
+
+---
+
+command:
+  umount
+
+description:
+  Unmounts a currently mounted file system.
+
+options:
+  - -f, --force: Forces an unmount even if the device is busy.
+  - -l, --lazy: Detaches the file system without syncing or unmounting its contents.
+  - -n, --no-canonicalize: Disables path name canonicalization before unmounting.
+  - -r, --read-only: Remounts the file system as read-only before unmounting.
+  - -t type, --types type: Specifies the file system type to unmount.
+
+examples:
+  - description: Unmount a device at the specified mount point.
+    code: umount /mnt/usb
+
+  - description: Force unmount a busy device.
+    code: umount -f /mnt/usb
+
+  - description: Unmount an NFS file system.
+    code: umount -t nfs /mnt/nfs
+
+  - description: Detach a file system without syncing or unmounting its contents.
+    code: umount -l /mnt/usb
+
