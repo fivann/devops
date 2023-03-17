@@ -1,0 +1,37 @@
+fstab:
+  description: The /etc/fstab file contains information about filesystems that are mounted at boot time.
+  example: 
+    - Mount a file system at boot time with default options:
+      ```
+      /dev/sda1  /mnt/data  ext4  defaults  0  2
+      ```
+    - Mount a file system at boot time with read-only permissions:
+      ```
+      /dev/sda1  /mnt/data  ext4  ro  0  2
+      ```
+    - Mount a file system at boot time with specific options:
+      ```
+      /dev/sda1  /mnt/data  ext4  rw,noexec  0  2
+      ```
+  options:
+    - `device`: The device or partition that will be mounted.
+    - `mount_point`: The directory where the device will be mounted.
+    - `file_system_type`: The file system type of the device.
+    - `mount_options`: Options to be used when mounting the device.
+    - `dump`: Specifies whether the filesystem should be backed up with the dump command.
+    - `fsck`: Specifies the order in which filesystem checks should be performed.
+
+
+fstab_options:
+  - option: device
+    description: Specifies the device or partition that will be mounted.
+  - option: mount_point
+    description: Specifies the directory where the device will be mounted.
+  - option: file_system_type
+    description: Specifies the file system type of the device.
+  - option: mount_options
+    description: Specifies the options to be used when mounting the device.
+  - option: dump
+    description: Specifies whether the filesystem should be backed up with the dump command.
+  - option: fsck
+    description: Specifies the order in which filesystem checks should be performed. Valid options are `0`, `1`, or `2`.
