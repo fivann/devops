@@ -1,0 +1,81 @@
+command: lsmod
+description: Lists the loaded kernel modules.
+options:
+  - name: -h, --help
+    description: Display help message and exit.
+    example: lsmod -h
+  - name: -V, --version
+    description: Output version information and exit.
+    example: lsmod -V
+  - name: -t, --type <type>
+    description: Display only modules of a specific type (e.g. fs, net, usb).
+    example: lsmod -t net
+  - name: -r, --reverse
+    description: Reverse the order of the list.
+    example: lsmod -r
+  - name: -s, --size
+    description: Display module sizes in bytes.
+    example: lsmod -s
+  - name: -a, --all
+    description: Display all loaded modules, including those that are not exported to userspace.
+    example: lsmod -a
+    
+---
+
+command: modinfo
+description: Displays information about a kernel module.
+options:
+  - name: -h, --help
+    description: Display help message and exit.
+    example: modinfo -h
+  - name: -a, --all
+    description: Display all information about the module, including license and parameter information.
+    example: modinfo -a <module-name>
+  - name: -d, --description
+    description: Display only the module description.
+    example: modinfo -d <module-name>
+  - name: -F, --field <field>
+    description: Display a specific field from the module info. Valid fields include author, description, depends, firmware, license, modalias, parm, and srcversion.
+    example: modinfo -F license <module-name>
+  - name: -k, --kernel <kernel-version>
+    description: Use the specified kernel version to look up module information.
+    example: modinfo -k 5.10.0-9-amd64 <module-name>
+  - name: -n, --filename <file>
+    description: Use the specified file instead of the default /lib/modules/`uname -r`/modules.alias.
+    example: modinfo -n /lib/modules/5.10.0-9-amd64/modules.alias <module-name>
+  - name: -p, --parameters
+    description: Display only the module parameter information.
+    example: modinfo -p <module-name>
+    
+---
+
+command: dmesg
+description: Displays the kernel ring buffer.
+options:
+  - name: -h, --help
+    description: Display help message and exit.
+    example: dmesg -h
+  - name: -D, --console-off
+    description: Disable printing messages to console.
+    example: dmesg -D
+  - name: -E, --console-on
+    description: Enable printing messages to console.
+    example: dmesg -E
+  - name: -T, --ctime
+    description: Display timestamps in human-readable format.
+    example: dmesg -T
+  - name: -d, --level <level>
+    description: Display messages with the specified level or higher. Valid levels include emerg, alert, crit, err, warning, notice, info, and debug.
+    example: dmesg -d err
+  - name: -f, --facility <facility>
+    description: Display messages from the specified facility. Valid facilities include kern, user, mail, daemon, auth, syslog, lpr, news, uucp, and cron.
+    example: dmesg -f kern
+  - name: -n, --console-level <level>
+    description: Display messages on the console with the specified level or higher.
+    example: dmesg -n warn
+  - name: -r, --raw
+    description: Display messages in raw format (no human-readable timestamps or prefixes).
+    example: dmesg -r
+  - name: -s, --buffer-size <size>
+    description: Set the kernel ring buffer size to <size> kilobytes.
+    example: dmesg -s 1024
