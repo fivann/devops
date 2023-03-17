@@ -47,3 +47,30 @@
 # These are just a few examples of what can be done with udev rules. The possibilities are almost endless, 
 #   and the ability to customize device handling on a per-device basis can be extremely powerful in certain situations.
 
+- command: udevadm info
+  description: Shows information about a device.
+  example: udevadm info /dev/sda
+
+- command: udevadm monitor
+  description: Monitors udev events as they happen.
+  example: udevadm monitor --property
+
+- command: udevadm control
+  description: Controls the udev daemon.
+  example: udevadm control --reload-rules
+
+- command: udevadm test
+  description: Simulates events for a device and shows the resulting device attributes.
+  example: udevadm test /sys/class/input/event3
+
+- command: udevadm trigger
+  description: Triggers the creation of device nodes for all devices that match the given rules.
+  example: udevadm trigger --subsystem-match=block
+
+- command: udevadm settle
+  description: Waits for all pending udev events to be handled before exiting.
+  example: udevadm settle
+
+- command: udevadm info --query=all --attribute-walk
+  description: Shows the complete udev device hierarchy and all attributes for a specific device.
+  example: udevadm info --query=all --attribute-walk /dev/sda
