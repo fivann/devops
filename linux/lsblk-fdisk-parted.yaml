@@ -1,0 +1,90 @@
+lsblk:
+  description: Lists information about all available or the specified block devices.
+  example:
+    - List information about all block devices:
+      ```
+      lsblk
+      ```
+    - List information about a specific block device:
+      ```
+      lsblk /dev/sda
+      ```
+  options:
+    - `-a, --ascii`: Use ASCII characters to draw the tree hierarchy.
+    - `-b, --bytes`: Print size information in bytes.
+    - `-d, --nodeps`: Do not print information about dependent devices.
+    - `-h, --help`: Display help information.
+    - `-I, --include`: Only display devices that match the specified patterns.
+    - `-i, --invert`: Invert the sense of matching for the `-I` option.
+    - `-l, --list`: Use list output format instead of tree.
+    - `-o, --output`: Specify the output columns to display.
+    - `-p, --paths`: Print complete device paths instead of abbreviations.
+    - `-r, --raw`: Do not pretty-print the output.
+    - `-t, --topology`: Display devices in their topology order.
+    - `-V, --version`: Display version information.
+
+
+fdisk:
+  description: Manipulates disk partition tables.
+  example:
+    - List information about all disk devices:
+      ```
+      sudo fdisk -l
+      ```
+    - Create a new partition table on a device:
+      ```
+      sudo fdisk /dev/sdb
+      g
+      w
+      ```
+    - Create a new partition on a device:
+      ```
+      sudo fdisk /dev/sdb
+      n
+      p
+      1
+      <ENTER>
+      <ENTER>
+      w
+      ```
+    - Delete a partition from a device:
+      ```
+      sudo fdisk /dev/sdb
+      d
+      1
+      w
+      ```
+  options:
+    - `-b, --sector-size`: Set the sector size in bytes.
+    - `-c, --compatibility`: Use compatibility mode.
+    - `-h, --help`: Display help information.
+    - `-l, --list`: List partition tables for all available devices.
+    - `-s, --sizes`: Print sizes in powers of 1024.
+    - `-u, --units`: Set the units to sectors or cylinders.
+    - `-v, --version`: Display version information.
+
+parted:
+  description: A partition editor for creating, resizing, and moving disk partitions.
+  example:
+    - List information about all disk devices:
+      ```
+      sudo parted -l
+      ```
+    - Create a new partition table on a device:
+      ```
+      sudo parted /dev/sdb mklabel gpt
+      ```
+    - Create a new partition on a device:
+      ```
+      sudo parted /dev/sdb mkpart primary ext4 0% 100%
+      ```
+    - Delete a partition from a device:
+      ```
+      sudo parted /dev/sdb rm 1
+      ```
+  options:
+    - `-a, --align`: Set alignment for newly created partitions.
+    - `-h, --help`: Display help information.
+    - `-l, --list`: List partition tables for all available devices.
+    - `-s, --script`: Use script mode.
+    - `-v, --version`: Display version information.
