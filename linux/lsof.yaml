@@ -1,0 +1,28 @@
+Command: lsof
+Description: Lists open files and the processes that have opened them.
+Usage: lsof [options]
+Options:
+  -c <command>: Show files opened by a specific command.
+  -u <user>: Show files opened by a specific user.
+  -p <pid>: Show files opened by a specific process ID.
+  -i [protocol:][address]: Show files related to a specific network connection.
+  -n: Do not resolve hostnames.
+  -t: Display only process IDs instead of process information.
+Examples:
+  # List all open files and the processes that have opened them
+  lsof
+  
+  # List all open files related to a specific user (e.g., root)
+  lsof -u root
+  
+  # List all open files related to a specific process ID (e.g., 1234)
+  lsof -p 1234
+  
+  # List all network connections related to a specific port (e.g., port 80)
+  lsof -i :80
+  
+  # List all open files related to a specific directory (e.g., /var/log)
+  lsof /var/log
+  
+  # List all open files related to a specific command (e.g., ssh)
+  lsof -c ssh
