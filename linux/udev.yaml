@@ -1,0 +1,49 @@
+- name: Create a custom udev rule
+  command: >
+    sudo bash -c 'echo "KERNEL==\"sd*\", ATTRS{model}==\"Samsung SSD 850*\", SYMLINK+=\"samsung_ssd\"" >
+    /etc/udev/rules.d/99-samsung_ssd.rules'
+
+- name: Reload udev rules
+  command: sudo udevadm control --reload-rules && sudo udevadm trigger
+
+- name: Check udev rules for a device
+  command: udevadm info /dev/sda
+  args:
+    - '--attribute-walk'
+
+- name: List available udev devices
+  command: sudo udevadm info --query=all --name=/dev/sda
+
+- name: Monitor udev events in real-time
+  command: sudo udevadm monitor
+
+
+# Explanation of the commands:
+
+# Create a custom udev rule: creates a custom udev rule that creates a symlink /dev/samsung_ssd for all devices that match the given model.
+# Reload udev rules: reloads the udev rules and triggers a re-detection of devices.
+# Check udev rules for a device: displays all the udev attributes for the given device.
+# List available udev devices: displays all available devices and their udev attributes.
+# Monitor udev events in real-time: runs a real-time monitor of udev events.
+# Note that the args key is used to provide additional arguments to the command, which may be necessary depending on the desired behavior.
+
+# Udev rules are used to create or modify device files and their attributes on a Linux system. 
+# These rules can be used to set permissions, create symlinks, change ownership, and perform other actions 
+# on a device when it is detected by the kernel.
+
+# Here are some examples of what you can do with udev rules:
+
+# Rename network interfaces: By default, network interfaces are named eth0, eth1, etc.
+#   With udev rules, you can rename them to something more descriptive, like "lan" and "wan".
+# Create persistent device names: Devices can be named based on their physical location, serial number, 
+#   or other attributes, making it easier to identify them and ensure they are always mapped to the same device file.
+# Automount removable media: When a USB drive or other removable media is inserted, a udev rule can be used 
+#   to automatically mount it at a specific location, set permissions, and apply other customizations.
+# Change device permissions: Udev rules can be used to set permissions for devices, making it possible 
+#   to restrict access to certain users or groups.
+# Map hardware buttons to actions: On laptops and other devices with hardware buttons, udev rules can be used 
+#   to map those buttons to specific actions, such as adjusting the volume or launching an application.
+
+# These are just a few examples of what can be done with udev rules. The possibilities are almost endless, 
+#   and the ability to customize device handling on a per-device basis can be extremely powerful in certain situations.
+
