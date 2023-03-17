@@ -1,0 +1,111 @@
+SIGHUP:
+  description: Hangup detected on controlling terminal or death of controlling process
+  example: Reload configuration file of a process by sending SIGHUP signal to a daemon process:
+           ```
+           kill -HUP daemon_process_pid
+           ```
+  code: 1
+
+SIGINT:
+  description: Interrupt from keyboard
+  example: Stop a running process gracefully by sending SIGINT signal using Ctrl+C:
+           ```
+           ctrl+c
+           ```
+           Or by sending the signal to the process ID:
+           ```
+           kill -INT process_pid
+           ```
+  code: 2
+
+SIGQUIT:
+  description: Quit from keyboard
+  example: Quit a running process and generate a core dump by sending SIGQUIT signal using Ctrl+\:
+           ```
+           ctrl+\
+           ```
+           Or by sending the signal to the process ID:
+           ```
+           kill -QUIT process_pid
+           ```
+  code: 3
+
+SIGILL:
+  description: Illegal Instruction
+  example: Stop a process that is executing illegal instructions by sending SIGILL signal to the process ID:
+           ```
+           kill -ILL process_pid
+           ```
+  code: 4
+
+SIGABRT:
+  description: Abort signal from abort(3)
+  example: Terminate a process in case of unrecoverable error by sending SIGABRT signal to the process ID:
+           ```
+           kill -ABRT process_pid
+           ```
+  code: 6
+
+SIGFPE:
+  description: Floating point exception
+  example: Stop a process when it encounters a floating point exception by sending SIGFPE signal to the process ID:
+           ```
+           kill -FPE process_pid
+           ```
+  code: 8
+
+SIGKILL:
+  description: Kill signal
+  example: Terminate a process immediately and unconditionally by sending SIGKILL signal to the process ID:
+           ```
+           kill -KILL process_pid
+           ```
+  code: 9
+
+SIGSEGV:
+  description: Invalid memory reference
+  example: Stop a process when it accesses an invalid memory address by sending SIGSEGV signal to the process ID:
+           ```
+           kill -SEGV process_pid
+           ```
+  code: 11
+
+SIGPIPE:
+  description: Broken pipe: write to pipe with no readers
+  example: Stop a process when it tries to write to a broken pipe by sending SIGPIPE signal to the process ID:
+           ```
+           kill -PIPE process_pid
+           ```
+  code: 13
+
+SIGALRM:
+  description: Timer signal from alarm(2)
+  example: Set a timer for a process to execute a certain task after a certain amount of time by sending SIGALRM signal to the process ID:
+           ```
+           kill -ALRM process_pid
+           ```
+  code: 14
+
+SIGTERM:
+  description: Termination signal
+  example: Terminate a process gracefully, allowing it to perform cleanup operations by sending SIGTERM signal to the process ID:
+           ```
+           kill -TERM process_pid
+           ```
+  code: 15
+
+SIGUSR1:
+  description: User-defined signal 1
+  example: Use this signal to communicate with a process in a custom way, for example to trigger a specific behavior. To send this signal to the process ID:
+           ```
+           kill -USR1 process_pid
+           ```
+  code: 30
+
+SIGUSR2:
+  description: User-defined signal 2
+  example: Use this signal to communicate with a process in a custom way, for example to trigger a specific behavior. To send this signal to the process ID:
+           ```
+           kill -USR2 process_pid
+           ```
+  code:
