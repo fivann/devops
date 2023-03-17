@@ -1,0 +1,81 @@
+Filesystem: /proc
+Description: A virtual filesystem that provides a view of the system's process and kernel status.
+Contents:
+  - /proc/cpuinfo: Information about the system's CPU(s).
+  - /proc/meminfo: Information about the system's memory usage.
+  - /proc/net/: Information about network status.
+  - /proc/sys/: Information about kernel settings and parameters.
+  - /proc/<pid>/: Information about a specific process, where <pid> is the process ID number.
+Examples:
+  # View the system's CPU information
+  cat /proc/cpuinfo
+  
+  # View the system's memory usage information
+  cat /proc/meminfo
+  
+  # View information about network status
+  cat /proc/net/dev
+  
+  # View information about a specific process (PID 1234)
+  cat /proc/1234/status
+  
+  # View and modify kernel settings (for example, to enable IP forwarding)
+  cat /proc/sys/net/ipv4/ip_forward
+  echo 1 > /proc/sys/net/ipv4/ip_forward
+
+---
+
+command:
+  name: blkid
+  description: displays the attributes of block devices (such as UUID and filesystem type)
+  
+options:
+  - option:
+      name: -c, --cache
+      description: use the cache file instead of scanning devices
+  - option:
+      name: -s, --size
+      description: print the device size
+  - option:
+      name: -p, --probe
+      description: print the name of the probe being used to identify the device
+  - option:
+      name: -o, --output
+      argument: output_format
+      description: specify the output format (e.g. "list", "export", "udev", "json", etc.)
+
+examples:
+  - description: Show information about all block devices
+    command: blkid
+    output: |
+      /dev/sda1: UUID="b5a5f932-e3aa-4c8c-a5b1-5fae7cbafc12" TYPE="ext4" PARTUUID="383efb54-01"
+      /dev/sda2: UUID="TjcrCT-r9Xv-8fk7-tjO1-mShB-uV2B-Skt8VA" TYPE="LVM2_member" PARTUUID="383efb54-02"
+      /dev/mapper/vg01-lv_root: UUID="7d2e25f3-b3ca-4b31-bd20-6a28989c12a7" TYPE="ext4"
+      /dev/mapper/vg01-lv_swap: UUID="b8f4911f-853e-48a2-9a09-9047dd51e06f" TYPE="swap"
+
+  - description: Show only the UUID and filesystem type for a specific device
+    command: blkid -s UUID -s TYPE /dev/sda1
+    output: |
+      UUID="b5a5f932-e3aa-4c8c-a5b1-5fae7cbafc12" TYPE="ext4"
+
+  - description: Show the device size for all block devices in a udev-like format
+    command: blkid -o udev --size
+    output: |
+      DEVLINKS=/dev/disk/by-id/ata-QEMU_HARDDISK_QM00001 /dev/disk/by-path/pci-0000:00:04.0-ata-1
+      DEVNAME=/dev/sda1
+      DEVPATH=/devices/pci0000:00/0000:00:04.0/virtio2/block/sda/sda1
+      ID_BUS=ata
+      ID_FS_TYPE=ext4
+      ID_FS_USAGE=filesystem
+      ID_FS_UUID=b5a5f932-e3aa-4c8c-a5b1-5fae7cbafc12
+      ID_FS_UUID_ENC=b5a5f932-e3aa-4c8c-a5b1-5fae7cbafc12
+      ID_FS_VERSION=1.0
+      ID_INSTANCE=0:1
+      ID_MODEL=QEMU_HARDDISK
+      ID_MODEL_ENC=QEMU\x20HARDDISK
+      ID_PART_ENTRY_DISK=8:0
+      ID_PART_ENTRY_NUMBER=1
+      ID_PART_ENTRY_OFFSET=1048576
+      ID_PART_ENTRY_SCHEME=gpt
+      ID_PART_ENTRY_SIZE=1048576
+      ID_PART_ENTRY_TYPE=0FC63DAF-848
