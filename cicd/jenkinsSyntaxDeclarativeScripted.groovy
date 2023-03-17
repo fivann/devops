@@ -7,8 +7,6 @@
 // Declarative syntax uses a YAML-based syntax to define the pipeline structure and stages, 
 //     with each stage containing a series of steps that Jenkins executes in order. Here's an example of a simple pipeline using declarative syntax:
 
-typescript
-Copy code
 pipeline {
   agent any
   stages {
@@ -35,8 +33,6 @@ pipeline {
 //   In scripted syntax, you write a script that defines the pipeline structure and includes the details 
 //   of how individual stages and steps are executed. Here's an example of the same pipeline using scripted syntax:
 
-javascript
-Copy code
 node {
   stage('Build') {
     sh 'npm install'
