@@ -1,0 +1,47 @@
+command:
+  name: kill
+  description: Send a signal to a process to terminate it or perform other actions
+  usage: kill [signal] [pid]
+
+options:
+  - option:
+      name: -l, --list
+      description: List all signal names and their corresponding numbers
+      example: kill -l
+
+  - option:
+      name: -s, --signal
+      description: Specify the signal to send to the process (default is SIGTERM)
+      example: kill -s SIGKILL 1234
+
+  - option:
+      name: -p, --pid
+      description: Specify the process ID to send the signal to
+      example: kill -9 -p 1234
+
+  - option:
+      name: -a, --all
+      description: Send the signal to all processes except for the kill process itself and init
+      example: kill -9 -a
+
+  - option:
+      name: -u, --user
+      description: Send the signal to all processes owned by the specified user
+      example: kill -s SIGTERM -u username
+
+signals:
+  - signal:
+      name: SIGTERM
+      description: Terminate the process gracefully (default signal)
+  - signal:
+      name: SIGKILL
+      description: Forcefully terminate the process
+  - signal:
+      name: SIGINT
+      description: Interrupt the process (similar to Ctrl-C)
+  - signal:
+      name: SIGSTOP
+      description: Stop the process temporarily
+  - signal:
+      name: SIGCONT
+      description: Resume the process after it has been stopped
