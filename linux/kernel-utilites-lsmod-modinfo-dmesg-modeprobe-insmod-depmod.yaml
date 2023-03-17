@@ -115,7 +115,7 @@ options:
 
 ---
 
-### NOT RECOMENDED
+### NOT RECOMENDED TO USE
 
 command: insmod
 description: Inserts a module into the running kernel.
@@ -135,3 +135,29 @@ options:
   - name: -v, --verbose
     description: Display verbose output.
     example: insmod -v <module-name>.ko
+    
+---
+
+Command: depmod
+Description: Generates a list of module dependencies for the Linux kernel.
+Options:
+  -a, --all: Generate dependency information for all available modules.
+  -b, --basedir <dir>: Search for modules in the specified directory instead of the default /lib/modules/<kernel version>.
+  -e, --errsyms: Print any unresolved symbol names to stderr instead of exiting with an error.
+  -F, --file <file>: Read module information from the specified file instead of from the module directory.
+  -n, --show-depends: Print a list of modules that the specified module depends on.
+  -v, --verbose: Print verbose output.
+Examples:
+  # Generate dependency information for all available modules
+  depmod -a
+  
+  # Generate dependency information for modules in a custom directory
+  depmod -a -b /path/to/custom/directory
+  
+  # Print a list of modules that the specified module depends on
+  depmod -n /path/to/module.ko
+  
+  # Generate dependency information and print verbose output
+  depmod -av
+
+
