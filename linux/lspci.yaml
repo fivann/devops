@@ -1,0 +1,49 @@
+command:
+  name: lspci
+  description: list all PCI devices
+
+options:
+  - name: -k
+    description: Display the kernel driver currently bound to each device.
+  - name: -v
+    description: Show full device hierarchy, including capability lists.
+  - name: -nn
+    description: Show vendor and device IDs as both numbers and names.
+  - name: -s [bus]:[slot].[func]
+    description: Display information for a specific device, identified by its bus/slot/function.
+  - name: -n
+    description: Display PCI vendor and device codes in numeric format.
+  - name: -x
+    description: Display hex-dump of the standard configuration space for the device.
+  - name: -D
+    description: Show vendor and device ID with human-readable names.
+  - name: -vv
+    description: Show verbose information about each device.
+
+examples:
+  - description: List all PCI devices.
+    command: lspci
+
+  - description: Show kernel driver currently bound to each device.
+    command: lspci -k
+
+  - description: Show full device hierarchy for all devices.
+    command: lspci -v
+
+  - description: Show vendor and device IDs as both numbers and names.
+    command: lspci -nn
+
+  - description: Show information for device at bus 0x01, slot 0x0a, function 0x00.
+    command: lspci -s 01:0a.0
+
+  - description: Display PCI vendor and device codes in numeric format.
+    command: lspci -n
+
+  - description: Display hex-dump of the standard configuration space for the device at bus 0x03, slot 0x00, function 0x0.
+    command: lspci -x -s 03:00.0
+
+  - description: Show vendor and device ID with human-readable names.
+    command: lspci -D
+
+  - description: Show verbose information about each device.
+    command: lspci -vv
