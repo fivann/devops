@@ -1,0 +1,51 @@
+command: mount
+description: mount a filesystem
+options:
+  - name: -t, --types
+    description: specifies the filesystem type
+    example: mount -t ext4 /dev/sda1 /mnt/data
+  - name: -o
+    description: specifies mount options
+    example: mount -o rw /dev/sda1 /mnt/data
+  - name: -n, --no-mtab
+    description: don't write to /etc/mtab
+    example: mount -n /dev/sda1 /mnt/data
+  - name: -a, --all
+    description: mount all filesystems mentioned in fstab
+    example: mount -a
+  - name: --bind
+    description: mount a directory at another location
+    example: mount --bind /home/user/docs /mnt/docs
+  - name: --make-private
+    description: mount a directory as private
+    example: mount --make-private /mnt/data
+  - name: --make-shared
+    description: mount a directory as shared
+    example: mount --make-shared /mnt/data
+  - name: --make-slave
+    description: mount a directory as slave
+    example: mount --make-slave /mnt/data
+  - name: --make-unbindable
+    description: mount a directory as unbindable
+    example: mount --make-unbindable /mnt/data
+  - name: --make-rshared
+    description: mount a directory as shared recursively
+    example: mount --make-rshared /mnt/data
+  - name: --make-rslave
+    description: mount a directory as slave recursively
+    example: mount --make-rslave /mnt/data
+  - name: --make-runbindable
+    description: mount a directory as run unbindable
+    example: mount --make-runbindable /mnt/data
+  - name: --noatime
+    description: don't update inode access times
+    example: mount -o rw,noatime /dev/sda1 /mnt/data
+  - name: --bind-ro
+    description: mount a directory as read-only
+    example: mount --bind-ro /home/user/docs /mnt/docs
+  - name: --rbind
+    description: mount a directory as recursive bind
+    example: mount --rbind /home/user/docs /mnt/docs
+  - name: --rbind-ro
+    description: mount a directory as recursive read-only bind
+    example: mount --rbind-ro /home/user/docs /mnt/docs
