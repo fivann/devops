@@ -79,3 +79,59 @@ options:
   - name: -s, --buffer-size <size>
     description: Set the kernel ring buffer size to <size> kilobytes.
     example: dmesg -s 1024
+
+---
+
+command: modprobe
+description: Adds or removes a kernel module from the Linux kernel.
+options:
+  - name: -h, --help
+    description: Display help message and exit.
+    example: modprobe -h
+  - name: -r, --remove <module-name>
+    description: Remove the specified module from the kernel.
+    example: modprobe -r <module-name>
+  - name: -v, --verbose
+    description: Display verbose output.
+    example: modprobe -v <module-name>
+  - name: -a, --all
+    description: Load all matching modules.
+    example: modprobe -a snd-card-0
+  - name: -i, --ignore-install
+    description: Ignore any install commands in the module's configuration file.
+    example: modprobe -i <module-name>
+  - name: -l, --list
+    description: List all available modules.
+    example: modprobe -l
+  - name: -q, --quiet
+    description: Suppress all output except for errors and warnings.
+    example: modprobe -q <module-name>
+  - name: -s, --show-depends
+    description: Show module dependencies.
+    example: modprobe -s <module-name>
+  - name: -c, --config <config-file>
+    description: Use the specified configuration file instead of the default /etc/modprobe.conf.
+    example: modprobe -c /etc/modprobe.d/sound.conf <module-name>
+
+---
+
+### NOT RECOMENDED
+
+command: insmod
+description: Inserts a module into the running kernel.
+options:
+  - name: -h, --help
+    description: Display help message and exit.
+    example: insmod -h
+  - name: -f, --force
+    description: Force module insertion even if it is already loaded or the kernel version does not match.
+    example: insmod -f <module-name>.ko
+  - name: -k, --kernel <kernel-file>
+    description: Specify the kernel image file to use for symbol resolution.
+    example: insmod -k /usr/src/linux-headers-<version>/vmlinux <module-name>.ko
+  - name: -n, --nodeps
+    description: Do not check module dependencies.
+    example: insmod -n <module-name>.ko
+  - name: -v, --verbose
+    description: Display verbose output.
+    example: insmod -v <module-name>.ko
