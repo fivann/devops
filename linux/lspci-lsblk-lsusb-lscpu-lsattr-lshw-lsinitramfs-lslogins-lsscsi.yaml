@@ -1,0 +1,156 @@
+command:
+  name: lspci
+  description: list all PCI devices
+
+options:
+  - name: -k
+    description: Display the kernel driver currently bound to each device.
+  - name: -v
+    description: Show full device hierarchy, including capability lists.
+  - name: -nn
+    description: Show vendor and device IDs as both numbers and names.
+  - name: -s [bus]:[slot].[func]
+    description: Display information for a specific device, identified by its bus/slot/function.
+  - name: -n
+    description: Display PCI vendor and device codes in numeric format.
+  - name: -x
+    description: Display hex-dump of the standard configuration space for the device.
+  - name: -D
+    description: Show vendor and device ID with human-readable names.
+  - name: -vv
+    description: Show verbose information about each device.
+
+examples:
+  - description: List all PCI devices.
+    command: lspci
+
+  - description: Show kernel driver currently bound to each device.
+    command: lspci -k
+
+  - description: Show full device hierarchy for all devices.
+    command: lspci -v
+
+  - description: Show vendor and device IDs as both numbers and names.
+    command: lspci -nn
+
+  - description: Show information for device at bus 0x01, slot 0x0a, function 0x00.
+    command: lspci -s 01:0a.0
+
+  - description: Display PCI vendor and device codes in numeric format.
+    command: lspci -n
+
+  - description: Display hex-dump of the standard configuration space for the device at bus 0x03, slot 0x00, function 0x0.
+    command: lspci -x -s 03:00.0
+
+  - description: Show vendor and device ID with human-readable names.
+    command: lspci -D
+
+  - description: Show verbose information about each device.
+    command: lspci -vv
+
+
+Command: lsblk
+Description: Lists information about block devices (disks and partitions).
+Example:
+- name: List all block devices and their mount points
+  command: lsblk
+  output: |
+    NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+    sda      8:0    0 465.8G  0 disk 
+    ├─sda1   8:1    0   512M  0 part /boot/efi
+    ├─sda2   8:2    0   732M  0 part /boot
+    └─sda3   8:3    0 464.6G  0 part /
+    sr0     11:0    1  1024M  0 rom  
+
+
+
+
+Command: lsusb
+Description: Lists information about USB buses and the devices connected to them.
+Example:
+- name: List all USB devices
+  command: lsusb
+  output: |
+    Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+    Bus 001 Device 004: ID 0bda:0129 Realtek Semiconductor Corp. RTS5129 Card Reader Controller
+    Bus 001 Device 003: ID 0c45:660d Microdia Integrated_Webcam_HD
+    Bus 001 Device 002: ID 05e3:0608 Genesys Logic, Inc. Hub
+    Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+
+Command: lscpu
+Description: Displays information about the CPU architecture and topology.
+Example:
+- name: Display CPU information
+  command: lscpu
+  output: |
+    Architecture:        x86_64
+    CPU op-mode(s):      32-bit, 64-bit
+    Byte Order:          Little Endian
+    CPU(s):              4
+    On-line CPU(s) list: 0-3
+    Thread(s) per core:  2
+    Core(s) per socket:  2
+    Socket(s):           1
+    NUMA node(s):        1
+    Vendor ID:           GenuineIntel
+    CPU family:          6
+    Model:               78
+    Model name:          Intel(R) Core(TM) i5-6300U CPU @ 2.40GHz
+    Stepping:            3
+    CPU MHz:             800.044
+    CPU max MHz:         3000.0000
+    CPU min MHz:         400.0000
+    BogoMIPS:            4788.00
+    Virtualization:      VT-x
+    L1d cache:           32K
+    L1i cache:           32K
+    L2 cache:            256K
+    L3 cache:            3072K
+
+Command: lsattr
+Description: Lists file attributes on a Linux second extended file system (ext2, ext3, or ext4).
+Example:
+- name: List file attributes for a directory
+  command: lsattr /var/www/html
+  output: |
+    -------------- /var/www/html
+
+
+command: lshw
+description: List hardware details of the system
+examples:
+  - description: List all hardware details
+    code: lshw
+  - description: List details of specific hardware class
+    code: lshw -class network
+  - description: Output in JSON format
+    code: lshw -json
+
+command: lsinitramfs
+description: List contents of initramfs image
+examples:
+  - description: List contents of the default initramfs image
+    code: lsinitramfs /boot/initramfs-$(uname -r).img
+  - description: List contents of a custom initramfs image
+    code: lsinitramfs /path/to/initramfs.img
+
+command: lslogins
+description: List logged in users and their details
+examples:
+  - description: List all logged in users
+    code: lslogins
+  - description: List details of a specific user
+    code: lslogins username
+  - description: Output in JSON format
+    code: lslogins -j
+
+command: lsscsi
+description: List SCSI devices and their attributes
+examples:
+  - description: List all SCSI devices
+    code: lsscsi
+  - description: List details of a specific device
+    code: lsscsi -t /dev/sda
+  - description: Output in JSON format
+    code: lsscsi -J
+
