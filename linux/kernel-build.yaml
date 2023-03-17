@@ -7,9 +7,16 @@
   command: |
     make menuconfig
 
+## -j$(nproc) tells make to run as many build tasks as there are CPU cores available on the system, 
+## which can significantly speed up the build process.
+
 - name: Build the kernel
   command: |
-    make -j$(nproc)
+    make bzImage -j$(nproc)
+
+- name: Build the kernel modules
+  command: |
+    make modules -j$(nproc)
 
 - name: Install the kernel modules
   command: |
