@@ -1,0 +1,18 @@
+
+## ls /usr/src/kernels
+
+---
+- name: Check Linux kernel status
+  commands:
+    - name: Print kernel release number
+      command: uname -r
+    - name: Display kernel version
+      command: uname -v
+    - name: Show all kernel information
+      command: uname -a
+    - name: Print command-line parameters passed to kernel at boot time
+      command: cat /proc/cmdline
+    - name: Display system hostname
+      command: cat /proc/sys/kernel/hostname
+...
+
