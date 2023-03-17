@@ -1,0 +1,74 @@
+Command: lsof
+Description: Lists open files and the processes that have opened them.
+Usage: lsof [options]
+Options:
+  -c <command>: Show files opened by a specific command.
+  -u <user>: Show files opened by a specific user.
+  -p <pid>: Show files opened by a specific process ID.
+  -i [protocol:][address]: Show files related to a specific network connection.
+  -n: Do not resolve hostnames.
+  -t: Display only process IDs instead of process information.
+Examples:
+  # List all open files and the processes that have opened them
+  lsof
+  
+  # List all open files related to a specific user (e.g., root)
+  lsof -u root
+  
+  # List all open files related to a specific process ID (e.g., 1234)
+  lsof -p 1234
+  
+  # List all network connections related to a specific port (e.g., port 80)
+  lsof -i :80
+  
+  # List all open files related to a specific directory (e.g., /var/log)
+  lsof /var/log
+  
+  # List all open files related to a specific command (e.g., ssh)
+  lsof -c ssh
+
+---
+
+command:
+  name: fuser
+  description: Identify processes using files or sockets
+
+options:
+  - name: -v, --verbose
+    description: Increase verbosity, displaying additional information
+  - name: -m, --mount
+    description: Name of mount point or directory to search
+  - name: -n, --namespace
+    description: Search within specified namespace (pid|user|uts|ipc|mnt|net)
+  - name: -k, --kill
+    description: Kill processes accessing the specified files
+  - name: -i, --interactive
+    description: Prompt before killing processes
+  - name: -SIGNAL
+    description: Specify a signal to be sent to processes accessing the specified files
+  - name: -u, --user
+    description: Search for processes belonging to the specified user
+  - name: -c, --command
+    description: Search for processes executing the specified command
+  - name: -l, --list-signals
+    description: List available signals and their corresponding values
+
+examples:
+  - description: Show processes using file /etc/passwd
+    command: fuser /etc/passwd
+  - description: Show processes using files or directories on a specific mount point
+    command: fuser -m /mnt/data
+  - description: Kill processes accessing the specified file
+    command: fuser -k /var/log/syslog
+  - description: Prompt before killing processes accessing the specified file
+    command: fuser -ik /var/log/syslog
+  - description: Show processes using a network socket
+    command: fuser -n tcp 80
+  - description: Show processes belonging to a specific user
+    command: fuser -u john
+  - description: Show processes executing a specific command
+    command: fuser -c firefox
+  - description: Send a specific signal to processes accessing the specified files
+    command: fuser -KILL /tmp/file.txt
+  - description: List available signals and their corresponding values
+    command: fuser -l
