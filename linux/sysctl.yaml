@@ -1,0 +1,20 @@
+Command: sysctl
+Description: Manages kernel parameters at runtime.
+Usage: sysctl [options] [parameter[=value]]
+Options:
+  -a: Show all parameters and their values.
+  -e: Ignore unknown parameters.
+  -n: Do not print the parameter name.
+  -w: Write new values to the kernel.
+Examples:
+  # Display the value of a specific parameter (e.g., net.ipv4.tcp_fin_timeout)
+  sysctl net.ipv4.tcp_fin_timeout
+  
+  # Set the value of a specific parameter (e.g., net.ipv4.tcp_fin_timeout) to 60 seconds
+  sysctl -w net.ipv4.tcp_fin_timeout=60
+  
+  # Display all kernel parameters and their values
+  sysctl -a
+  
+  # Display the value of a specific parameter without the parameter name (useful for scripting)
+  sysctl -n net.ipv4.tcp_fin_timeout
