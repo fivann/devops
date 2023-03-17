@@ -59,4 +59,7 @@ perl_use_cases:
   - name: Convert a string to uppercase
     command: perl -ne 'print uc' file.txt
     example: 'echo "hello, world!" > file.txt && perl -ne "print uc" file.txt'
+    
+  - name: Uncomment lines in a file 
+    command: perl -pi -e 's/^#(\s*)/$1/' file.txt
 
