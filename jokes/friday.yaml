@@ -1,0 +1,27 @@
+- name: Do not deploy to master on a Friday
+  description: 'No one wants to be fixing bugs over the weekend'
+  severity: high
+
+- name: Do not rebuild production software on a Friday
+  description: 'If something goes wrong, your weekend is ruined'
+  severity: high
+
+- name: Do not deploy untested code on a Friday
+  description: 'The Friday afternoon rush can lead to careless mistakes'
+  severity: medium
+
+- name: Do not schedule important meetings on a Friday afternoon
+  description: 'Everyone is looking forward to the weekend and may not be fully engaged'
+  severity: low
+
+- name: Do not make major changes to the production environment on a Friday
+  description: 'If something goes wrong, you may have to work all weekend to fix it'
+  severity: high
+
+- name: Do not assume everyone is working on a Friday
+  description: 'Some people may have already started their weekend or taken a day off'
+  severity: low
+
+- name: Do not forget to wish your coworkers a happy weekend
+  description: 'Everyone needs a little extra positivity on a Friday!'
+  severity: low
