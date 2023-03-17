@@ -1,0 +1,31 @@
+df:
+  description: Displays the amount of disk space used and available on file systems
+  options:
+    - -h: show sizes in human-readable format
+    - -T: show file system type
+    - -t <type>: show only file systems of a specific type
+    - -x <type>: exclude file systems of a specific type
+  example: df -h
+
+du:
+  description: Displays the amount of disk space used by files and directories
+  options:
+    - -h: show sizes in human-readable format
+    - -s: display only a total for each argument
+    - -c: display a grand total for all arguments
+    - --exclude=<pattern>: exclude files that match a pattern
+  example: du -h
+
+
+
+# The main difference between df and du is that df shows the amount of disk space used and available on file systems, 
+# while du shows the amount of disk space used by files and directories. df displays information on the file system as a whole, 
+# while du focuses on individual files and directories within the file system.
+
+# Another key difference is that df reports on the total size of a file system and how much of that space is free, 
+# whereas du reports on the size of individual files and directories. This means that df is more useful 
+# for determining how much free space is available on a particular file system, while du is better for 
+# identifying which files and directories are taking up the most space on a file system.
+
+# In summary, df is used to display information about file systems, while du is used to display information 
+# about individual files and directories.
