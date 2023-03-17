@@ -67,3 +67,77 @@ mkswap:
     - `-L, --label`: Set a label for the swap space.
     - `-U, --uuid`: Set a UUID for the swap space.
 
+############################################################
+
+# Creating Swap Space on a Linux System
+# In this lab, we are tasked with adding swap space to the hosts in order to provide greater virtual memory overhead.
+
+# A partition has been provided, /dev/xvdg1, that should be used as a swap partition. 
+# We will need to create the swap space on the partition, enable it, and then add an entry 
+# to /etc/fstab to ensure that it will persist through a reboot. We will then create a swap file 
+# to be used as an additional swap space. The file should be 1GB in size, created using the dd command.
+
+# Note:
+# All tasks should be performed as the root user.
+# The UUID of the partition will differ for each attempt.
+
+############################################################
+
+# Create and Enable a Swap Partition
+# Our first task is to create and enable a swap partition using /dev/xvdg1. To do so, complete the following:
+
+# Use lsblk to see our current partitions.
+# Use the mkswap command to create swap space on /dev/xvdg1:
+mkswap /dev/xvdg1
+
+# Use the swapon command to enable the swap partition:
+swapon /dev/xvdg1
+
+# Review that it worked by using 
+sqapon --show.
+
+############################################################
+
+# Add an entry to /etc/fstab to ensure that the swap partition persists though a reboot (use the UUID)
+# Obtain the UUID for the partition using the blkid command
+
+# Use the editor of your choosing (i.e., vim, nano, etc.) to add an entry to /etc/fstab for the swap partition. 
+# For our example, we'll be using vim:
+
+vim /etc/fstab
+
+# At the bottom of the file, add the following entry:
+UUID=partition_UUID swap swap sw 0 0
+
+############################################################
+
+# Create and Enable a 1 GB Swap File
+# Create and enable a 1 GB swap file in the root directory called extraswap:
+
+# Use the dd command to create a 1 GB file called extraswap:
+dd if=/dev/zero of=/extraswap bs=1M count=1024
+
+# Update the permissions on the swap file to be read right only for the root user:
+chmod 600 /extraswap
+
+# Use the mkswap command to turn extraswap into a swap file:
+mkswap /extraswap
+
+# Use the swapon command to enable the swap file:
+swapon /extraswap
+
+############################################################
+
+# Add an Entry
+# Finally, we need to add an entry to /etc/fstab to ensure that the swap file persists through a reboot (use the full path to the file name).
+
+# Use the editor of your choosing (i.e., vim, nano, etc.) to add an entry to /etc/fstab for the swap file. For our example, we are using vim:
+vim /etc/fstab
+
+# At the bottom of the file, add the following entry:
+/extraswap swap swap sw 0 0
+
+# Save the file with :wq.
+
+############################################################
+
