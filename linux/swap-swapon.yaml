@@ -1,0 +1,69 @@
+swaps:
+  command: cat /proc/swaps
+
+swap:
+  description: Swap space is used as virtual memory when the system runs out of physical RAM. The swap file/partition is used to temporarily store data that is not currently being used in memory.
+  example:
+    - Create a swap partition:
+      ```
+      /dev/sda2  swap  swap  defaults  0  0
+      ```
+    - Create a swap file:
+      ```
+      /mnt/swapfile  none  swap  sw  0  0
+      ```
+  options:
+    - `device`: The device or partition that will be used as swap.
+    - `swap_type`: Indicates that the device is being used as swap space.
+    - `swap_options`: Options to be used when mounting the device as swap.
+    - `dump`: Specifies whether the swap space should be backed up with the dump command.
+    - `fsck`: Specifies the order in which filesystem checks should be performed.
+
+swapon:
+  description: Activates swap space on a device or file.
+  example:
+    - Activate a swap partition:
+      ```
+      sudo swapon /dev/sda2
+      ```
+    - Activate a swap file:
+      ```
+      sudo swapon /mnt/swapfile
+      ```
+  options:
+    - `-a, --all`: Activate all swap devices listed in /etc/fstab.
+    - `-d, --discard`: Enable discard option when activating swap.
+    - `-e, --ifexists`: Silently ignore devices that do not exist.
+    - `-p, --priority`: Specify the priority of the swap device.
+
+mount_and_format_swap:
+  description: Mounts a new block device and formats it to swap space.
+  example:
+    - Mount and format a new block device as swap:
+      ```
+      sudo mkswap /dev/sdb1
+      sudo swapon /dev/sdb1
+      ```
+  steps:
+    - Identify the new block device using a tool like `lsblk` or `fdisk`.
+    - Create a swap partition using a tool like `fdisk` or `parted`.
+    - Format the new partition as swap using the `mkswap` command.
+    - Activate the new swap space using the `swapon` command.
+
+mkswap:
+  description: Formats a block device or file as swap space.
+  example:
+    - Format a block device as swap:
+      ```
+      sudo mkswap /dev/sdb1
+      ```
+    - Format a file as swap:
+      ```
+      sudo dd if=/dev/zero of=/mnt/swapfile bs=1G count=4
+      sudo chmod 600 /mnt/swapfile
+      sudo mkswap /mnt/swapfile
+      ```
+  options:
+    - `-L, --label`: Set a label for the swap space.
+    - `-U, --uuid`: Set a UUID for the swap space.
+
