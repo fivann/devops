@@ -1,0 +1,35 @@
+ext2:
+- Introduced in 1993 as the default filesystem for Linux.
+- Supports up to 2 terabytes of disk space.
+- Does not support journaling, which means that filesystem checks are required after unexpected shutdowns.
+- Uses a traditional block-based allocation scheme.
+
+ext3:
+- Introduced in 2001 as an extension of ext2 with journaling support.
+- Supports up to 32 terabytes of disk space.
+- Journaling helps improve recovery after unexpected shutdowns.
+- Uses a traditional block-based allocation scheme.
+
+ext4:
+- Introduced in 2008 as an extension of ext3 with improved performance and scalability.
+- Supports up to 1 exabyte of disk space.
+- Supports extents, which reduces fragmentation and improves performance.
+- Supports delayed allocation, which improves performance by delaying allocation of blocks until they are actually needed.
+
+XFS:
+- Introduced in 1994 by Silicon Graphics for their IRIX operating system.
+- Supports up to 8 exabytes of disk space.
+- Uses a more advanced extent-based allocation scheme that reduces fragmentation and improves performance.
+- Supports journaling for improved recovery after unexpected shutdowns.
+
+Btrfs:
+- Introduced in 2009 as a new filesystem for Linux with advanced features.
+- Supports up to 16 exabytes of disk space.
+- Uses a copy-on-write (CoW) allocation scheme that allows for snapshots and other advanced features.
+- Supports transparent compression and encryption.
+
+ZFS:
+- Developed by Sun Microsystems for their Solaris operating system.
+- Supports up to 256 quadrillion zettabytes of disk space.
+- Uses a combined file system and volume manager that provides advanced features such as snapshots, data compression, and data deduplication.
+- Supports transactional copy-on-write allocation that provides strong data consistency guarantees.
