@@ -42,3 +42,17 @@ certbot --nginx -d $YOUR_DOMAIN -d www.$YOUR_DOMAIN
 (crontab -l 2>/dev/null; echo "0 3 * * * /usr/bin/certbot renew --quiet --post-hook \"systemctl reload nginx\"") | crontab -
 
 echo "SSL certificate installation complete."
+
+
+# sudo ./install_ssl.sh your_domain.com /path/to/nginx/sites-available/your_domain.conf
+
+# Replace your_domain.com with your actual domain name and 
+# /path/to/nginx/sites-available/your_domain.conf with the path to your Nginx configuration file.
+
+# Please note that this script will work for most basic configurations, 
+# but it might require modification for more complex setups. 
+# Additionally, the script does not perform error checking at each step, 
+# so be sure to verify each step's success in the terminal output.
+
+
+
