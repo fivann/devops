@@ -131,3 +131,87 @@ xfsrestore:
     Metadata_only_restore_from_file:
       Command: "xfsrestore -x -f /backups/full_backup.xfsdump /mnt/data_restored"
 
+---
+
+btrfs:
+  General_commands:
+    - mkfs.btrfs: "Create a new btrfs filesystem"
+    - btrfs filesystem: "Perform filesystem-level operations"
+    - btrfs subvolume: "Perform subvolume operations"
+    - btrfs balance: "Rebalance data and metadata chunks across devices"
+    - btrfs device: "Manage devices in the filesystem"
+    - btrfs scrub: "Verify data and metadata checksums"
+    - btrfs check: "Check filesystem for errors (offline operation)"
+    - btrfs rescue: "Perform rescue operations on a damaged filesystem"
+  Examples:
+    Create_filesystem:
+      Command: "mkfs.btrfs /dev/sda1"
+      Description: "Create a new btrfs filesystem on /dev/sda1"
+    Create_subvolume:
+      Command: "btrfs subvolume create /mnt/btrfs/subvol1"
+      Description: "Create a new subvolume named 'subvol1' in the mounted btrfs filesystem"
+    List_subvolumes:
+      Command: "btrfs subvolume list /mnt/btrfs"
+      Description: "List all subvolumes in the mounted btrfs filesystem"
+    Snapshot_subvolume:
+      Command: "btrfs subvolume snapshot /mnt/btrfs/subvol1 /mnt/btrfs/snapshot1"
+      Description: "Create a snapshot of 'subvol1' named 'snapshot1' in the mounted btrfs filesystem"
+    Balance_filesystem:
+      Command: "btrfs balance start /mnt/btrfs"
+      Description: "Start a balance operation on the mounted btrfs filesystem"
+    Add_device:
+      Command: "btrfs device add /dev/sdb1 /mnt/btrfs"
+      Description: "Add /dev/sdb1 to the mounted btrfs filesystem"
+    Remove_device:
+      Command: "btrfs device remove /dev/sdb1 /mnt/btrfs"
+      Description: "Remove /dev/sdb1 from the mounted btrfs filesystem"
+    Scrub_filesystem:
+      Command: "btrfs scrub start /mnt/btrfs"
+      Description: "Start a scrub operation to verify data and metadata checksums on the mounted btrfs filesystem"
+    Check_filesystem:
+      Command: "btrfs check /dev/sda1"
+      Description: "Check the btrfs filesystem on /dev/sda1 for errors (offline operation)"
+    Rescue_chunk_recover:
+      Command: "btrfs rescue chunk-recover /dev/sda1"
+      Description: "Attempt to recover missing or damaged data and metadata chunks on the btrfs filesystem on /dev/sda1"
+
+---
+
+zfs:
+  General_commands:
+    - zpool: "Manage ZFS storage pools"
+    - zfs: "Manage ZFS datasets"
+  Examples:
+    Create_storage_pool:
+      Command: "zpool create mypool /dev/sdb"
+      Description: "Create a new ZFS storage pool named 'mypool' using /dev/sdb"
+    Add_device_to_pool:
+      Command: "zpool add mypool /dev/sdc"
+      Description: "Add /dev/sdc to the existing 'mypool' ZFS storage pool"
+    Create_filesystem:
+      Command: "zfs create mypool/myfilesystem"
+      Description: "Create a new ZFS filesystem named 'myfilesystem' in the 'mypool' storage pool"
+    Create_snapshot:
+      Command: "zfs snapshot mypool/myfilesystem@snapshot1"
+      Description: "Create a snapshot of the 'myfilesystem' filesystem named 'snapshot1'"
+    List_snapshots:
+      Command: "zfs list -t snapshot"
+      Description: "List all snapshots in the ZFS storage pool"
+    List_filesystems:
+      Command: "zfs list -t filesystem"
+      Description: "List all filesystems in the ZFS storage pool"
+    Destroy_snapshot:
+      Command: "zfs destroy mypool/myfilesystem@snapshot1"
+      Description: "Destroy the 'snapshot1' snapshot of the 'myfilesystem' filesystem"
+    Destroy_filesystem:
+      Command: "zfs destroy mypool/myfilesystem"
+      Description: "Destroy the 'myfilesystem' ZFS filesystem"
+    Set_property:
+      Command: "zfs set compression=lz4 mypool/myfilesystem"
+      Description: "Set the 'compression' property to 'lz4' for the 'myfilesystem' ZFS filesystem"
+    Get_property:
+      Command: "zfs get compression mypool/myfilesystem"
+      Description: "Get the 'compression' property value for the 'myfilesystem' ZFS filesystem"
+    Rollback_snapshot:
+      Command: "zfs rollback mypool/myfilesystem@snapshot1"
+      Description: "Rollback the 'myfilesystem' filesystem to the 'snapshot1' state"
