@@ -1,0 +1,59 @@
+1. hardlink vs symlink:
+   - Hard link: multiple names for the same file
+     Example: 
+       - ln /path/to/file /path/to/link
+   - Symlink: a reference to a path that points to a file/directory
+     Example:
+       - ln -s /path/to/file /path/to/link
+       
+2. Troubleshoot a faulty application:
+   - Logs:
+     - Check logs for error messages or warnings
+     Example:
+       - tail -f /var/log/syslog
+   - Process Monitor:
+     - Use process monitoring tool to identify bottlenecks/issues
+     Example:
+       - top
+   - Resource Monitor:
+     - Check system resource usage (CPU, memory, disk)
+     Example:
+       - htop
+   - Debuggers:
+     - Use a debugger to step through the code
+     Example:
+       - gdb /path/to/application
+
+3. Create file error: no free space left on the device:
+   - Possible problem: file system has run out of inodes
+   - Confirm:
+     - Check inode usage with "df -i"
+     Example:
+       - df -i /
+   - If inode usage is 100%, delete some files to free up inodes.
+
+4. Troubleshoot network problems:
+   - Check network connectivity
+     Example:
+       - ping server_ip
+   - Check firewall settings
+     Example:
+       - sudo ufw status
+   - Check DNS resolution
+     Example:
+       - nslookup server_hostname
+   - Use network monitoring tools
+     Example:
+       - tcpdump -i eth0
+
+5. Recover data from deleted file:
+   - Possible using tools like extundelete or photorec
+     Example:
+       - sudo extundelete /dev/sda1 --restore-file /var/log/nginx/access.log
+
+6. "declare -A V" in bash:
+   - Declare an associative array named V
+   - Add elements to the array with syntax "V[key]=value"
+     Example:
+       - declare -A fruit
+       - fruit[apple]="red"
