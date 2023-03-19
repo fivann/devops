@@ -90,6 +90,3 @@ sudo nginx -t
 # For more information, see the Nginx documentation at https://nginx.org/en/docs/.
 
 
-
-
-Regenerate response
