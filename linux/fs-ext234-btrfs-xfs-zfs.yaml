@@ -78,4 +78,56 @@ ZFS:
     - example: xfs_repair -n /dev/sda1
       description: Run a dry-run repair of the XFS file system on the /dev/sda1 device without actually making any changes
 
+---
+
+xfsdump:
+  Basic_usage: "xfsdump [options] mount_point"
+  Common_options:
+    -l: "Specify dump level (0-9)"
+    -L: "Specify dump label"
+    -M: "Specify dump media label"
+    -f: "Specify dump destination"
+    -I: "Specify inventory file"
+    -F: "Force dump, ignoring some warnings"
+    -J: "Display progress bar"
+    -R: "Retry failed tape positioning"
+    -j: "Compress data using specified compression level (0-9)"
+    -p: "Specify number of concurrent streams"
+    -t: "Specify time in seconds between progress reports"
+    -T: "Specify start time for incremental dumps"
+    -V: "Display version information and exit"
+    -z: "Specify compression level (0-9)"
+  Examples:
+    Full_backup_to_file:
+      Command: "xfsdump -l 0 -L 'Full Backup' -f /backups/full_backup.xfsdump /mnt/data"
+    Incremental_backup_to_file:
+      Command: "xfsdump -l 1 -L 'Incremental Backup' -T '2023-03-18 00:00:00' -f /backups/incremental_backup.xfsdump /mnt/data"
+
+xfsrestore:
+  Basic_usage: "xfsrestore [options] mount_point"
+  Common_options:
+    -f: "Specify restore source"
+    -I: "Specify inventory file"
+    -A: "Attempt to restore extended attributes"
+    -F: "Force restore, ignoring some warnings"
+    -i: "Interactive restore, prompting before overwriting"
+    -L: "Restore specified dump label"
+    -m: "Restore specified dump media label"
+    -N: "Perform a dry-run restore"
+    -p: "Specify number of concurrent streams"
+    -r: "Resume an interrupted restore"
+    -R: "Retry failed tape positioning"
+    -S: "Skip specified number of records"
+    -t: "Specify time in seconds between progress reports"
+    -V: "Display version information and exit"
+    -x: "Restore metadata only"
+    -j: "Decompress data using specified decompression level (0-9)"
+    -z: "Specify decompression level (0-9)"
+  Examples:
+    Full_restore_from_file:
+      Command: "xfsrestore -f /backups/full_backup.xfsdump /mnt/data_restored"
+    Interactive_restore_from_file:
+      Command: "xfsrestore -i -f /backups/incremental_backup.xfsdump /mnt/data_restored"
+    Metadata_only_restore_from_file:
+      Command: "xfsrestore -x -f /backups/full_backup.xfsdump /mnt/data_restored"
 
