@@ -33,3 +33,49 @@ ZFS:
 - Supports up to 256 quadrillion zettabytes of disk space.
 - Uses a combined file system and volume manager that provides advanced features such as snapshots, data compression, and data deduplication.
 - Supports transactional copy-on-write allocation that provides strong data consistency guarantees.
+
+---
+
+- command: xfs_info
+  description: Display information about an XFS file system
+  syntax:
+    - xfs_info [options] <device or mount point>
+  options:
+    - option: -h
+      description: Show help information and exit
+    - option: -V
+      description: Print version information and exit
+  examples:
+    - example: xfs_info /dev/sda1
+      description: Display information about the XFS file system on the /dev/sda1 device
+
+- command: xfs_repair
+  description: Repair an XFS file system
+  syntax:
+    - xfs_repair [options] <device or mount point>
+  options:
+    - option: -n
+      description: Dry-run mode (don't actually make any changes)
+    - option: -v
+      description: Verbose mode (display detailed information)
+    - option: -L
+      description: Force log zeroing during repair
+    - option: -P
+      description: Partial repair (do not traverse unallocated blocks)
+    - option: -m
+      description: Use metadata log for repair
+    - option: -t
+      description: Use transaction log for repair
+    - option: -L
+      description: Use log device for repair
+    - option: -h
+      description: Show help information and exit
+    - option: -V
+      description: Print version information and exit
+  examples:
+    - example: xfs_repair /dev/sda1
+      description: Repair the XFS file system on the /dev/sda1 device
+    - example: xfs_repair -n /dev/sda1
+      description: Run a dry-run repair of the XFS file system on the /dev/sda1 device without actually making any changes
+
+
