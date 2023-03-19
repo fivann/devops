@@ -148,3 +148,54 @@
     - example: dumpe2fs -x /dev/sdd1
       description: Print extended information for the file system on device /dev/sdd1
 
+---
+
+- command: debugfs
+  description: Ext2/3/4 file system debugger
+  syntax:
+    - debugfs [options] <device>
+  options:
+    - option: -b <block-size>
+      description: Set block size for file system
+    - option: -c
+      description: Set prompt to command mode
+    - option: -f <file>
+      description: Execute commands from a file
+    - option: -R <command>
+      description: Execute a single command and exit
+    - option: -w
+      description: Set prompt to write mode
+    - option: -z
+      description: Disable crash protection
+    - option: -v
+      description: Verbose output
+    - option: -d
+      description: Show debugging information
+    - option: -V
+      description: Print version information and exit
+  commands:
+    - command: cd <directory>
+      description: Change the current directory
+    - command: cat <file>
+      description: Print the contents of a file
+    - command: ls [-l] [-i] [<directory>]
+      description: List directory contents
+    - command: pwd
+      description: Print the current directory
+    - command: stat <file>
+      description: Print file system status for a file
+    - command: debugfs -w [-f <file>]
+      description: Enter write mode and execute commands from a file
+    - command: debugfs -R <command> <device>
+      description: Execute a single command and exit
+  examples:
+    - example: debugfs /dev/sda1
+      description: Start debugfs on the file system on device /dev/sda1
+    - example: debugfs -c /dev/sdb1
+      description: Start debugfs in command mode on the file system on device /dev/sdb1
+    - example: debugfs -w /dev/sdc1
+      description: Start debugfs in write mode on the file system on device /dev/sdc1
+    - example: debugfs -f commands.txt /dev/sdd1
+      description: Start debugfs and execute commands from file commands.txt on the file system on device /dev/sdd1
+
+
