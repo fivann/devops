@@ -1,0 +1,65 @@
+- command: fsck
+  description: File system consistency check and repair
+  syntax:
+    - fsck [options] <filesystem>
+  options:
+    - option: -A
+      description: Check all file systems
+    - option: -M
+      description: Do not check mounted file systems
+    - option: -R
+      description: Check root file system
+    - option: -V
+      description: Verbose output
+    - option: -y
+      description: Assume yes to all prompts
+    - option: -t <filesystem-type>
+      description: Specify file system type to check
+    - option: -r <retries>
+      description: Specify number of retries on error
+    - option: -C <interval>
+      description: Show progress every <interval> seconds
+    - option: -T <timestamp>
+      description: Use specified timestamp instead of current time
+  examples:
+    - example: fsck /dev/sda1
+      description: Check file system on device /dev/sda1
+    - example: fsck -A
+      description: Check all file systems
+    - example: fsck -t ext4 /dev/sdb1
+      description: Check file system of type ext4 on device /dev/sdb1
+
+---
+
+- command: mkfs
+  description: Create a file system on a device
+  syntax:
+    - mkfs [options] <device>
+  options:
+    - option: -t <type>
+      description: Specify file system type
+    - option: -c
+      description: Check for bad blocks
+    - option: -L <label>
+      description: Set volume label
+    - option: -m <percentage>
+      description: Set reserved blocks percentage
+    - option: -n
+      description: Don't create a file system, just print what would be done
+    - option: -v
+      description: Verbose output
+    - option: -F
+      description: Force creation of file system
+    - option: -T <usage>
+      description: Specify file system usage type
+    - option: -O <feature>[,...]
+      description: Enable or disable file system features
+  examples:
+    - example: mkfs /dev/sda1
+      description: Create a default file system on device /dev/sda1
+    - example: mkfs -t ext4 /dev/sdb1
+      description: Create an ext4 file system on device /dev/sdb1
+    - example: mkfs -c /dev/sdc1
+      description: Check for bad blocks and create a default file system on device /dev/sdc1
+    - example: mkfs -L "mydata" -t ext4 /dev/sdd1
+      description: Create an ext4 file system with volume label "mydata" on device /dev/sdd1
