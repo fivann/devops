@@ -73,3 +73,34 @@ Network_topologies:
           H (central device of a star topology)
           |
         D---E---F (bus topology)
+
+
+---
+
+Switching_and_Routing:
+  Switching:
+    Description: "Switches forward packets within a local network, operating at Layer 2 of the OSI model"
+    Function: "Using MAC addresses, switches learn which devices are connected to their ports and create an internal table to forward packets to the correct destination"
+    Advantages:
+      - Efficient_packet_forwarding
+      - Reduces_collision_domains
+    Example:
+      Network_Diagram: |
+        A---|
+            S---C
+        B---|
+      Explanation: "Switch 'S' forwards packets between devices A, B, and C based on their MAC addresses"
+
+  Routing:
+    Description: "Routers forward packets between different networks, operating at Layer 3 of the OSI model"
+    Function: "Routers use IP addresses and routing tables to determine the best path for forwarding packets between networks"
+    Advantages:
+      - Connects_different_networks
+      - Reduces_broadcast_domains
+      - Supports_different_media_and_topologies
+    Example:
+      Network_Diagram: |
+        A---|
+            R---C
+        B---|
+      Explanation: "Router 'R' forwards packets between devices A, B, and C, which are on different networks, based on their IP addresses"
