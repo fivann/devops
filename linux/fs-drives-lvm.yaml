@@ -1,0 +1,46 @@
+LVM:
+  General_commands:
+    - pvcreate: "Initialize physical volumes for use by LVM"
+    - pvdisplay: "Display information about physical volumes"
+    - pvremove: "Remove physical volumes"
+    - pvresize: "Resize physical volumes"
+    - vgcreate: "Create volume groups"
+    - vgdisplay: "Display information about volume groups"
+    - vgremove: "Remove volume groups"
+    - vgextend: "Extend volume groups by adding physical volumes"
+    - vgreduce: "Reduce volume groups by removing physical volumes"
+    - lvcreate: "Create logical volumes"
+    - lvdisplay: "Display information about logical volumes"
+    - lvremove: "Remove logical volumes"
+    - lvresize: "Resize logical volumes"
+    - lvextend: "Extend logical volumes"
+    - lvreduce: "Reduce logical volumes"
+    - lvrename: "Rename logical volumes"
+  Examples:
+    Create_physical_volume:
+      Command: "pvcreate /dev/sdb1"
+      Description: "Initialize /dev/sdb1 as a physical volume for use by LVM"
+    Create_volume_group:
+      Command: "vgcreate my_vg /dev/sdb1"
+      Description: "Create a volume group named 'my_vg' using the physical volume /dev/sdb1"
+    Extend_volume_group:
+      Command: "vgextend my_vg /dev/sdc1"
+      Description: "Extend the 'my_vg' volume group by adding the physical volume /dev/sdc1"
+    Create_logical_volume:
+      Command: "lvcreate -L 10G -n my_lv my_vg"
+      Description: "Create a logical volume named 'my_lv' of size 10GB in the 'my_vg' volume group"
+    Extend_logical_volume:
+      Command: "lvextend -L +5G /dev/my_vg/my_lv"
+      Description: "Extend the logical volume 'my_lv' in the 'my_vg' volume group by 5GB"
+    Reduce_logical_volume:
+      Command: "lvreduce -L -5G /dev/my_vg/my_lv"
+      Description: "Reduce the logical volume 'my_lv' in the 'my_vg' volume group by 5GB"
+    Resize_filesystem_before_lvreduce:
+      Command: "resize2fs /dev/my_vg/my_lv 5G"
+      Description: "Resize the filesystem on the logical volume 'my_lv' in the 'my_vg' volume group to 5GB before reducing the volume"
+    Display_volume_groups:
+      Command: "vgdisplay"
+      Description: "Display information about all volume groups"
+    Display_logical_volumes:
+      Command: "lvdisplay"
+      Description: "Display information about all logical volumes"
