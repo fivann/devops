@@ -1,0 +1,51 @@
+- command: stat
+  description: Display file or file system status
+  syntax:
+    - stat [options] <file>
+  options:
+    - option: -c <format>
+      description: Use the specified format
+    - option: -f
+      description: Display file system status instead of file status
+    - option: -L
+      description: Follow symbolic links
+    - option: -t
+      description: Print the timestamp in human-readable format
+    - option: -h
+      description: Show help information and exit
+    - option: -V
+      description: Print version information and exit
+  formats:
+    - format: %n
+      description: File name
+    - format: %s
+      description: File size in bytes
+    - format: %b
+      description: Number of blocks allocated to the file
+    - format: %f
+      description: File type in octal
+    - format: %u
+      description: User ID of owner
+    - format: %g
+      description: Group ID of owner
+    - format: %d
+      description: Device ID (major/minor)
+    - format: %a
+      description: Access mode in octal
+    - format: %A
+      description: Access mode in human-readable format
+    - format: %i
+      description: Inode number
+    - format: %h
+      description: Number of hard links
+    - format: %t
+      description: File creation time in seconds since epoch
+    - format: %y
+      description: File creation time in human-readable format
+  examples:
+    - example: stat /etc/passwd
+      description: Display file status for the /etc/passwd file
+    - example: stat -c "%n %s %A %y" /var/log/messages
+      description: Display file name, size, access mode, and creation time for the /var/log/messages file in human-readable format
+    - example: stat -f /dev/sda1
+      description: Display file system status for the /dev/sda1 device
