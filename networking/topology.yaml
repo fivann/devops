@@ -1,0 +1,75 @@
+Network_topologies:
+  Bus:
+    Description: "All devices are connected to a central cable (bus) with two endpoints"
+    Advantages:
+      - Easy_to_implement
+      - Low_cost
+    Disadvantages:
+      - Limited_distance_and_number_of_devices
+      - Single_point_of_failure
+    Example:
+      Devices: [A, B, C, D]
+      Topology: "A---B---C---D"
+
+  Star:
+    Description: "All devices are connected to a central device, like a hub or switch"
+    Advantages:
+      - Easy_to_add_or_remove_devices
+      - Centralized_management
+      - No_single_point_of_failure
+    Disadvantages:
+      - Higher_cost_due_to_central_device
+    Example:
+      Devices: [A, B, C, D]
+      Topology: |
+        A
+         \
+          H---C
+         /
+        B
+         \
+          D
+
+  Ring:
+    Description: "Devices are connected in a circular manner, with each device connected to two others"
+    Advantages:
+      - Simple_wiring
+      - Can_handle_higher_traffic_than_bus_topology
+    Disadvantages:
+      - Difficult_to_add_or_remove_devices
+      - Single_point_of_failure
+    Example:
+      Devices: [A, B, C, D]
+      Topology: "A---B---C---D---A (circular)"
+
+  Mesh:
+    Description: "Each device is connected to every other device in the network"
+    Advantages:
+      - High_redundancy
+      - Robust_against_failures
+    Disadvantages:
+      - High_cost_due_to_large_number_of_connections
+    Example:
+      Devices: [A, B, C, D]
+      Topology: |
+        A---B
+        |\  |
+        | \ |
+        |  \|
+        C---D
+
+  Hybrid:
+    Description: "A combination of two or more topologies"
+    Advantages:
+      - Flexible_design
+      - Can_be_customized_to_meet_specific_needs
+    Disadvantages:
+      - Complex_wiring_and_management
+    Example:
+      Devices: [A, B, C, D, E, F]
+      Topology: |
+        A---B---C (bus topology)
+          |
+          H (central device of a star topology)
+          |
+        D---E---F (bus topology)
