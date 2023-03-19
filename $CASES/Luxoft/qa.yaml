@@ -6,6 +6,11 @@
      Example:
        - ln -s /path/to/file /path/to/link
        
+   Notes:
+   - When you create a file called "example.txt", a new inode is allocated to represent it. 
+   - If you create a hard link to "example.txt", the hard link points to the same inode as the original file. 
+   - If you create a symbolic link to "example.txt", the symbolic link points to a new inode that contains a reference to the original file. 
+   
 2. Troubleshoot a faulty application:
    - Logs:
      - Check logs for error messages or warnings
@@ -47,6 +52,9 @@
        - tcpdump -i eth0
 
 5. Recover data from deleted file:
+   - If some process in still working w/this file, use lsof:
+     Example: 
+       - sudo lsof | grep deleted-file-name
    - Possible using tools like extundelete or photorec
      Example:
        - sudo extundelete /dev/sda1 --restore-file /var/log/nginx/access.log
