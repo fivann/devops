@@ -114,8 +114,8 @@ energy_efficient:
  
 # Best performance for Apache HTTP Server:
 
-Scenario: Best performance for Apache HTTP Server
-Parameters:
+bestApacheHTTPSercerPerf:
+  Description: Best performance for Apache HTTP Server
   net.ipv4.tcp_fin_timeout: 10
   net.ipv4.tcp_keepalive_time: 600
   net.ipv4.tcp_max_syn_backlog: 65536
@@ -133,8 +133,8 @@ Parameters:
 
 # Best performance for Kubernetes:
 
-Scenario: Best performance for Kubernetes
-Parameters:
+bestK8Sparams:
+  Description: Best performance for Kubernetes
   net.core.somaxconn: 65535
   net.core.netdev_max_backlog: 250000
   net.ipv4.tcp_tw_reuse: 1
@@ -149,9 +149,8 @@ Parameters:
   net.ipv4.tcp_congestion_control: bbr
 
 # Best performance for Nginx:
-
-Scenario: Best performance for Nginx
-Parameters:
+bestNGINXparams:
+  Description: Best performance for Nginx
   net.core.somaxconn: 65535
   net.core.netdev_max_backlog: 250000
   net.ipv4.tcp_tw_reuse: 1
@@ -167,8 +166,8 @@ Parameters:
 
 # Best performance for Java applications:
 
-Scenario: Best performance for Java applications
-Parameters:
+bestJAVAparams:
+  Description: Best performance for Java applications
   net.ipv4.tcp_fin_timeout: 10
   net.ipv4.tcp_keepalive_time: 600
   net.ipv4.tcp_max_syn_backlog: 65536
