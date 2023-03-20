@@ -1,0 +1,65 @@
+tcp_handshake:
+  - step1:
+      action: SYN
+      sender: client
+      receiver: server
+      description: >
+        Client sends a packet with the SYN (synchronize) flag set to initiate the connection.
+  - step2:
+      action: SYN-ACK
+      sender: server
+      receiver: client
+      description: >
+        Server acknowledges the client's SYN request by sending a packet with both SYN and ACK (acknowledge) flags set.
+  - step3:
+      action: ACK
+      sender: client
+      receiver: server
+      description: >
+        Client acknowledges the server's SYN-ACK by sending a packet with the ACK flag set. The connection is now established.
+
+
+---
+
+tcp_related_commands:
+  - command: netstat
+    options:
+      - option: "-t"
+        description: "Display only TCP connections."
+      - option: "-n"
+        description: "Show numerical addresses instead of resolving hostnames."
+      - option: "-l"
+        description: "Display listening sockets."
+    usage: "netstat -tnl"
+    description: "Lists all active TCP listening sockets with numerical addresses."
+
+  - command: ss
+    options:
+      - option: "-t"
+        description: "Display only TCP connections."
+      - option: "-n"
+        description: "Show numerical addresses instead of resolving hostnames."
+      - option: "-l"
+        description: "Display listening sockets."
+    usage: "ss -tnl"
+    description: "Lists all active TCP listening sockets with numerical addresses, similar to netstat."
+
+  - command: tcpdump
+    options:
+      - option: "-i"
+        description: "Specify the network interface."
+      - option: "tcp"
+        description: "Capture only TCP packets."
+      - option: "port"
+        description: "Specify the port number to filter packets."
+    usage: "tcpdump -i eth0 tcp port 80"
+    description: "Captures and displays TCP packets on the eth0 network interface for port 80."
+
+  - command: nmap
+    options:
+      - option: "-p"
+        description: "Specify the port or port range to scan."
+      - option: "-sT"
+        description: "Perform a TCP connect scan."
+    usage: "nmap -p 80-100 -sT example.com"
+    description: "Performs a TCP connect scan on the specified port range (80-100) for the target 'example.com'."
