@@ -1,0 +1,43 @@
+NSLookup Command Cheat Sheet:
+
+- Use 'nslookup' to perform DNS queries and troubleshoot DNS issues.
+- Use the '-type' option to specify the DNS record type to query.
+- Use the '-debug' option to enable debugging output.
+- Use the '-timeout' option to set the query timeout in seconds.
+- Use the '-server' option to specify the DNS server to query.
+- Use the '-q' option to specify a single query or a batch file containing multiple queries.
+- Use the '-cname' option to follow CNAME (alias) records.
+
+Examples:
+
+1. Query a DNS record:
+   nslookup www.example.com
+
+2. Query a specific DNS record type:
+   nslookup -type=mx example.com
+
+3. Query a specific DNS server:
+   nslookup www.example.com 8.8.8.8
+
+4. Query a batch file containing multiple queries:
+   nslookup -q=file example.txt
+
+5. Enable debugging output:
+   nslookup -debug www.example.com
+
+6. Follow CNAME (alias) records:
+   nslookup -cname www.example.com
+
+7. Set the query timeout to 5 seconds:
+   nslookup -timeout=5 www.example.com
+
+8. Query the reverse DNS (PTR) record for an IP address:
+   nslookup 192.168.1.1
+
+9. Query multiple DNS records:
+   nslookup -type=mx -type=a example.com
+
+10. Display only the IP address in the output:
+    nslookup -type=a example.com | grep -i "address" | awk '{print $2}'
+
+Note: These commands are examples and may vary depending on the operating system and network configuration.
