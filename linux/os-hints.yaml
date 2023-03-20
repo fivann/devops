@@ -1,0 +1,232 @@
+system_os_commands:
+  - description: Информация о дистрибутиве
+    commands:
+      - cat /etc/*-release
+      - cat /etc/os-release
+  - description: Версия ядра
+    command: uname -a
+  - description: Информация о системе
+    command: dmidecode -t system
+  - description: Информация о памяти
+    commands:
+      - cat /proc/meminfo
+      - cat /proc/meminfo | grep Total
+  - description: Информация о процессоре
+    commands:
+      - cat /proc/cpuinfo
+      - cat /proc/cpuinfo | grep 'model name'
+  - description: Информация о подкачке
+    command: cat /proc/swaps
+  - description: Общая информация о системе
+    command: cat /proc/meminfo | grep Total; cat /proc/cpuinfo | grep 'model name'; df -h
+  - description: Информация о жестком диске и файловой системе
+    commands:
+      - lsblk -afs
+      - lsblk -a
+      - du -hc /home/daygeek/Documents/ | sort -rh | head -20
+      - df -Th | grep "^/dev"
+  - description: Управление временем и часовыми поясами
+    commands:
+      - /usr/share/zoneinfo
+      - /usr/share/zoneinfo/tzselect
+      - timedatectl set-timezone Europe/Moscow
+      - timedatectl list-timezones | grep Moscow
+      - date +%T -s "11:14:00"
+      - date
+      - date 010118002021
+      - zdump
+  - description: Установка и настройка Chrony NTP
+    commands:
+      - yum install chrony
+      - vi /etc/chrony.conf
+      - mcedit /etc/chrony.conf
+      - systemctl restart chronyd
+      - systemctl status chronyd
+---
+
+system_os_commands_part2:
+  - description: Аппаратные часы
+    command: hwclock
+  - description: Добавить пользователя в группу
+    command: sudo usermod -a -G groupname username
+  - description: Настройка сервера времени для Chrony и удаление дубликатов строк
+    commands:
+      - sed -i 's/^server .*$/server 10.14.1.45 iburst/' /etc/chrony.conf
+      - perl -i -ne 'print if ! $x{$_}++' /etc/chrony.conf
+      - sed -i 's/^server .*$/server 10.14.1.45 iburst/' /etc/chrony.conf && perl -i -ne 'print if ! $x{$_}++' /etc/chrony.conf && systemctl restart chronyd
+  - description: Проверить статус Chrony
+    command: chronyc tracking
+  - description: Запомнить последние 1000 команд в истории (добавить в .bashrc)
+    command: HISTSIZE=1000
+  - description: Свободная память
+    command: free -g
+  - description: Обработка ошибок в скриптах оболочки
+    command: set -eo pipefail
+  - description: Управление пакетами и репозиториями
+    commands:
+      - yum list | grep <name>
+      - yum list installed
+      - yum deplist zip
+      - yum whatprovides libstdc++
+      - yum repolist
+      - yum repolist enabled
+      - yum -v repolist all
+      - yum-config-manager --enable REPO
+      - yum-config-manager --disable REPO
+      - ll /etc/yum.repos.d/
+      - npm install -g --unsafe-perm node-red@1.1.3
+      - subscription-manager repos --list
+      - subscription-manager repos --list | grep URL
+      - rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+      - yum install epel-release
+      - rpm -iv webmin-1.979-1.noarch.rpm
+      - rpm -e webmin
+      - rpm -Vv docker-cli
+      - rpm -qi docker-cli
+      - yum remove openssh
+      - yum search openssh
+      - ls /etc/yum.repos.d/
+      - yumdownloader openssh
+      - yum deplist <package>
+      - repoquery --whatrequires kdebase\
+---
+
+system_os_commands_part3:
+  - description: Сборка RPM и работы с пакетами
+    resources:
+      - https://www.opennet.ru/base/sys/rpm_create.txt.html
+    command: rpmrebuild package.name
+  - description: Управление SELinux
+    commands:
+      - cat /etc/selinux/config
+      - sed -i 's/^SELINUX=.*$/SELINUX=disabled/' /etc/selinux/config
+      - sed -i 's/^host all  all    0.0.0.0/0  md5*$/host all  all    0.0.0.0/0  trust/' pg_hba.conf
+  - description: Комментирование и раскомментирование строк в файлах
+    commands:
+      - sed -i '/^#.*cportal-blue.ftgroup.ru/s/^#//' /etc/nginx/sites-enabled/my.conf.test
+      - sed -i 's/^[^#]*cportal-green.ftgroup.ru/#&/' /etc/nginx/sites-enabled/my.conf.test
+      - sed -i '/^#.*cportal-green.ftgroup.ru/s/^#//' /etc/nginx/sites-enabled/my.conf.test
+      - sed -i 's/^[^#]*cportal-blue.ftgroup.ru/#&/' /etc/nginx/sites-enabled/my.conf.test
+      - sed -i '/^#.*cportal-green.ftgroup.ru/s/^#//' /etc/nginx/sites-enabled/my.conf.test && sed -i 's/^[^#]*cportal-blue.ftgroup.ru/#&/' /etc/nginx/sites-enabled/my.conf.test
+      - yes | cp /etc/nginx/sites-enabled/my.conf /etc/nginx/sites-enabled/my.conf.bak
+  - description: Отключение SELinux
+    command: setenforce 0
+  - description: Работа с переменными среды
+    commands:
+      - env | grep SHELL
+      - printenv
+      - printenv HOME
+  - description: Работа с процессами и службами
+    commands:
+      - systemctl | grep postgres
+      - ps -ef
+      - systemctl list-units | grep postgresql
+  - description: IOTOP
+    commands:
+      - iotop -aP
+      - iotop -aPqqq
+  - description: Управление сетью
+    commands:
+      - nmtui
+      - /etc/sysconfig/network-scripts/ifcfg-eth0
+      - yum install net-tools
+      - netstat -ltnp | grep -w ':80'
+      - sudo netstat -tunp | grep 8086
+
+---
+system_os_commands_part4:
+  - description: Работа с CURL
+    commands:
+      - curl example.com:8080
+      - curl -v telnet://172.16.35.14:5432
+      - curl http://example.com --output my.file
+      - curl -I -v redhat.com
+  - description: Получение информации о сайте и портах
+    commands:
+      - wget -O - localhost:1880
+      - host <ip>
+      - netstat -ptnau
+  - description: Управление брандмауэром (firewalld)
+    commands:
+      - service firewalld stop
+      - service firewalld start
+      - service firewalld status
+      - systemctl stop firewalld
+      - systemctl disable firewalld
+      - ifdown eth0 && sleep 10 && ifup eth0
+      - firewall-cmd --list-all
+  - description: Установка net-tools и работа с IP-адресами
+    commands:
+      - yum install net-tools
+      - ip addr show
+  - description: Информация о сокетах и портах
+    note: |
+      0-1023 - общеизвестные порты
+      1024-49131 - пользовательские порты
+      до 65535 - динамические порты
+  - description: Перезапуск службы имен хостов
+    commands:
+      - vi /etc/hostname
+      - systemctl restart systemd-hostnamed
+  - description: Работа с Telnet
+    command: telnet 172.19.90.42 21
+  - description: Управление портами с помощью nmap и firewall-cmd
+    commands:
+      - nmap -p 8888 172.16.35.180
+      - firewall-cmd --zone=public --add-port=8888/tcp --permanent
+      - firewall-cmd --zone=public --remove-port=80/tcp --permanent
+      - firewall-cmd --reload
+
+---
+system_os_commands_part5:
+  - description: Работа с iptables
+    commands:
+      - iptables -L
+      - iptables -F
+      - iptables -A INPUT -s 10.10.10.10 -j DROP
+      - iptables -A OUTPUT -s 10.10.10.10 -j DROP
+      - iptables -A INPUT -s 10.10.10.0/24 -j DROP
+      - /sbin/service iptables save
+      - iptables -P INPUT DROP
+      - iptables -P OUTPUT DROP
+      - iptables -A INPUT -s xxx.xxx.xxx.xxx -j ACCEPT
+      - iptables -A OUTPUT -d xxx.xxx.xxx.xxx -j ACCEPT
+      - iptables -A INPUT -p TCP --dport 80 -j ACCEPT
+  - description: Работа с firewalld
+    commands:
+      - firewall-cmd --permanent --zone=public --add-port=2234/tcp
+      - firewall-cmd --reload
+  - description: Работа с почтовыми агентами (MTA)
+    commands:
+      - cat /etc/aliases
+      - newaliases
+      - cd /var/mail
+      - mail
+      - mail user
+      - mailq
+  - description: Настройка печати с использованием CUPS
+    note: использует порт 631
+  - description: Работа с DNS и resolve
+    commands:
+      - /etc/resolvconf/resolv.conf.d
+      - dig 172.19.62.87
+  - description: Работа с логами и rsyslog
+    commands:
+      - '*.* @192.168.81.242:514'
+      - service rsyslog restart
+  - description: Выбор версии Python с помощью alternatives
+    command: alternatives --config python
+  - description: Работа с UUID
+    commands:
+      - uuidgen eth0
+      - sed -i 's/^UUID=.*$/UUID=c2ea305b-a0d1-4619-93e5-481d9e5eaa4b/' /etc/sysconfig/network-scripts/ifcfg-eth0
+  - description: Работа с NFS
+    command: rpcinfo -p | grep nfs
+  - description: Работа с SSL
+    note: "Порядок сертификатов:\n
+      1. Приватный ключ\n
+      2. Ваш сертификат\n
+      3. Промежуточные сертификаты\n
+      Исключить корневой сертификат, чтобы избежать предупреждения о 'Chain issues - Contains anchor' при проверке сертификата."
+---
+
