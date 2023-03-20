@@ -1,0 +1,36 @@
+dns_related_commands:
+  - command: dig
+    options:
+      - option: "@server"
+        description: "Specify the DNS server to query."
+      - option: "domain"
+        description: "Domain name to look up."
+      - option: "+short"
+        description: "Display concise output."
+    usage: "dig @8.8.8.8 example.com +short"
+    description: "Queries the specified DNS server (8.8.8.8) for the IP address of example.com with a concise output."
+
+  - command: nslookup
+    options:
+      - option: "domain"
+        description: "Domain name to look up."
+      - option: "server"
+        description: "Specify the DNS server to query."
+    usage: "nslookup example.com 8.8.8.8"
+    description: "Queries the specified DNS server (8.8.8.8) for the IP address of example.com."
+
+  - command: host
+    options:
+      - option: "domain"
+        description: "Domain name to look up."
+      - option: "server"
+        description: "Specify the DNS server to query."
+    usage: "host example.com 8.8.8.8"
+    description: "Queries the specified DNS server (8.8.8.8) for the IP address of example.com."
+
+  - command: whois
+    options:
+      - option: "domain"
+        description: "Domain name to look up."
+    usage: "whois example.com"
+    description: "Queries the WHOIS database for information about the domain 'example.com'."
