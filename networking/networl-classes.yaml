@@ -1,0 +1,26 @@
+Network Classes:
+  - Class A:
+      - Address Range: 1.0.0.0 - 127.255.255.255
+      - First Octet: 0-126
+      - Subnet Mask: 255.0.0.0
+      - Supports up to 126 networks with up to 16,777,214 hosts per network
+  - Class B:
+      - Address Range: 128.0.0.0 - 191.255.255.255
+      - First Octet: 128-191
+      - Subnet Mask: 255.255.0.0
+      - Supports up to 16,384 networks with up to 65,534 hosts per network
+  - Class C:
+      - Address Range: 192.0.0.0 - 223.255.255.255
+      - First Octet: 192-223
+      - Subnet Mask: 255.255.255.0
+      - Supports up to 2,097,152 networks with up to 254 hosts per network
+  - Class D:
+      - Address Range: 224.0.0.0 - 239.255.255.255
+      - First Octet: 224-239
+      - Used for multicast addresses
+  - Class E:
+      - Address Range: 240.0.0.0 - 255.255.255.255
+      - First Octet: 240-255
+      - Reserved for future use, experimental purposes, or emergencies
+
+
