@@ -1,0 +1,40 @@
+vpn_related_commands:
+  - command: openvpn
+    options:
+      - option: "--config"
+        description: "Specify the configuration file."
+    usage: "sudo openvpn --config /path/to/config.ovpn"
+    description: "Connect to a VPN server using OpenVPN with the specified configuration file."
+
+  - command: ip
+    options:
+      - option: "link"
+        description: "Display network interfaces."
+      - option: "addr"
+        description: "Display network interfaces with IP addresses."
+    usage: "ip link"
+    description: "Display the list of network interfaces, including VPN connections."
+    
+  - command: wg-quick
+    options:
+      - option: "up"
+        description: "Bring up the WireGuard VPN interface."
+      - option: "down"
+        description: "Bring down the WireGuard VPN interface."
+    usage: "sudo wg-quick up /path/to/wg0.conf"
+    description: "Connect to a WireGuard VPN server using the specified configuration file."
+
+  - command: systemctl
+    options:
+      - option: "start"
+        description: "Start the specified VPN service."
+      - option: "stop"
+        description: "Stop the specified VPN service."
+      - option: "status"
+        description: "Display the status of the specified VPN service."
+      - option: "enable"
+        description: "Enable the specified VPN service at startup."
+      - option: "disable"
+        description: "Disable the specified VPN service at startup."
+    usage: "sudo systemctl start openvpn@config.service"
+    description: "Start the OpenVPN service using the specified configuration."
