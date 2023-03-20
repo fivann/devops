@@ -1,0 +1,99 @@
+Permissions:
+  - Description: File permissions in Unix-based operating systems
+  - Modes:
+      0: No permissions
+      1: Execute only
+      2: Write only
+      3: Write and execute
+      4: Read only
+      5: Read and execute
+      6: Read and write
+      7: Read, write and execute
+  - Special Modes:
+      d: Directory
+      l: Symbolic link
+      s: SUID or SGID
+      t: Sticky bit
+  - Example:
+      - File: -rw-r--r--  (owner has read/write, group and others have read-only)
+        Octal Mode: 644
+      - Directory: drwxr-xr-x (owner has read/write/execute, group and others have read/execute)
+        Octal Mode: 755
+      - File: -rwxrwx---  (owner and group have read/write/execute, others have no access)
+        Octal Mode: 770
+      - Directory: drwxrwsr-x (owner has read/write/execute, group has read/write/execute and SGID set, others have read/execute)
+        Octal Mode: 2775
+      - File: -rwSr-xr-x  (owner has read/write, group has read-only and SUID set, others have read/execute)
+        Octal Mode: 4644
+      - Directory: drwxrwxrwt (owner, group, and others have read/write/execute and sticky bit set)
+        Octal Mode: 1777
+
+
+chmod Cheat Sheet:
+  - Description: A quick reference guide for using the chmod command to change file permissions
+  - Syntax: chmod [options] mode file
+  - Options:
+      - -R: Recursively change permissions for files and directories within a directory
+      - -f: Suppress error messages
+      - -v: Verbose mode, display each file that is modified
+  - Modes:
+      - u: User (owner)
+      - g: Group
+      - o: Other (everyone else)
+      - a: All (same as ugo)
+      - +: Add permission
+      - -: Remove permission
+      - =: Set permission
+      - r: Read
+      - w: Write
+      - x: Execute
+  - Examples:
+      - chmod u+x file.txt: Add execute permission for owner
+      - chmod a=rw file.txt: Set read and write permissions for all
+      - chmod g-w,o-rx file.txt: Remove write permission for group and read/execute permissions for others
+      - chmod -R u=rwX,go=rX dir/: Set read and write permissions for owner and read/execute permissions for group and others for all files and directories within "dir/"
+
+---
+
+chown Cheat Sheet:
+  - Description: A quick reference guide for using the chown command to change file ownership
+  - Syntax: chown [options] [user][:group] file
+  - Options:
+      - -R: Recursively change ownership for files and directories within a directory
+      - -f: Suppress error messages
+      - -v: Verbose mode, display each file that is modified
+  - User: The username or UID of the new owner
+  - Group: The groupname or GID of the new group
+  - Examples:
+      - chown user1 file.txt: Change owner to "user1"
+      - chown user1:group1 file.txt: Change owner to "user1" and group to "group1"
+      - chown :group2 file.txt: Change group to "group2" and keep existing owner
+      - chown -R user1:group1 dir/: Recursively change owner to "user1" and group to "group1" for all files and directories within "dir/"
+
+
+---
+
+
+umask Cheat Sheet:
+  - Description: A quick reference guide for using the umask command to set default file permissions
+  - Syntax: umask [options] [mode]
+  - Options:
+      - -S: Display the umask value in symbolic notation
+      - -p: Display the umask value in octal notation
+  - Modes:
+      - u: User (owner)
+      - g: Group
+      - o: Other (everyone else)
+      - a: All (same as ugo)
+      - +: Add permission
+      - -: Remove permission
+      - r: Read
+      - w: Write
+      - x: Execute
+  - Examples:
+      - umask 022: Set default permissions to rw-r--r--
+      - umask u=rwx,g=,o=: Set default permissions to rwx------
+      - umask a+w: Add write permission to default permissions for all
+      - umask -S: Display the current umask value in symbolic notation
+
+
