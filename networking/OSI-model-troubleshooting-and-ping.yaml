@@ -1,30 +1,86 @@
 OSI_Model:
   Layer_7_Application:
     Description: "Provides end-user services and interfaces for network communication"
-    Protocols: [HTTP, HTTPS, FTP, SMTP, POP3, IMAP, Telnet, DNS, SSH]
+    Protocols: [HTTP, HTTPS, FTP, SMTP, POP3, IMAP, Telnet, DNS, SSH, SOAP]
     Function: "Communicates with user applications, enabling them to send and receive data over a network"
   Layer_6_Presentation:
     Description: "Translates data between network formats and application-specific formats"
+    Protocols: [TLS, SSL, MIME, JPEG, GIF]
     Function: "Data representation, compression, and encryption"
   Layer_5_Session:
     Description: "Manages and controls connections between applications"
+    Protocols: [SSL, LDAP, NetBIOS, PPTP, SMB]
     Function: "Establishes, maintains, and terminates sessions between devices"
   Layer_4_Transport:
     Description: "Ensures reliable data transmission between devices"
-    Protocols: [TCP, UDP]
+    Protocols: [TCP, UDP, SPX, iSCSI]
     Function: "Error checking, flow control, and segmentation"
   Layer_3_Network:
     Description: "Determines the best path for data transmission between networks"
-    Protocols: [IP, ICMP, OSPF, RIP, BGP]
+    Protocols: [IP, IPsec, ICMP, OSPF, RIP, BGP]
     Function: "Routing, addressing, and packet forwarding"
   Layer_2_Data_Link:
     Description: "Provides a reliable link between devices on the same network"
-    Protocols: [Ethernet, Wi-Fi, PPP, HDLC, Frame Relay]
+    Protocols: [Ethernet, MAC, VLAN, Wi-Fi, PPP, HDLC, Frame Relay]
     Function: "Framing, MAC addressing, and error detection"
   Layer_1_Physical:
     Description: "Defines the physical characteristics of a network, such as cables, connectors, and signaling"
     Standards: [UTP, STP, Coaxial, Fiber Optic, IEEE 802.3, IEEE 802.11]
     Function: "Bit-level transmission and reception"
+
+
+---
+
+OSI Model Troubleshooting:
+
+Layer 1: Physical Layer
+- Check for cable connectivity and physical damage.
+  - Use the command 'ipconfig' (Windows) or 'ifconfig' (Linux/Mac) to check network interface status.
+  - Use the command 'ping' to test connectivity between devices.
+  - Use the command 'netsh interface show interface' (Windows) or 'ip link show' (Linux/Mac) to view interface settings.
+  - Use a cable tester to check for cable faults.
+
+Layer 2: Data Link Layer
+- Check for MAC address conflicts or errors.
+  - Use the command 'arp -a' to check the ARP table and verify MAC addresses.
+  - Use the command 'netstat -nr' to check routing table entries.
+  - Use the command 'ifconfig' (Linux/Mac) or 'ipconfig /all' (Windows) to view interface settings.
+  - Use a protocol analyzer such as Wireshark to inspect frames.
+
+Layer 3: Network Layer
+- Check for IP address conflicts or routing issues.
+  - Use the command 'ipconfig' (Windows) or 'ifconfig' (Linux/Mac) to check IP configurations.
+  - Use the command 'ping' to test connectivity between devices.
+  - Use the command 'tracert' or 'traceroute' to check routing paths.
+  - Use the command 'route print' (Windows) or 'netstat -r' (Linux/Mac) to view routing table entries.
+
+Layer 4: Transport Layer
+- Check for port conflicts or firewall issues.
+  - Use the command 'netstat -ano' to check for open ports and associated processes.
+  - Use the command 'telnet' to test port connectivity.
+  - Use the command 'nc' to test TCP/UDP ports.
+  - Use the command 'iptables -L' (Linux) or 'netsh advfirewall firewall show rule name=all' (Windows) to view firewall rules.
+
+Layer 5: Session Layer
+- Check for session establishment issues.
+  - Use the command 'telnet' or 'ssh' to test session establishment.
+  - Use the command 'netstat -a' to check for established sessions.
+  - Use the command 'ipconfig /flushdns' (Windows) or 'systemd-resolve --flush-caches' (Linux) to clear DNS cache.
+
+Layer 6: Presentation Layer
+- Check for data formatting issues.
+  - Use a protocol analyzer such as Wireshark to inspect packet contents.
+  - Use the command 'openssl s_client -connect host:port' to test SSL/TLS connections.
+  - Use the command 'curl -v host:port' to test HTTP/HTTPS connections.
+
+Layer 7: Application Layer
+- Check for application-specific issues.
+  - Use application-specific debugging tools or logs to identify issues.
+  - Use the command 'nslookup' to test DNS resolution.
+  - Use the command 'dig' to test DNS resolution and zone transfers.
+  - Use the command 'ping -a' to resolve IP addresses to hostnames.
+
+
 
 ---
 
