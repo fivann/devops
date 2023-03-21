@@ -45,5 +45,114 @@ pesudographics:
     |   eth0      |------->| Bond0 or |------->|   Switch    |
     +-------------+        |  Team0   |        +-------------+
     +-------------+        +----------+        +-------------+
-    |   eth1      |-------------------------->|   Switch    |
-    +-------------+                           +-------------+
+    |   eth1      |--------------------------> |   Switch    |
+    +-------------+                            +-------------+
+
+
+---
+
+bond_fault_tolerance_setup:
+  definition: "Setting up NIC bonding with fault tolerance on Linux combines multiple network interfaces into a single logical interface, providing failover capabilities and increased reliability."
+
+steps:
+  1_install_ifenslave:
+    - command: "sudo apt-get install ifenslave"
+      description: "Install ifenslave package on Ubuntu/Debian-based systems to configure NIC bonding."
+  2_create_bond_interface:
+    - command: "sudo nano /etc/network/interfaces"
+      description: "Edit the network interfaces configuration file on Ubuntu/Debian-based systems."
+      example: |
+        auto bond0
+        iface bond0 inet static
+          address 192.168.1.100
+          netmask 255.255.255.0
+          gateway 192.168.1.1
+          bond-slaves none
+          bond-mode active-backup
+          bond-miimon 100
+  3_add_slave_interfaces:
+    - command: "sudo nano /etc/network/interfaces"
+      description: "Edit the network interfaces configuration file on Ubuntu/Debian-based systems to add slave interfaces to the bond interface."
+      example: |
+        auto eth0
+        iface eth0 inet manual
+          bond-master bond0
+          bond-primary eth0
+
+        auto eth1
+        iface eth1 inet manual
+          bond-master bond0
+  4_apply_changes:
+    - command: "sudo systemctl restart networking"
+      description: "Restart the networking service to apply changes."
+
+pesudographics:
+  bond_fault_tolerance_process: |
+    +-----------------+        +----------+        +-------------+
+    |   eth0 (active) |------->| Bond0    |------->|   Switch    |
+    +-----------------+        | (active- |        +-------------+
+    +-----------------+        |  backup) |
+    |   eth1 (backup) |------->|          |
+    +-----------------+        +----------+
+
+---
+
+team_fault_tolerance_setup:
+  definition: |
+    "Setting up NIC teaming with fault tolerance on Linux allows multiple network interfaces 
+    to work together as a single logical interface, providing failover capabilities and increased reliability."
+
+steps:
+  1_install_teamd:
+    - command: "sudo apt-get install -y teamd"
+      description: "Install teamd package on Ubuntu/Debian-based systems to configure NIC teaming."
+  2_create_teamd_config_file:
+    - command: "sudo nano /etc/teamd/team0.conf"
+      description: "Create a teamd configuration file for the team interface."
+      example: |
+        {
+          "device": "team0",
+          "runner": {"name": "activebackup"},
+          "link_watch": {"name": "ethtool"},
+          "ports": {"eth0": {}, "eth1": {}}
+        }
+  3_create_team_interface:
+    - command: "sudo nano /etc/network/interfaces"
+      description: "Edit the network interfaces configuration file on Ubuntu/Debian-based systems."
+      example: |
+        auto team0
+        iface team0 inet static
+          address 192.168.1.100
+          netmask 255.255.255.0
+          gateway 192.168.1.1
+          teamdctl_config_file /etc/teamd/team0.conf
+          teamdctl_options --d-bus=disable
+  4_add_slave_interfaces:
+    - command: "sudo nano /etc/network/interfaces"
+      description: | 
+        "Edit the network interfaces configuration file on Ubuntu/Debian-based systems 
+        to add slave interfaces to the team interface."
+      example: |
+        auto eth0
+        iface eth0 inet manual
+          team-port team0
+
+        auto eth1
+        iface eth1 inet manual
+          team-port team0
+  5_apply_changes:
+    - command: "sudo systemctl restart networking"
+      description: "Restart the networking service to apply changes."
+
+pesudographics:
+  team_fault_tolerance_process: |
+    +-------------+        +----------+        +-------------+
+    |   eth0 (active)      | Team0    |------->|   Switch    |
+    +-------------+------->| (active- |        +-------------+
+    +-------------+        |  backup) |
+    |   eth1 (backup)      |          |
+    +-------------+------->|          |
+                           +----------+
+
+
+
