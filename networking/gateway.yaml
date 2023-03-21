@@ -1,0 +1,49 @@
+gateway:
+  definition: | 
+    "A gateway is a device that serves as an entry point
+    and exit point for data traffic between different networks. 
+    It is responsible for routing data packets between networks, often 
+    connecting a local network to the internet."
+
+linux_commands:
+  view_gateway:
+    - command: "ip route show | grep default"
+      description: "Display the default gateway for the system."
+      pesudographics: |
+        Command output example:
+        -----------------------
+        default via 192.168.1.1 dev eth0 proto static
+  set_temporary_gateway:
+    - command: "sudo ip route replace default via <gateway_ip> dev <interface_name>"
+      description: "Set a temporary default gateway for the system."
+      example: "sudo ip route replace default via 192.168.1.1 dev eth0"
+  set_persistent_gateway:
+    ubuntu_debian:
+      - command: "sudo nano /etc/network/interfaces"
+        description: "Edit the network interfaces configuration file on Ubuntu/Debian-based systems."
+        example: |
+          auto eth0
+          iface eth0 inet static
+            address 192.168.1.100
+            netmask 255.255.255.0
+            gateway 192.168.1.1
+    centos_redhat:
+      - command: "sudo nano /etc/sysconfig/network-scripts/ifcfg-<interface_name>"
+        description: "Edit the network interface configuration file on CentOS/Red Hat-based systems."
+        example: "sudo nano /etc/sysconfig/network-scripts/ifcfg-eth0"
+        content: |
+          DEVICE=eth0
+          BOOTPROTO=static
+          IPADDR=192.168.1.100
+          NETMASK=255.255.255.0
+          GATEWAY=192.168.1.1
+          ONBOOT=yes
+  apply_changes:
+    - command: "sudo systemctl restart networking"
+      description: "Restart the networking service to apply changes."
+
+pesudographics:
+  gateway_process: |
+    +--------------+        +---------+       +-------------+
+    | Local Device |------->| Gateway |------>| Remote Host |
+    +--------------+        +---------+       +-------------+
