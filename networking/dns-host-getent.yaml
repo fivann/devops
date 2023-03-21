@@ -1,0 +1,39 @@
+- getent:
+    - Purpose: 'Query entries from administrative databases like passwd, group, hosts, services, protocols, and others.'
+    - Syntax: 'getent [database] [key]'
+    - Examples:
+        - PasswdLookup:
+            Command: 'getent passwd username'
+            Description: 'Lookup a user in the passwd database'
+        - GroupLookup:
+            Command: 'getent group groupname'
+            Description: 'Lookup a group in the group database'
+        - HostsLookup:
+            Command: 'getent hosts hostname'
+            Description: 'Lookup a host in the hosts database'
+        - ServicesLookup:
+            Command: 'getent services servicename'
+            Description: 'Lookup a service in the services database'
+        - ProtocolsLookup:
+            Command: 'getent protocols protocolname'
+            Description: 'Lookup a protocol in the protocols database'
+
+- host:
+    - Purpose: 'Perform DNS lookups'
+    - Syntax: 'host [options] [name] [server]'
+    - Examples:
+        - BasicLookup:
+            Command: 'host example.com'
+            Description: 'Perform a basic DNS lookup for example.com'
+        - IPv6Lookup:
+            Command: 'host -t AAAA example.com'
+            Description: 'Query for IPv6 addresses (AAAA records) for example.com'
+        - MXLookup:
+            Command: 'host -t MX example.com'
+            Description: 'Query for mail exchange (MX) records for example.com'
+        - NSLookup:
+            Command: 'host -t NS example.com'
+            Description: 'Query for name server (NS) records for example.com'
+        - SpecificServer:
+            Command: 'host example.com nameserver.example'
+            Description: 'Perform a DNS lookup for example.com using a specific name server'
