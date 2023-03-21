@@ -96,6 +96,50 @@ umask Cheat Sheet:
       - umask a+w: Add write permission to default permissions for all
       - umask -S: Display the current umask value in symbolic notation
 
+---
+
+linux_permissions_on_links:
+  definition: |
+    "In Linux, hard links share the same inode as the target file, 
+    meaning they have the same permissions and ownership. 
+    However, symbolic links have their own set of permissions, 
+    which refers to the permissions of the link itself and not the target file. 
+    When accessing a symlink, the system checks the permissions on the target file, not the symlink."
+
+steps:
+  1_create_files_and_links:
+    - command: "touch file1"
+      description: "Create a sample file called 'file1'."
+    - command: "ln file1 hardlink1"
+      description: "Create a hard link 'hardlink1' pointing to 'file1'."
+    - command: "ln -s file1 symlink1"
+      description: "Create a symbolic link 'symlink1' pointing to 'file1'."
+
+  2_view_permissions:
+    - command: "ls -l"
+      description: "View the permissions of the files and links."
+
+  3_change_permissions:
+    - command: "chmod 750 file1"
+      description: "Change permissions on the target file 'file1' (This will affect hard links as well)."
+    - command: "chmod 750 symlink1"
+      description: "Change permissions on the symbolic link 'symlink1' (Note: This will change the permissions on the target file, not the link itself)."
+
+  4_verify_permissions:
+    - command: "ls -l"
+      description: "Verify the permissions of the files, hard links, and symbolic links after changing them."
+
+pesudographics:
+  permissions_on_links_process: |
+    1. Create file1, hardlink1, and symlink1
+    2. View permissions
+    3. Change permissions
+    4. Verify permissions
+
+    file1 <-> hardlink1
+    file1 -> symlink1
+
+
 
 # ----------------------- 
 # old version:
