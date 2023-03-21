@@ -1,0 +1,31 @@
+explanation: |
+  Access Control Lists (ACLs) in Linux provide an additional layer of permissions control 
+  for files and directories beyond the standard user, group, and other (octal) permissions. 
+  They allow for more granular control over access to resources, enabling you to grant 
+  or restrict access to specific users or groups. Octal permissions use a three-digit number 
+  to represent permissions for the owner, group, and others, while ACLs provide a more 
+  flexible and detailed permissions system.
+
+
+---
+
+getfacl:
+  Description: Display the Access Control List (ACL) of a file or directory.
+  Usage: getfacl [file_or_directory]
+  Example:
+  $ getfacl /path/to/file
+
+setfacl:
+  Description: Modify the Access Control List (ACL) of a file or directory.
+  Usage: setfacl [options] [file_or_directory]
+  Options:
+    -m: Modify ACL. Requires a specified ACL entry in the format of [type]:[identity]:[permissions], e.g., u:user:rwx
+    -x: Remove specified ACL entry.
+    -b: Remove all extended ACL entries.
+    -R: Apply changes recursively to directories.
+    -k: Remove default ACLs from the directory.
+  Examples:
+    $ setfacl -m u:user:rw /path/to/file
+    $ setfacl -x u:user /path/to/file
+    $ setfacl -R -m g:group:rx /path/to/directory
+    $ setfacl -b /path/to/file
