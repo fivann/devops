@@ -1,0 +1,39 @@
+linux_inode_cheat_sheet:
+  definition: "In Linux, an inode is a data structure used to store metadata about a file or directory. Each file has a unique inode containing information like permissions, ownership, and file type. Running out of inodes may prevent creating new files or directories, even if there is available disk space."
+
+steps:
+  1_show_inode_usage:
+    - command: "df -i"
+      description: "Show inode usage for all mounted filesystems."
+    - command: "df -i /path/to/directory"
+      description: "Show inode usage for a specific directory."
+
+  2_find_large_inode_consumers:
+    - command: "find /path/to/directory -xdev -printf '%h\n' | sort | uniq -c | sort -k 1 -n"
+      description: "Find directories with a large number of inodes in a specific directory."
+
+  3_cleanup_unnecessary_files:
+    - command: "rm /path/to/unnecessary_file"
+      description: "Remove unnecessary files to free up inodes."
+    - command: "find /path/to/directory -type f -mtime +30 -exec rm {} \;"
+      description: "Find and remove files older than 30 days in a specific directory."
+
+  4_increase_inode_limit:
+    - command: "tune2fs -L /dev/sdXN -i 2048"
+      description: |
+        "Increase the inode limit on an ext2, ext3, or ext4 filesystem 
+        (WARNING: This requires unmounting the filesystem and may cause data loss). 
+        Replace '/dev/sdXN' with the appropriate device name."
+
+pesudographics:
+  inode_cheat_sheet_process: |
+    1. Show inode usage
+    2. Find large inode consumers
+    3. Cleanup unnecessary files
+    4. Increase inode limit (if necessary and with caution)
+
+    +------+     +------+     +------+
+    | Show |---->| Find |---->| Clean |
+    +------+     +------+     +------+
+       |                           |
+       +--------> Increase <-------+
