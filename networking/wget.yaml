@@ -1,0 +1,28 @@
+- wget:
+    - Purpose: 'Download files from the internet using HTTP, HTTPS, or FTP protocols'
+    - Syntax: 'wget [options] [URL]'
+    - Examples:
+        - BasicDownload:
+            Command: 'wget http://example.com/file.zip'
+            Description: 'Download a file from a URL'
+        - SpecifyOutput:
+            Command: 'wget -O outputfile.zip http://example.com/file.zip'
+            Description: 'Download a file and save it with a specific filename'
+        - ContinueIncomplete:
+            Command: 'wget -c http://example.com/file.zip'
+            Description: 'Continue downloading an incomplete file'
+        - LimitRate:
+            Command: 'wget --limit-rate=200k http://example.com/file.zip'
+            Description: 'Limit the download rate to 200 kilobytes per second'
+        - DownloadInBackground:
+            Command: 'wget -b http://example.com/file.zip'
+            Description: 'Download a file in the background'
+        - RetryAttempts:
+            Command: 'wget --tries=5 http://example.com/file.zip'
+            Description: 'Retry the download 5 times in case of errors'
+        - RecursiveDownload:
+            Command: 'wget -r -np -nH --cut-dirs=1 http://example.com/directory/'
+            Description: 'Recursively download files from a directory, avoiding parent directories and removing the top-level directory from the local path'
+        - MirrorWebsite:
+            Command: 'wget --mirror --convert-links --adjust-extension --page-requisites --no-parent http://example.com'
+            Description: 'Mirror a website for offline browsing'
