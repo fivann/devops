@@ -1,0 +1,35 @@
+- Explanation:
+    - '/etc/hosts': 'A configuration file that maps hostnames to IP addresses'
+    - 'hostnames': 'Human-readable labels assigned to devices connected to a computer network'
+    - '/etc/hostname': 'Contains the hostname of the system'
+    - 'hostnamectl': 'A command used to view and set the system hostname'
+- Example:
+    - '/etc/hosts':
+      - IP: '127.0.0.1'
+        Hostname: 'localhost'
+      - IP: '192.168.1.100'
+        Hostname: 'example-host'
+- Commands:
+    - ViewHostname: 'hostname'
+    - SetHostname: 'hostnamectl set-hostname new-hostname'
+    - EditHostsFile: 'sudo nano /etc/hosts'
+- AddMapping:
+    - IP: '192.168.1.101'
+      Hostname: 'new-host'
+
+- DIFFERENCE: |
+  /etc/hostname and /etc/hosts are two different configuration files in Linux systems with distinct purposes:
+  
+  /etc/hostname: This file contains the hostname of the local system. 
+  The hostname is a human-readable label assigned to a device connected to a computer network, 
+  used to identify the device in various forms of electronic communication. 
+  The /etc/hostname file usually contains a single line with the system's hostname. When the system boots, 
+  the hostname is set based on the contents of this file.
+  
+  /etc/hosts: This file is used for mapping hostnames to IP addresses. 
+  It provides a local, static method for resolving hostnames to their respective IP addresses, 
+  which can be useful in situations when no DNS service is available. 
+  The /etc/hosts file contains a list of IP addresses and their corresponding hostnames, with one mapping per line. 
+  This file is used by the operating system to perform hostname lookups when needed.
+  In summary, /etc/hostname defines the hostname of the local system, while /etc/hosts is responsible 
+  for mapping hostnames to IP addresses.
