@@ -26,3 +26,61 @@ route_command:
   4. Add a default gateway:
      command: sudo route add default gw <gateway_ip> dev <interface_name>
      example: sudo route add default gw 192.168.1.1 dev eth0
+
+---
+
+Routing Troubleshooting in Linux:
+
+When troubleshooting routing issues in Linux, there are a few key commands that can help you diagnose and fix the problem.
+
+1. Check IP configuration: |
+     The first thing to check is the IP configuration of the system, 
+     including IP address, netmask, default gateway, and DNS servers. 
+     You can check this with the following commands:
+   - ip addr show
+   - ip route show
+   - cat /etc/resolv.conf
+
+2. Check network interface:
+   Check that the network interface is up and running, and that it has the correct IP address and netmask. You can use the following commands:
+   - ifconfig -a
+   - ip link show
+
+3. Ping test:
+   Perform a ping test to confirm network connectivity. You can use the ping command:
+   - ping <ip_address>
+   - ping <hostname>
+
+4. Check routing table:
+   Check the routing table to see if the network packets are being routed correctly. You can use the following commands:
+   - route
+   - ip route show
+
+5. Traceroute: | 
+     Use the traceroute command to see the path taken by network packets as they travel from the source to the destination. 
+     This can help you identify where the packets are being dropped. You can use the following command:
+   - traceroute <hostname>
+
+6. TCPDump: | 
+     Use TCPDump to capture and analyze network traffic in real-time. 
+     This can help you identify issues with packet loss, routing loops, and other network problems. 
+     You can use the following command:
+   - tcpdump -i <interface> <protocol> <port>
+
+7. Netstat: | 
+     Netstat is a useful tool for diagnosing network issues, including port conflicts, network congestion, 
+     and other connectivity problems. You can use the following commands:
+   - netstat -tulpn
+   - netstat -rn
+
+8. Firewall:
+   Check the firewall configuration to ensure that the necessary ports are open for the network traffic. You can use the following command:
+   - iptables -L
+
+9. DNS:
+   Check the DNS configuration to ensure that the hostname is resolving correctly. You can use the following command:
+   - nslookup <hostname>
+   - dig <hostname>
+
+
+
