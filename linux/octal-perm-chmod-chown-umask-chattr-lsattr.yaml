@@ -73,7 +73,23 @@ chown Cheat Sheet:
 
 ---
 
+chattr:
+  description: A command that allows a user to set or remove attributes from a file or directory.
+  commands:
+    - chattr +i file.txt    # sets the immutable attribute to file.txt
+    - chattr -i file.txt   # removes the immutable attribute from file.txt
+    - chattr +a file.txt   # sets the append-only attribute to file.txt
+    - chattr -a file.txt   # removes the append-only attribute from file.txt
+    - chattr +u file.txt   # sets the undeletable attribute to file.txt
+    - chattr -u file.txt   # removes the undeletable attribute from file.txt
 
+lsattr:
+  description: A command that lists the attributes of a file or directory.
+  commands:
+    - lsattr file.txt   # lists the attributes of file.txt
+
+
+---
 umask Cheat Sheet:
   - Description: A quick reference guide for using the umask command to set default file permissions
   - Syntax: umask [options] [mode]
