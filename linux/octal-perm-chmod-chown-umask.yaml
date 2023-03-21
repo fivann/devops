@@ -204,3 +204,41 @@ linux:
           - =: set permission
         example: "chmod u+x file.txt"
 
+---
+
+- name: Using Octal Permissions to Set up a Collaboration Area
+  description: |
+    In a multi-user environment like Linux, there will come a need to have a specific area set aside for different uses to collaborate. This lab will walk through the process and make sure you understand how different permissions can work together.
+  steps:
+  - name: Log in as cloud_user
+    command: |
+      ssh cloud_user@server_ip_address
+  - name: Change ownership of /opt/collab directory to bob.managers
+    command: |
+      sudo chown bob.managers /opt/collab
+  - name: Set permissions to 770 on /opt/collab directory
+    command: |
+      sudo chmod 770 /opt/collab
+  - name: Become bob and touch a file in /opt/collab
+    command: |
+      sudo su - bob -c 'touch /opt/collab/bob'
+  - name: Become adam and touch a file in /opt/collab
+    command: |
+      sudo su - adam -c 'touch /opt/collab/adam'
+  - name: Become sally and touch a file in /opt/collab
+    command: |
+      sudo su - sally -c 'touch /opt/collab/sally'
+  - name: Edit adam's umask to 0002 in ~/.bash_profile
+    command: |
+      sudo su - adam -c 'vim ~/.bash_profile'
+      # Delete the line that says umask 066
+      # Save and exit the file
+  - name: Delete and recreate the adam file in /opt/collab
+    command: |
+      sudo su - adam -c 'rm /opt/collab/adam'
+      sudo su - adam -c 'touch /opt/collab/adam'
+  - name: Verify all managers can read all files in /opt/collab
+    command: |
+      sudo su - bob -c 'cat /opt/collab/*'
+      sudo su - adam -c 'cat /opt/collab/*'
+      sudo su - sally -c 'cat /opt/collab/*'
