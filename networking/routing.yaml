@@ -1,0 +1,28 @@
+ip_command:
+  1. Display current routing table:
+     command: ip route show
+  2. Add a static route:
+     command: sudo ip route add <destination_network>/<prefix_length> via <gateway_ip> dev <interface_name>
+     example: sudo ip route add 192.168.2.0/24 via 192.168.1.1 dev eth0
+  3. Delete a static route:
+     command: sudo ip route del <destination_network>/<prefix_length> via <gateway_ip> dev <interface_name>
+     example: sudo ip route del 192.168.2.0/24 via 192.168.1.1 dev eth0
+  4. Add a static route with a specific metric:
+     command: sudo ip route add <destination_network>/<prefix_length> via <gateway_ip> dev <interface_name> metric <metric_value>
+     example: sudo ip route add 192.168.2.0/24 via 192.168.1.1 dev eth0 metric 100
+  5. Add a default gateway:
+     command: sudo ip route add default via <gateway_ip> dev <interface_name>
+     example: sudo ip route add default via 192.168.1.1 dev eth0
+
+route_command:
+  1. Display current routing table:
+     command: route -n
+  2. Add a static route:
+     command: sudo route add -net <destination_network> netmask <subnet_mask> gw <gateway_ip> dev <interface_name>
+     example: sudo route add -net 192.168.2.0 netmask 255.255.255.0 gw 192.168.1.1 dev eth0
+  3. Delete a static route:
+     command: sudo route del -net <destination_network> netmask <subnet_mask> gw <gateway_ip> dev <interface_name>
+     example: sudo route del -net 192.168.2.0 netmask 255.255.255.0 gw 192.168.1.1 dev eth0
+  4. Add a default gateway:
+     command: sudo route add default gw <gateway_ip> dev <interface_name>
+     example: sudo route add default gw 192.168.1.1 dev eth0
