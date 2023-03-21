@@ -1,0 +1,49 @@
+nic_bonding_teaming:
+  definition: | 
+    "NIC bonding and teaming are methods to combine multiple network interfaces on a single host 
+    to provide increased bandwidth, fault tolerance, and load balancing. 
+    Bonding uses a single logical interface for multiple physical interfaces, 
+    while teaming allows for more flexible and advanced configurations."
+
+linux_commands:
+  install_ifenslave:
+    - command: "sudo apt-get install ifenslave"
+      description: "Install ifenslave package on Ubuntu/Debian-based systems to configure NIC bonding."
+  create_bond_interface:
+    - command: "sudo nano /etc/network/interfaces"
+      description: "Edit the network interfaces configuration file on Ubuntu/Debian-based systems."
+      example: |
+        auto bond0
+        iface bond0 inet static
+          address 192.168.1.100
+          netmask 255.255.255.0
+          gateway 192.168.1.1
+          bond-slaves none
+          bond-mode 802.3ad
+          bond-miimon 100
+  add_slave_interfaces:
+    - command: "sudo nano /etc/network/interfaces"
+      description: | 
+        "Edit the network interfaces configuration file on Ubuntu/Debian-based systems 
+        to add slave interfaces to the bond interface."
+      example: |
+        auto eth0
+        iface eth0 inet manual
+          bond-master bond0
+          bond-primary eth0
+
+        auto eth1
+        iface eth1 inet manual
+          bond-master bond0
+  apply_changes:
+    - command: "sudo systemctl restart networking"
+      description: "Restart the networking service to apply changes."
+
+pesudographics:
+  nic_bonding_teaming_process: |
+    +-------------+        +----------+        +-------------+
+    |   eth0      |------->| Bond0 or |------->|   Switch    |
+    +-------------+        |  Team0   |        +-------------+
+    +-------------+        +----------+        +-------------+
+    |   eth1      |-------------------------->|   Switch    |
+    +-------------+                           +-------------+
