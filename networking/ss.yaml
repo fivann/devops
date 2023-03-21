@@ -1,0 +1,47 @@
+command:
+  name: ss
+  description: Show socket statistics
+
+options:
+  - name: -h, --help
+    description: Display help information
+
+  - name: -4, --ipv4
+    description: Display IPv4 sockets only
+
+  - name: -6, --ipv6
+    description: Display IPv6 sockets only
+
+  - name: -a, --all
+    description: Display all sockets (default)
+
+  - name: -t, --tcp
+    description: Display TCP sockets only
+
+  - name: -u, --udp
+    description: Display UDP sockets only
+
+  - name: -p, --processes
+    description: Display process using socket
+
+  - name: -n, --numeric
+    description: Do not resolve names
+
+  - name: -r, --resolve
+    description: Resolve hostnames
+
+  - name: -e, --extended
+    description: Show detailed socket information
+
+  - name: -O, --options
+    description: Show socket options
+
+examples:
+  - description: Display TCP sockets on port 80
+    command: ss -t -n -l 'sport = :80'
+
+  - description: Display all listening TCP and UDP sockets
+    command: ss -a -n -l
+
+  - description: Display all established TCP connections
+    command: ss -t -n -o state established
