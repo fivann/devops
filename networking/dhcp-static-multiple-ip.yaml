@@ -1,0 +1,139 @@
+difference:
+  static_ip:
+    definition: "A static IP address is a manually assigned, unchanging IP address for a device on a network."
+  dhcp:
+    definition: "Dynamic Host Configuration Protocol (DHCP) is a network protocol that automates the assignment of IP addresses to devices on a network."
+  
+mechanism:
+  dhcp:
+    - dhcp_discover: "The client sends a broadcast packet (DHCPDISCOVER) to discover available DHCP servers."
+    - dhcp_offer: "The DHCP server responds with a DHCPOFFER, proposing an IP address for the client."
+    - dhcp_request: "The client selects an IP address and sends a DHCPREQUEST to the server, requesting the offered address."
+    - dhcp_ack: "The server sends a DHCPACK, confirming the assignment of the IP address to the client."
+
+linux_commands:
+  install_dhcp_server:
+    - command: "sudo apt-get install isc-dhcp-server"
+    - description: "Install DHCP server on Ubuntu/Debian-based systems."
+  configure_dhcp_server:
+    - command: "sudo nano /etc/dhcp/dhcpd.conf"
+    - description: "Edit the configuration file for the DHCP server."
+    - example: |
+        subnet 192.168.1.0 netmask 255.255.255.0 {
+          range 192.168.1.100 192.168.1.200;
+          option domain-name-servers 8.8.8.8, 8.8.4.4;
+          option routers 192.168.1.1;
+          option subnet-mask 255.255.255.0;
+          default-lease-time 600;
+          max-lease-time 7200;
+        }
+  start_dhcp_server:
+    - command: "sudo systemctl start isc-dhcp-server"
+    - description: "Start the DHCP server."
+  enable_dhcp_server:
+    - command: "sudo systemctl enable isc-dhcp-server"
+    - description: "Enable the DHCP server to start on boot."
+  view_dhcp_leases:
+    - command: "cat /var/lib/dhcp/dhcpd.leases"
+    - description: "View the current DHCP leases."
+
+pesudographics:
+  dhcp_process: |
+    Client          DHCP Server
+      |                  |
+      |---Discover---->  |
+      |                  |
+      |<----Offer------- |
+      |                  |
+      |---Request----->  |
+      |                  |
+      |<-----Ack-------- |
+
+---
+
+dhcp_lease_info:
+  definition: "DHCP lease information contains details about the currently assigned IP addresses, lease duration, and other relevant information."
+
+linux_commands:
+  isc_dhcp_server:
+    - command: "cat /var/lib/dhcp/dhcpd.leases"
+      description: "View the DHCP lease information for the ISC DHCP server on Linux systems."
+      pesudographics: |
+        Lease file example:
+        -------------------
+        lease 192.168.1.100 {
+          starts 1 2023/03/21 12:00:00;
+          ends 1 2023/03/21 14:00:00;
+          tstp 1 2023/03/21 14:00:00;
+          cltt 1 2023/03/21 12:00:00;
+          binding state active;
+          next binding state free;
+          rewind binding state free;
+          hardware ethernet 00:11:22:33:44:55;
+          uid "\001\000\011\022\033\044\055";
+          client-hostname "client-device";
+        }
+
+  dnsmasq:
+    - command: "cat /var/lib/misc/dnsmasq.leases"
+      description: "View the DHCP lease information for the Dnsmasq DHCP server on Linux systems."
+      pesudographics: |
+        Lease file example:
+        -------------------
+        86400 00:11:22:33:44:55 192.168.1.100 client-device
+
+---
+
+multiple_ip:
+  definition: "Assigning multiple IP addresses to a single network interface, allowing it to handle traffic for multiple IP networks simultaneously."
+
+linux_commands:
+  temporary_multiple_ip:
+    - command: "sudo ip addr add <IP_address>/<subnet_mask> dev <interface_name>"
+      description: "Add a temporary additional IP address to a network interface."
+      example: "sudo ip addr add 192.168.1.101/24 dev eth0"
+  persistent_multiple_ip:
+    ubuntu_debian:
+      - command: "sudo nano /etc/network/interfaces"
+        description: "Edit the network interfaces configuration file on Ubuntu/Debian-based systems."
+        example: |
+          auto eth0
+          iface eth0 inet static
+            address 192.168.1.100
+            netmask 255.255.255.0
+            gateway 192.168.1.1
+
+          iface eth0 inet static
+            address 192.168.1.101
+            netmask 255.255.255.0
+    centos_redhat:
+      - command: "sudo nano /etc/sysconfig/network-scripts/ifcfg-<interface_name>:<id>"
+        description: "Create a new configuration file for each additional IP address on CentOS/Red Hat-based systems."
+        example: "sudo nano /etc/sysconfig/network-scripts/ifcfg-eth0:1"
+        content: |
+          DEVICE=eth0:1
+          BOOTPROTO=static
+          IPADDR=192.168.1.101
+          NETMASK=255.255.255.0
+          ONBOOT=yes
+  apply_changes:
+    - command: "sudo systemctl restart networking"
+      description: "Restart the networking service to apply changes."
+
+pesudographics:
+  multiple_ip_process: |
+    +---------------------+
+    | Network Interface   |
+    | (e.g., eth0)        |
+    +---------------------+
+               |
+    +---------------------+
+    | IP Address 1        |
+    | (e.g., 192.168.1.100)|
+    +---------------------+
+               |
+    +---------------------+
+    | IP Address 2        |
+    | (e.g., 192.168.1.101)|
+    +---------------------+
+
