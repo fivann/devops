@@ -83,4 +83,52 @@ When troubleshooting routing issues in Linux, there are a few key commands that 
    - dig <hostname>
 
 
+---
+# LAB
+
+lab:
+  title: Working with Static Routes
+
+description: |
+  Your task is to create a script that modifies the routing table to prohibit connectivity to google.com 
+  and to add an entry to use 10.0.1.20 as the gateway for the 10.0.8.0/24 subnet.
+
+tasks:
+  - login:
+      description: Login to the lab server using the credentials provided
+      command: ssh cloud_user@PUBLIC_IP_ADDRESS
+
+  - become_root:
+      description: Become the root user
+      command: sudo su -
+
+  - view_routing_table:
+      description: View the routing table
+      command: ip route show
+
+  - install_bind_utils:
+      description: Install the bind-utils package to get the IPs associated with google.com
+      command: sudo apt-get update && sudo apt-get install -y bind-utils
+
+  - get_google_ip:
+      description: Get the IP address(es) of google.com
+      command: host google.com
+
+  - prohibit_connectivity:
+      description: Prohibit connectivity to google.com using IP address
+      command: ip route add prohibit <GOOGLE_IP>
+
+  - add_gateway:
+      description: Add an entry for the 10.0.8.0/24 network to use 10.0.1.20 as the gateway
+      command: ip route add 10.0.8.0/24 via 10.0.1.20
+
+  - create_script:
+      description: Create a script that creates both entries
+      command: |
+        echo '#!/bin/bash\n' > /home/cloud_user/routes.sh
+        echo 'ip route add prohibit <GOOGLE_IP>' >> /home/cloud_user/routes.sh
+        echo 'ip route add 10.0.8.0/24 via 10.0.1.20' >> /home/cloud_user/routes.sh
+
+conclusion:
+  description: Congratulations — you've completed this hands-on lab!
 
