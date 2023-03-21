@@ -1,0 +1,26 @@
+- Show_all_logs: journalctl
+- Show_logs_since_boot: journalctl -b
+- Show_logs_by_unit:
+    - service: journalctl -u service-name
+- Show_logs_by_priority:
+    - emergency: journalctl -p 0
+    - alert: journalctl -p 1
+    - critical: journalctl -p 2
+    - error: journalctl -p 3
+    - warning: journalctl -p 4
+    - notice: journalctl -p 5
+    - info: journalctl -p 6
+    - debug: journalctl -p 7
+- Show_logs_by_time_range:
+    - since: journalctl --since "YYYY-MM-DD HH:MM:SS"
+    - until: journalctl --until "YYYY-MM-DD HH:MM:SS"
+    - range: journalctl --since "YYYY-MM-DD HH:MM:SS" --until "YYYY-MM-DD HH:MM:SS"
+- Show_logs_by_kernel_messages: journalctl -k
+- Show_logs_by_PID: journalctl _PID=process_id
+- Show_logs_by_UID: journalctl _UID=user_id
+- Show_logs_by_GID: journalctl _GID=group_id
+- Show_logs_by_COMM: journalctl _COMM=command_name
+- Reverse_output: journalctl -r
+- Show_logs_with_realtime_updates: journalctl -f
+- Show_logs_with_pagination: journalctl -e
+- Limit_number_of_output_lines: journalctl -n number_of_lines
