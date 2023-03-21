@@ -191,6 +191,109 @@ Suitable Linux commands:
 - To remove sticky bit: 
     chmod -t directory_path
 
+---
+# LAB
+
+Working with Special Bits:
+Introduction: 
+  - It's important to manage special bits that can be set on files and directories.
+  - This lab demonstrates how to manage them.
+
+The Scenario:
+  - We need to create a collaborative space for managers named Bob, Adam, and Sally on our server.
+  - They are all members of the managers group.
+  - We need to create a directory named "managers" in /opt owned by the managers group.
+  - We also need to create a "scratch" directory within that with the same permissions as /tmp.
+  - Additionally, we need to set up an executable named "suid" in /tmp to be owned by Bob and run with his permissions.
+
+Logging In:
+  - Use the provided credentials to log in as cloud_user.
+  - Obtain root privileges using sudo -i.
+
+Create the Collaborative Area:
+  - Create the managers directory in /opt:
+      - cd /opt
+      - mkdir managers
+  - Make sure the managers group owns the managers directory:
+      - chown bob.managers managers/
+  - Set all new files created in managers to be owned by the managers group:
+      - chmod g+s managers
+  - Grant write permissions to the managers group:
+      - chmod g+w managers
+  - Test:
+      - cd managers
+      - touch file
+      - ls -l
+  - Cleanup:
+      - rm file
+
+Create a Scratch Area, Similar to /tmp, Named scratch:
+  - Create the scratch directory:
+      - mkdir scratch
+  - Check the permissions on /tmp:
+      - ls -ld /tmp
+  - Set the same permissions on scratch:
+      - chmod o+t scratch
+      - chmod a+w scratch
+
+Configure the suid Executable:
+  - Copy the executable to the current directory:
+      - cp /tmp/suid .
+  - Change the owner of the executable to Bob:
+      - chown bob.managers suid
+  - Set the setUID bit:
+      - chmod u+s suid
+  - Test:
+      - ./suid
+      - Check the effective UID using "id bob".
+
+---
+# LAB 2
+
+Managing and Troubleshooting File Permissions:
+  Introduction: |
+    This lab covers most of the things that you need to know to navigate and troubleshoot a filesystem. 
+    You will get a chance to practice working with octal permissions, setting ACLs, SELinux, special bits, 
+    and file attributes to complete tasks that could happen in the real world.
+
+  The Scenario: |
+    Bob, Adam, and Sally are developers working on a website. 
+    They need access to /var/www/html to manipulate files and directories. 
+    They also need a scratch area at /var/www/devs, where all files should have the devs group ownership. 
+    There is an index.html file in /var/www/devs that should be moved over to /var/www/html. 
+    Your task is to complete these tasks while troubleshooting any issues that arise.
+
+  Logging In: |
+    Use the credentials provided on the hands-on lab overview page, and log in as cloud_user. 
+    Once you're in, run `sudo -i` to get root privileges.
+
+  Set up /var/www/html to Allow the devs Group Access: |
+    First, get some baseline information by running `getfacl /var/www/html`.
+    Since there are no ACLs set currently, set your own using `setfacl -m d:g:devs:rwx /var/www/html`, 
+    and then check it by running `getfacl /var/www/html`.
+    Now, anyone in the devs group can navigate to and write to /var/www/html.
+
+  Fix Startup Errors for Apache: |
+    If running `systemctl start httpd` gives errors, run `journalctl -xe` to see if there are any issues. 
+    You might see lines similar to:
+    Jan 09 20:32:46 Server1 httpd[7107]: (13)Permission denied: AH00091: httpd: could not open error log file /etc/httpd/l>
+    Jan 09 20:32:46 Server1 httpd[7107]: AH00015: Unable to open logs
+    The issue might be with the error log file, which is /var/log/httpd/error_log. 
+    Check it using `ls -lZ /var/log/httpd/error_log`. If the context is wrong (e.g., admin_home instead of what it should be), 
+    use `restorecon /var/log/httpd/error_log`, and then start the service with `systemctl start httpd`.
+
+  Set up /var/www/devs Directory So That All Files Created Are Owned by the devs Group: |
+    First, run `ls -ld /var/www/devs` to get information about the directory. Both the root user and group own it. 
+    Give the group owner write permissions, and set devs as that group owner by running 
+    `chmod g+w /var/www/devs` and `chown root.devs /var/www/devs`, respectively. 
+    Set the sticky bit, so that any file created in there will be owned by the devs group, with `chmod g+s /var/www/devs`.
+    Run a test by navigating to /var/www/devs, creating a file, and checking its ownership by running `ls -l`. 
+    It should be owned by the devs group.
+
+  Move /var/www/devs/index.html to /var/www/html and Ensure It's Served Correctly: |
+    To move index.html, run `mv /var/www/devs/index.html /var/www/html`. 
+    If this returns an "Operation not permitted" error, check the file attributes with `lsattr /var/www/devs/index.html`. 
+    If it shows that the file has the immutable flag set, change it by running `
 
 
 # ----------------------- 
