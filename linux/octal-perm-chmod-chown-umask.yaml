@@ -123,7 +123,8 @@ steps:
     - command: "chmod 750 file1"
       description: "Change permissions on the target file 'file1' (This will affect hard links as well)."
     - command: "chmod 750 symlink1"
-      description: "Change permissions on the symbolic link 'symlink1' (Note: This will change the permissions on the target file, not the link itself)."
+      description: |
+        "Change permissions on the symbolic link 'symlink1' (Note: This will change the permissions on the target file, not the link itself)."
 
   4_verify_permissions:
     - command: "ls -l"
@@ -138,6 +139,41 @@ pesudographics:
 
     file1 <-> hardlink1
     file1 -> symlink1
+
+---
+# SPECIAL BITS
+
+Linux special bits:
+  s: SUID or SGID
+  t: Sticky bit
+  
+Explanation:
+SUID (Set User ID) and SGID (Set Group ID) are special permission bits that can be set on executable files or directories. 
+When an executable file with the SUID bit is run, it is executed with the permissions of the file owner instead of the 
+user who is running it. Similarly, when an executable file with the SGID bit is run, it is executed with the group permissions 
+of the group that owns the file.
+
+The sticky bit is a permission bit that can be set on directories. When set, it prevents users from deleting or renaming files 
+in that directory unless they are the owner of the file or the directory, or they have write permission on the directory.
+
+Suitable Linux commands:
+- To set SUID bit: 
+    chmod u+s filename
+
+- To set SGID bit: 
+    chmod g+s filename
+
+- To set sticky bit: 
+    chmod +t directory_path
+
+- To remove SUID bit: 
+    chmod u-s filename
+
+- To remove SGID bit: 
+    chmod g-s filename
+
+- To remove sticky bit: 
+    chmod -t directory_path
 
 
 
@@ -208,7 +244,8 @@ linux:
 
 - name: Using Octal Permissions to Set up a Collaboration Area
   description: |
-    In a multi-user environment like Linux, there will come a need to have a specific area set aside for different uses to collaborate. This lab will walk through the process and make sure you understand how different permissions can work together.
+    In a multi-user environment like Linux, there will come a need to have a specific area set aside for different uses to collaborate. 
+    This lab will walk through the process and make sure you understand how different permissions can work together.
   steps:
   - name: Log in as cloud_user
     command: |
