@@ -1,0 +1,152 @@
+SELinux_Overview:
+  Introduction: >
+    SELinux (Security-Enhanced Linux) is a Linux security feature that provides an extra layer of access control for various resources. It enforces mandatory access controls (MAC) on objects by assigning security labels to them.
+  Basic_Concepts:
+    - Type enforcement: SELinux policies control the access between processes and objects based on their types.
+    - Role-based access control: Users are assigned roles, and these roles determine which types a user can access.
+    - Multi-level security: SELinux supports multi-level security (MLS) by labeling objects with sensitivity levels.
+  Useful_Commands:
+    1. Check SELinux status:
+       command: sestatus
+    2. Get SELinux mode:
+       command: getenforce
+    3. Set SELinux mode:
+       commands:
+         - setenforce 0 (Permissive mode)
+         - setenforce 1 (Enforcing mode)
+    4. Get file security context:
+       command: ls -Z /path/to/file
+    5. Set file security context:
+       command: chcon -t new_type /path/to/file
+    6. Restore file security context to default:
+       command: restorecon -v /path/to/file
+    7. Create custom SELinux policy module:
+       command: audit2allow -M custom_policy < /path/to/audit.log
+    8. Install custom SELinux policy module:
+       command: semodule -i custom_policy.pp
+---
+
+- name: Use Case 1 - Securing Web Applications
+  description: |
+    SELinux can be used to secure web applications by enforcing fine-grained access controls 
+    to sensitive data and system resources. For example, SELinux policies can be written to prevent 
+    unauthorized access to the Apache web server configuration files or the MySQL database.
+
+- name: Use Case 2 - Container Security
+  description: |
+    SELinux is commonly used to secure containerized applications. By applying SELinux policies to container images, 
+    system administrators can ensure that containers have access to only the resources and files they need to operate, 
+    and are prevented from accessing other resources on the host system.
+
+- name: Use Case 3 - Multi-Tenant Environments
+  description: |
+    SELinux can be used to secure multi-tenant environments, such as cloud computing platforms. 
+    By enforcing strict access controls on system resources, SELinux can prevent one tenant from accessing another tenant's data or resources.
+
+- name: Use Case 4 - Compliance Requirements
+  description: |
+    SELinux can be used to satisfy compliance requirements, such as those specified 
+    by the Payment Card Industry Data Security Standard (PCI DSS). SELinux policies can be written to enforce access controls 
+    and audit requirements for sensitive data, such as credit card information.
+
+- name: Use Case 5 - Privilege Escalation Prevention
+  description: |
+    SELinux can be used to prevent privilege escalation attacks by enforcing strict access controls on system resources. 
+    By restricting the permissions of users and processes, SELinux can help prevent attackers from gaining elevated privileges on a system.
+
+---
+
+- name: SELinux Commands for Use Case 1 - Securing Web Applications
+  commands:
+    - name: View SELinux Context for a File
+      command: ls -Z /path/to/file
+    - name: Change SELinux Context for a File
+      command: chcon -t httpd_sys_content_t /path/to/file
+    - name: Enable Apache to Connect to the Network
+      command: setsebool -P httpd_can_network_connect 1
+
+- name: SELinux Commands for Use Case 2 - Container Security
+  commands:
+    - name: View SELinux Context for a Container
+      command: docker inspect --format='{{.SecurityOpt}}' container_id
+    - name: Change SELinux Context for a Container
+      command: docker run --security-opt label:type:container_runtime_t image_name
+
+- name: SELinux Commands for Use Case 3 - Multi-Tenant Environments
+  commands:
+    - name: View SELinux Context for a Process
+      command: ps -eZ | grep process_name
+    - name: Change SELinux Context for a Process
+      command: semanage fcontext -a -t type /path/to/file
+    - name: Enable Audit Logging for SELinux
+      command: setsebool -P auditd_enable_hiddendirs 1
+
+- name: SELinux Commands for Use Case 4 - Compliance Requirements
+  commands:
+    - name: View SELinux Booleans
+      command: getsebool -a | grep boolean_name
+    - name: Change SELinux Boolean
+      command: setsebool boolean_name on
+
+- name: SELinux Commands for Use Case 5 - Privilege Escalation Prevention
+  commands:
+    - name: View SELinux Policies
+      command: seinfo -t
+    - name: Change SELinux Policy
+      command: semanage permissive -a type
+
+---
+
+- name: SELinux Booleans
+  description: |
+    SELinux booleans are variables that can be set to change the behavior of SELinux policies. 
+    Booleans can be used to enable or disable certain security features, or to change the behavior of specific applications. 
+    Booleans are represented as on or off, and can be queried and changed using the getsebool and setsebool commands.
+
+  commands:
+    - name: View All SELinux Booleans
+      command: getsebool -a
+
+    - name: View the Value of a Specific Boolean
+      command: getsebool boolean_name
+
+    - name: Enable a Boolean
+      command: setsebool boolean_name on
+
+    - name: Disable a Boolean
+      command: setsebool boolean_name off
+
+    - name: Set a Boolean to Persist Across Reboots
+      command: setsebool -P boolean_name on
+
+    - name: List Booleans Associated with a Certain Application
+      command: semanage boolean -l | grep application_name
+
+
+---
+
+
+- name: chcon Cheat Sheet
+  description: |
+    chcon is a command-line utility used to change the SELinux context of a file or directory. 
+    This can be useful for ensuring that files have the correct context when they are created 
+    or for restoring the context of a file that has been modified. Here are some commonly used chcon commands:
+
+  commands:
+    - name: View SELinux Context of a File
+      command: ls -Z /path/to/file
+
+    - name: Change SELinux Context of a File
+      command: chcon -t type /path/to/file
+
+    - name: Change SELinux Context of a Directory
+      command: chcon -R -t type /path/to/directory
+
+    - name: Change SELinux Context and Enable Write Protection
+      command: chcon -t type -u object_r:read_only_file_t /path/to/file
+
+    - name: Change SELinux Context and Preserve Other Context Attributes
+      command: chcon --reference=/reference/file /path/to/file
+
+
+
