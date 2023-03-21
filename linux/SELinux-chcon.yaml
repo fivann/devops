@@ -148,5 +148,49 @@ SELinux_Overview:
     - name: Change SELinux Context and Preserve Other Context Attributes
       command: chcon --reference=/reference/file /path/to/file
 
+---
+## LAB
+
+- task: Troubleshooting SELinux on Files and Directories
+  description: |
+    Understanding how to fix potential SELinux issues is important. 
+    This lab will present an SELinux problem and allow us to work through the solution, 
+    getting us familiar with where to look and how to fix problems.
+  steps:
+  - name: Identify and Fix the Problem on Startup
+    description: |
+      Let's try to start Apache right off, to see what happens:
+    commands:
+    - '# systemctl start httpd'
+    - '# journalctl -xe'
+    - '# ls -lZ /etc/httpd/logs/error_log'
+    - '# ls -lZ /var/log/httpd/error_log'
+    - '# restorecon /var/log/httpd/error_log'
+    - '# ls -lZ /var/log/httpd/error_log'
+    - '# systemctl start httpd'
+  - name: Fix the Problem with Home Directories
+    description: |
+      Now let's check on what's happening with home directories. Run this to see where they should be:
+    commands:
+    - '# cat /etc/httpd/conf.d/userdir.conf'
+    - '# cd /home/developer'
+    - '# ls -l'
+    - '# mkdir public_html'
+    - '# ls -lZd public_html'
+    - '# chmod 0711 /home/developer'
+    - '# chmod 0755 /home/developer/public_html'
+    - '# cd public_html'
+    - '# touch testfile'
+    - '# curl localhost/~developer/testfile'
+    - '# grep testfile /var/log/audit/audit.log'
+    - '# getsebool -a | grep httpd'
+    - '# setsebool httpd_enable_homedirs on'
+    - '# curl localhost/~developer/testfile'
+    - '# mv ../index.html .'
+    - '# curl localhost/~developer/index.html'
+    - '# ls -lZ'
+    - '# restorecon index.html'
+    - '# ls -lZ'
+    - '# curl localhost/~developer/index.html'
 
 
