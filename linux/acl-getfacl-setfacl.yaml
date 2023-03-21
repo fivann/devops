@@ -29,3 +29,44 @@ setfacl:
     $ setfacl -x u:user /path/to/file
     $ setfacl -R -m g:group:rx /path/to/directory
     $ setfacl -b /path/to/file
+
+---
+## LAB
+
+
+
+Using_ACLs_to_Allow_Collaboration:
+  Introduction: |
+    ACLs allow more granularity than octal permissions do. 
+    In this hands-on lab, we'll set up a collaboration area using 
+    ACLs to get some practice reading getfacl output and creating setfacl input.
+  Scenario: |
+    Adam, Bob, and Sally are managers that all have access to our server. 
+    They need a directory that all of them can access and read and write files into. 
+    Bob has created a directory named /opt/collab for them to use, 
+    but isn't sure how to give Adam and Sally permission without also giving Will (not a manager) permission. 
+    We've been tasked with setting up this area using ACLs.
+  Logging_In: Use the credentials provided on the hands-on lab overview page, and log in as cloud_user.
+  Steps:
+    1. Become Bob user:
+       command: sudo su - bob
+    2. Check current ACLs on /opt/collab directory:
+       command: getfacl /opt/collab
+    3. Give managers group access to the directory:
+       command: setfacl -m g:managers:rwx /opt/collab
+    4. Give Adam and Sally access:
+       commands:
+         - setfacl -m u:adam:rwx /opt/collab
+         - setfacl -m u:sally:rwx /opt/collab
+    5. Create files as each user:
+       commands:
+         - touch /opt/collab/bob (as Bob)
+         - touch /opt/collab/adam (as Adam)
+         - touch /opt/collab/sally (as Sally)
+    6. Check the updated ACLs:
+       command: getfacl /opt/collab
+    7. Remove Adam's access to the /opt/collab directory:
+       command: setfacl -m u:adam:0 /opt/collab
+    8. Test Adam's access:
+       command: touch /opt/collab/adam (as Adam, should fail)
+
