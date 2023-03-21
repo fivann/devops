@@ -137,3 +137,40 @@ pesudographics:
     | (eg, 192.168.1.101) |
     +---------------------+
 
+---
+## LAB
+
+multiple_IPs_same_interface:
+  scenario: "Provision two more IP addresses (10.0.1.15 and 10.0.1.20) on the same subnet as the existing IP on a new host."
+
+steps:
+  1_login:
+    description: "Use the credentials and server IP in the hands-on lab overview page to log into the lab server."
+
+  2_check_current_ip:
+    - command: "nmcli c"
+    - command: "nmcli d show eth0"
+      description: "Check the current IP address configuration."
+
+  3_add_additional_ip_addresses:
+    - command: "sudo nmcli c mod System\\ eth0 ipv4.addresses 10.0.1.15/24,10.0.1.20/24"
+      description: "Add the additional IP addresses 10.0.1.15 and 10.0.1.20 to the existing network interface."
+    - command: "nmcli c show System\\ eth0 | grep ipv4"
+      description: "Check the current IP address configuration after adding the new IP addresses."
+
+  4_restart_networking:
+    - command: "sudo systemctl restart network"
+      description: "Restart the networking service to apply the new IP address configuration."
+    - command: "nmcli"
+      description: "Verify that the new IP addresses have been added to the network interface."
+
+pesudographics:
+  multiple_ips_process: |
+    +-------------+       +-------------+
+    |   Existing IP       |  10.0.1.15  |
+    +-------------+------>+-------------+
+    +-------------+       +-------------+
+    |   10.0.1.20         |   Switch    |
+    +-------------+------>+-------------+
+
+
