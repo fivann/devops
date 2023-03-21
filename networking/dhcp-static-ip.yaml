@@ -1,0 +1,51 @@
+difference:
+  static_ip:
+    definition: "A static IP address is a manually assigned, unchanging IP address for a device on a network."
+  dhcp:
+    definition: "Dynamic Host Configuration Protocol (DHCP) is a network protocol that automates the assignment of IP addresses to devices on a network."
+  
+mechanism:
+  dhcp:
+    - dhcp_discover: "The client sends a broadcast packet (DHCPDISCOVER) to discover available DHCP servers."
+    - dhcp_offer: "The DHCP server responds with a DHCPOFFER, proposing an IP address for the client."
+    - dhcp_request: "The client selects an IP address and sends a DHCPREQUEST to the server, requesting the offered address."
+    - dhcp_ack: "The server sends a DHCPACK, confirming the assignment of the IP address to the client."
+
+linux_commands:
+  install_dhcp_server:
+    - command: "sudo apt-get install isc-dhcp-server"
+    - description: "Install DHCP server on Ubuntu/Debian-based systems."
+  configure_dhcp_server:
+    - command: "sudo nano /etc/dhcp/dhcpd.conf"
+    - description: "Edit the configuration file for the DHCP server."
+    - example: |
+        subnet 192.168.1.0 netmask 255.255.255.0 {
+          range 192.168.1.100 192.168.1.200;
+          option domain-name-servers 8.8.8.8, 8.8.4.4;
+          option routers 192.168.1.1;
+          option subnet-mask 255.255.255.0;
+          default-lease-time 600;
+          max-lease-time 7200;
+        }
+  start_dhcp_server:
+    - command: "sudo systemctl start isc-dhcp-server"
+    - description: "Start the DHCP server."
+  enable_dhcp_server:
+    - command: "sudo systemctl enable isc-dhcp-server"
+    - description: "Enable the DHCP server to start on boot."
+  view_dhcp_leases:
+    - command: "cat /var/lib/dhcp/dhcpd.leases"
+    - description: "View the current DHCP leases."
+
+pesudographics:
+  dhcp_process: |
+    Client          DHCP Server
+      |                  |
+      |---Discover---->  |
+      |                  |
+      |<----Offer------- |
+      |                  |
+      |---Request----->  |
+      |                  |
+      |<-----Ack-------- |
+     
