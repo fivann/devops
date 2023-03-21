@@ -155,4 +155,56 @@ pesudographics:
                            +----------+
 
 
+---
+## LAB
+
+create_interface_team:
+  scenario: "Configure a new application server with primary interface eth0 (10.0.1.11), and team interfaces eth1 and eth2 as part of a team with round robin mode, static IP range 10.0.1.15/24, and gateway from DHCP."
+
+steps:
+  1_login:
+    description: "Use the credentials and server IP in the hands-on lab overview page to log into the lab server."
+
+  2_install_teamd:
+    - command: "sudo yum -y install teamd bash-completion"
+      description: "Install teamd and bash-completion packages."
+    - command: "source /etc/profile"
+      description: "Source the profile to apply changes."
+
+  3_configure_team_interface:
+    - command: "sudo nmcli con delete Wired\\ connection\\ 1"
+    - command: "sudo nmcli con delete Wired\\ connection\\ 2"
+      description: "Delete existing connections for eth1 and eth2."
+    - command: "sudo nmcli con add type team con-name Team0 ifname team0"
+      description: "Create the Team Connection with name Team0 and interface name team0."
+    - command: "sudo nmcli con mod Team0 ipv4.address 10.0.1.15/24 ipv4.gateway 10.0.1.1 ipv4.method manual"
+      description: "Modify the Team Connection to include the static IP and gateway."
+
+  4_add_slave_interfaces:
+    - command: "sudo nmcli con add type team-slave ifname eth1 con-name Slave1 master team0"
+    - command: "sudo nmcli con add type team-slave ifname eth2 con-name Slave2 master team0"
+      description: "Add slave interfaces eth1 and eth2 to the team."
+
+  5_verify_team_state:
+    - command: "nmcli c show Team0 | grep ipv4"
+    - command: "sudo nmcli con up Team0"
+    - command: "sudo nmcli con up Slave1"
+    - command: "sudo nmcli con up Slave2"
+      description: "Verify the team state and bring up the Team Connection and slave interfaces."
+    - command: "sudo teamdctl team0 state"
+      description: "Get details on the team state."
+
+  6_verify_connectivity:
+    - command: "ping 10.0.1.15"
+      description: "Ping the team interface IP address to verify connectivity."
+
+pesudographics:
+  create_interface_team_process: |
+    +-------------+        +-------------+     +-------------+
+    |   eth0 (management) | eth1 (team)  |     |   Switch    |
+    +-------------+        +-------------+---->+-------------+
+    +-------------+        +-------------+
+    |   eth2 (team)        |   Team0     |
+    +-------------+------->+-------------+
+
 
