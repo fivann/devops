@@ -57,8 +57,9 @@ List rules
 ```
 This lists all the defined rules.
 
-
+----
 ### ZONES
+Firewalld is a popular firewall management tool that uses zones to define different trust levels for network connections or interfaces. Here's a YAML representation of the default zones provided by firewalld, along with brief descriptions and examples:
 ```
 - zone: DROP
   description: | 
