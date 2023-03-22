@@ -1,0 +1,44 @@
+nc:
+  description: >
+    Netcat (nc) is a versatile command-line utility that facilitates reading from and writing to network connections
+    using TCP or UDP. It is often referred to as the Swiss Army knife of networking tools due to its wide range of uses,
+    such as port scanning, file transfer, and setting up simple servers or clients.
+  options:
+    - listen:
+        flag: -l
+        description: Set netcat to listen mode, creating a server that waits for incoming connections.
+    - udp:
+        flag: -u
+        description: Use UDP instead of TCP (default) for connections.
+    - port_range:
+        flag: -p
+        description: Specify the local port or port range to use.
+    - timeout:
+        flag: -w
+        description: Set a timeout in seconds for connections.
+    - verbose:
+        flag: -v
+        description: Show verbose output.
+    - exec:
+        flag: -e
+        description: Execute a command upon establishing a connection.
+  examples:
+    - basic_connection:
+        command: nc HOST PORT
+        description: Connect to a remote host and port using netcat.
+    - listen_mode:
+        command: nc -l PORT
+        description: Set netcat to listen mode on a specific port.
+    - udp_connection:
+        command: nc -u HOST PORT
+        description: Connect to a remote host and port using UDP.
+    - port_scan:
+        command: nc -zv HOST PORT_RANGE
+        description: Perform a port scan on a remote host.
+    - file_transfer:
+        sender_command: nc -l PORT < FILENAME
+        receiver_command: nc HOST PORT > FILENAME
+        description: Transfer a file between two hosts using netcat.
+    - simple_server:
+        command: nc -l PORT -e /bin/bash
+        description: Set up a simple server that executes /bin/bash upon connection.
