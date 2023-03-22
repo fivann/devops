@@ -32,4 +32,149 @@
 
 ---
 
+# Установка локального разрешения DNS-имен
+- name: Установка локального разрешения DNS-имен
+  hosts: all
+  become: true
+  tasks:
+
+  # Проверка содержимого и порядка в /etc/nsswitch.conf
+  - name: Проверка содержимого и порядка в /etc/nsswitch.conf
+    command: "sudo vim /etc/nsswitch.conf"
+    register: nsswitch_conf
+
+  - name: Изменение /etc/nsswitch.conf
+    lineinfile:
+      path: /etc/nsswitch.conf
+      line: "hosts:\tfiles dns myhostname"
+    when: "'files dns myhostname' not in nsswitch_conf.stdout_lines[5]"
+
+  # Добавление записи в /etc/hosts
+  - name: Добавление записи в /etc/hosts
+    lineinfile:
+      path: /etc/hosts
+      line: "10.0.1.10\twww.example.com"
+    when: "'www.example.com' not in ansible_facts['default_ipv4']['address']"
+
+  # Проверка соединения с локальным веб-сервером
+  - name: Проверка соединения с локальным веб-сервером
+    command: "curl localhost"
+    register: curl_output
+
+  - name: Проверка соединения с локальным веб-сервером (www.example.com)
+    command: "curl www.example.com"
+    register: curl_output_www
+
+  - name: Проверка соединения с локальным веб-сервером (результат)
+    debug:
+      var: curl_output.stdout
+    when: "'Connection refused' not in curl_output.stdout and curl_output_www.stdout == curl_output.stdout"
+
+---
+
+# Создание DNS-серверов
+- name: Создание DNS-серверов
+  hosts: all
+  become: true
+  tasks:
+
+  # Установка BIND на основном DNS-сервере
+  - name: Установка BIND на основном DNS-сервере
+    yum:
+      name: ['bind', 'bind-utils']
+      state: present
+    register: bind_installed
+
+  - name: Включение службы named
+    systemd:
+      name: named
+      enabled: yes
+    when: bind_installed.changed == True
+
+  # Настройка BIND на основном DNS-сервере
+  - name: Настройка BIND на основном DNS-сервере
+    lineinfile:
+      path: /etc/named.conf
+      line: "{{ item.line }}"
+    loop:
+      - { line: 'listen-on port 53 { 127.0.0.1; 10.0.1.10; };' }
+      - { line: 'allow-query     { localhost; 10.0.1.11; };' }
+      - { line: 'allow-transfer  { localhost; 10.0.1.11; };' }
+      - { line: 'recursion no;' }
+      - { line: 'zone "example.com" IN {' }
+      - { line: '  type master;' }
+      - { line: '  file "forward.example.com";' }
+      - { line: '  allow-update { none; };' }
+      - { line: '};' }
+      - { line: 'zone "1.0.10.in-addr.arpa" IN {' }
+      - { line: '  type master;' }
+      - { line: '  file "reverse.example.com";' }
+      - { line: '  allow-update { none; };' }
+      - { line: '};' }
+    notify: start named
+
+  # Создание файлов зоны на основном DNS-сервере
+  - name: Создание файлов зоны на основном DNS-сервере
+    copy:
+      dest: "/var/named/{{ item.filename }}"
+      content: "{{ lookup('file', 'templates/' + item.filename) }}"
+    loop:
+      - { filename: 'forward.example.com' }
+      - { filename: 'reverse.example.com' }
+
+  # Проверка конфигурации на основном DNS-сервере
+  - name: Проверка конфигурации на основном DNS-сервере
+    command: named-checkconf /etc/named.conf
+    changed_when: False
+    register: checkconf_result
+
+  - name: Проверка forward.example.com на основном DNS-сервере
+    command: named-checkzone example.com /var/named/forward.example.com
+    changed_when: False
+    register: forward_checkzone_result
+
+  - name: Проверка reverse.example.com на основном DNS-сервере
+    command: named-checkzone example.com /var/named/reverse.example.com
+    changed_when: False
+    register: reverse_checkzone_result
+
+  - name: Отладочный вывод (конфигурация и проверка)
+    hosts: all
+    gather_facts: no
+    tasks:
+      - name: Вывод содержимого файла /etc/resolv.conf на хостах
+        shell: cat /etc/resolv.conf
+      - name: Вывод настроек DNS-конфигурации на хостах
+        shell: cat /etc/named.conf
+      - name: Проверка настроек DNS-конфигурации на хостах
+        shell: named-checkconf /etc/named.conf
+      - name: Проверка корректности зон на хостах
+        shell: named-checkzone
+
+---
+
+- name: Verify the Issue and Check /etc/nsswitch.conf
+  become: true
+  shell: |
+    curl -I https://acloudguru.com/
+    sed -i '/hosts:/ s/$/ dns/' /etc/nsswitch.conf
+    sed -i '/acloudguru.com/d' /etc/hosts
+
+- name: Determine If the DNS Host is Listening on TCP Port 53
+  become: true
+  shell: |
+    cat /etc/resolv.conf
+    timeout 1 bash -c "</dev/tcp/10.0.1.1/53" || echo "Unable to connect"
+    dig @10.0.0.2 acloudguru.com
+
+- name: Change the Configuration to Use the 10.0.0.2 Host
+  become: true
+  shell: |
+    nmcli con mod System\ ens5 ipv4.dns "10.0.0.2"
+    systemctl restart NetworkManager
+    cat /etc/resolv.conf
+    dig acloudguru.com
+    curl -I https://acloudguru.com/
+
+
 
