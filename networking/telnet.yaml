@@ -1,0 +1,39 @@
+telnet:
+  description: >
+    Telnet is a command-line utility for connecting to remote hosts over the TCP/IP protocol. It can be used for testing
+    network connectivity, checking if a service is running on a specific port, or for remote terminal connections.
+  options:
+    - open:
+        command: "open HOST PORT"
+        description: Connect to a remote host and port.
+    - close:
+        command: "close"
+        description: Close the current connection.
+    - quit:
+        command: "quit"
+        description: Close the current connection and exit telnet.
+    - display:
+        command: "display"
+        description: Show the current telnet settings.
+    - set:
+        command: "set OPTION"
+        description: Set a telnet option.
+    - unset:
+        command: "unset OPTION"
+        description: Unset a telnet option.
+  examples:
+    - connect_to_host:
+        command: "telnet HOST PORT"
+        description: Connect to a remote host and port using telnet.
+    - test_port:
+        command: "telnet HOST PORT"
+        description: Test if a service is running on a specific port.
+    - display_settings:
+        command: "telnet> display"
+        description: Show the current telnet settings while in an active telnet session.
+    - set_echo:
+        command: "telnet> set echo"
+        description: Enable local echo while in an active telnet session.
+    - unset_echo:
+        command: "telnet> unset echo"
+        description: Disable local echo while in an active telnet session.
