@@ -61,37 +61,49 @@ This lists all the defined rules.
 ### ZONES
 ```
 - zone: DROP
-  description: Any incoming network packets are dropped without any further processing. Only outgoing network connections are possible.
+  description: | 
+    Any incoming network packets are dropped without any further processing. 
+    Only outgoing network connections are possible.
   example:
     - command: firewall-cmd --zone=DROP --add-interface=eth1
       explanation: Assign interface eth1 to the DROP zone, dropping all incoming traffic on the interface.
 
 - zone: BLOCK
-  description: Similar to DROP, incoming connections are rejected with an icmp-host-prohibited or icmp6-adm-prohibited message. Only outgoing network connections are possible.
+  description: | 
+    Similar to DROP, incoming connections are rejected with an icmp-host-prohibited or icmp6-adm-prohibited message. 
+    Only outgoing network connections are possible.
   example:
     - command: firewall-cmd --zone=BLOCK --add-interface=eth1
       explanation: Assign interface eth1 to the BLOCK zone, rejecting all incoming traffic on the interface.
 
 - zone: PUBLIC
-  description: Represents public, untrusted networks. You don't trust other computers but may allow selected incoming connections.
+  description: | 
+    Represents public, untrusted networks. 
+    You don't trust other computers but may allow selected incoming connections.
   example:
     - command: firewall-cmd --zone=PUBLIC --add-service=http
       explanation: Allow incoming HTTP traffic in the PUBLIC zone.
 
 - zone: EXTERNAL
-  description: Used for external networks with NAT masquerading enabled, especially for routers. You don't trust other computers.
+  description: |
+    Used for external networks with NAT masquerading enabled, especially for routers. 
+    You don't trust other computers.
   example:
     - command: firewall-cmd --zone=EXTERNAL --add-masquerade
       explanation: Enable NAT masquerading in the EXTERNAL zone.
 
 - zone: INTERNAL
-  description: For use on internal networks. You mostly trust other computers but may only allow selected incoming connections.
+  description: | 
+    For use on internal networks. 
+    You mostly trust other computers but may only allow selected incoming connections.
   example:
     - command: firewall-cmd --zone=INTERNAL --add-service=http
       explanation: Allow incoming HTTP traffic in the INTERNAL zone.
 
 - zone: DMZ
-  description: Used for computers located in a DMZ (demilitarized zone). Limited access is allowed for selected incoming connections.
+  description: | 
+    Used for computers located in a DMZ (demilitarized zone). 
+    Limited access is allowed for selected incoming connections.
   example:
     - command: firewall-cmd --zone=DMZ --add-service=http
       explanation: Allow incoming HTTP traffic in the DMZ zone.
@@ -116,3 +128,38 @@ This lists all the defined rules.
 
 ```
 
+### IPSet
+```
+- step: Create an IP set
+  description: Create an IP set with a specified type (e.g., hash:ip, hash:net, or hash:port).
+  example:
+    - command: firewall-cmd --permanent --new-ipset=blocked_ips --type=hash:ip
+      explanation: Create a new IP set named "blocked_ips" with the type "hash:ip".
+
+- step: Add elements to an IP set
+  description: Add IP addresses, networks, or ports to an existing IP set.
+  example:
+    - command: firewall-cmd --permanent --ipset=blocked_ips --add-entry=192.168.1.10
+      explanation: Add the IP address 192.168.1.10 to the "blocked_ips" IP set.
+
+- step: Remove elements from an IP set
+  description: Remove IP addresses, networks, or ports from an existing IP set.
+  example:
+    - command: firewall-cmd --permanent --ipset=blocked_ips --remove-entry=192.168.1.10
+      explanation: Remove the IP address 192.168.1.10 from the "blocked_ips" IP set.
+
+- step: Delete an IP set
+  description: Delete an existing IP set.
+  example:
+    - command: firewall-cmd --permanent --delete-ipset=blocked_ips
+      explanation: Delete the "blocked_ips" IP set.
+
+- step: Use an IP set in a firewall rule
+  description: | 
+    Use an IP set in a firewall rule to apply actions (e.g., accept, reject, or drop) 
+    to the specified set of IP addresses, networks, or ports.
+  example:
+    - command: firewall-cmd --permanent --zone=public --add-rich-rule='rule source ipset=blocked_ips drop'
+      explanation: Drop all incoming traffic from IP addresses in the "blocked_ips" IP set in the public zone.
+
+```
