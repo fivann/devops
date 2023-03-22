@@ -61,3 +61,41 @@ iptables -A OUTPUT -p tcp --dport [PORT NUMBER] -j DROP
       explanation: Apply Network Address Translation (NAT) to packets leaving the system through eth0.
 
 
+---
+
+
+- state: NEW
+  description: Represents new, untracked connections or the first packet of a new connection.
+  example:
+    - rule: iptables -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
+      explanation: Allow incoming SSH traffic (port 22) for new connections.
+
+- state: ESTABLISHED
+  description: Represents connections that have been established and have seen packets in both directions.
+  example:
+    - rule: iptables -A INPUT -m state --state ESTABLISHED -j ACCEPT
+      explanation: Allow incoming traffic for established connections.
+
+- state: RELATED
+  description: Represents packets that are related to an existing connection, such as ICMP error messages or FTP data connections.
+  example:
+    - rule: iptables -A INPUT -m state --state RELATED -j ACCEPT
+      explanation: Allow incoming traffic for connections related to an established connection.
+
+- state: INVALID
+  description: Represents packets that do not have a valid state, such as those that fail checksums or have incorrect sequence numbers.
+  example:
+    - rule: iptables -A INPUT -m state --state INVALID -j DROP
+      explanation: Drop incoming traffic with an invalid state.
+
+- state: UNTRACKED
+  description: Represents packets that are not tracked by the connection tracking system.
+  example:
+    - rule: iptables -A INPUT -m state --state UNTRACKED -j DROP
+      explanation: Drop incoming traffic that is not tracked by the connection tracking system.
+
+- state: DNAT
+  description: Represents packets whose destination address has been changed due to Destination Network Address Translation (DNAT).
+  example:
+    - rule: iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.1.2:8080
+      explanation: Redirect incoming HTTP traffic (port 80) to a different internal IP address (192.168.1.2) and port (8080).
