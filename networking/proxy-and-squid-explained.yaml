@@ -1,0 +1,135 @@
+proxy_servers:
+  description: Объяснение применения прокси-серверов и их отличия от SOCKS-прокси.
+  proxy_server_explanation:
+    description: Прокси-серверы - это серверы, которые перенаправляют сетевые запросы от клиентов к их назначению.
+    examples:
+      - caching_proxy:
+          description: Кеширующий прокси-сервер
+          explanation: Кеширует веб-страницы и содержимое для ускорения загрузки и уменьшения пропускной способности.
+      - web_filter_proxy:
+          description: Прокси-сервер для фильтрации веб-содержимого
+          explanation: Фильтрует веб-сайты или контент на основе правил, чтобы блокировать доступ к определенным ресурсам.
+
+  socks_proxy_explanation:
+    description: SOCKS-прокси - это более низкоуровневый протокол, который перенаправляет трафик независимо от протокола приложения.
+    advantages:
+      - protocol_independence: Независимость от протокола приложения, поддержка различных типов трафика (HTTP, FTP, SMTP и т.д.).
+      - encryption: Поддержка шифрования, когда используется вместе с протоколом, таким как SSH.
+
+  differences:
+    - http_vs_socks:
+        description: Основное отличие между HTTP-прокси и SOCKS-прокси
+        explanation: HTTP-прокси работает только с веб-трафиком, в то время как SOCKS-прокси работает с любым видом трафика.
+
+---
+
+squid_proxy:
+  description: Объяснение, установка и настройка SQUID-прокси.
+  explanation: SQUID - это кеширующий прокси-сервер для веб-клиентов, поддерживающий различные протоколы, такие как HTTP, HTTPS и FTP.
+  
+  installation:
+    steps:
+      - update_system:
+          description: Обновление системы перед установкой
+          command: sudo apt update && sudo apt upgrade -y
+      - install_squid:
+          description: Установка пакета SQUID
+          command: sudo apt install squid -y
+
+  configuration:
+    steps:
+      - backup_original_config:
+          description: Создание резервной копии оригинального файла конфигурации
+          command: sudo cp /etc/squid/squid.conf /etc/squid/squid.conf.bak
+      - edit_config_file:
+          description: Редактирование файла конфигурации
+          command: sudo nano /etc/squid/squid.conf
+      - config_options:
+          description: Настройки файла конфигурации
+          options:
+            - acl_rules:
+                description: Определение правил доступа
+                example: "acl localnet src 192.168.1.0/24"
+            - http_access:
+                description: Разрешение или запрет доступа на основе определенных правил
+                example: "http_access allow localnet"
+            - http_port:
+                description: Указание порта, на котором будет работать прокси-сервер
+                example: "http_port 3128"
+            - visible_hostname:
+                description: Установка видимого имени хоста для SQUID
+                example: "visible_hostname myproxy"
+      - save_and_exit:
+          description: Сохранение и выход из файла конфигурации
+      - restart_squid:
+          description: Перезапуск SQUID для применения изменений
+          command: sudo systemctl restart squid
+
+  usage:
+    steps:
+      - set_browser_proxy:
+          description: Настройка браузера для использования SQUID-прокси
+          details: В настройках вашего браузера укажите IP-адрес и порт SQUID-прокси.
+
+
+---
+## LAB
+---
+
+installing_and_configuring_squid:
+  description: Установка и настройка прокси-сервера Squid.
+  scenario: Ограничение доступа некоторых клиентских хостов только к linuxacademy.com через прокси-сервер.
+
+  steps:
+    - login:
+        description: Вход в систему с использованием учетных данных и IP-адреса сервера из обзора лаборатории.
+
+    - install_squid:
+        description: Установка Squid на сервере Server1.
+        command: yum install squid
+
+    - enable_and_start_squid:
+        description: Включение и запуск Squid.
+        commands:
+          - systemctl enable squid
+          - systemctl start squid
+
+    - permit_squid_client_access:
+        description: Разрешение доступа клиентов к службе Squid через межсетевой экран.
+        commands:
+          - firewall-cmd --permanent --add-service=squid
+          - firewall-cmd --reload
+
+    - check_firewall:
+        description: Проверка, что доступ открыт.
+        command: firewall-cmd --list-all
+
+    - configure_squid:
+        description: Настройка Squid для доступа к linuxacademy.com.
+        steps:
+          - edit_config_file:
+              description: Редактирование файла конфигурации /etc/squid/squid.conf.
+          - add_acl_rules:
+              description: Добавление правил для доступа только к linuxacademy.com.
+              example: |
+                acl whitelist dstdomain .linuxacademy.com
+                http_access allow whitelist
+          - remove_localnet_rule:
+              description: Удаление или комментирование строки 'http_access allow localnet'.
+          - restart_squid:
+              description: Перезапуск Squid для применения изменений.
+              command: systemctl restart squid
+
+    - test_from_client:
+        description: Тестирование настройки с клиентской машины.
+        steps:
+          - export_http_proxy:
+              description: Установка переменной окружения http_proxy.
+              command: export http_proxy="http://10.0.1.10:3128"
+          - test_access_linuxacademy:
+              description: Проверка доступа к linuxacademy.com с использованием curl.
+              command: curl -I linuxacademy.com
+          - test_access_other_site:
+              description: Проверка доступа к другому сайту, который должен быть запрещен.
+              command: curl -I apache.org
+
