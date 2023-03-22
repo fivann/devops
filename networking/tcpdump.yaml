@@ -11,6 +11,7 @@
     shell: tcpdump -i eth0 -w capture.pcap
 
 ---
+---
 
 - name: Capture traffic from eth0 interface
   hosts: all
