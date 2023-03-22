@@ -1,0 +1,151 @@
+vpn_related_commands:
+  - command: openvpn
+    options:
+      - option: "--config"
+        description: "Specify the configuration file."
+    usage: "sudo openvpn --config /path/to/config.ovpn"
+    description: "Connect to a VPN server using OpenVPN with the specified configuration file."
+
+  - command: ip
+    options:
+      - option: "link"
+        description: "Display network interfaces."
+      - option: "addr"
+        description: "Display network interfaces with IP addresses."
+    usage: "ip link"
+    description: "Display the list of network interfaces, including VPN connections."
+    
+  - command: wg-quick
+    options:
+      - option: "up"
+        description: "Bring up the WireGuard VPN interface."
+      - option: "down"
+        description: "Bring down the WireGuard VPN interface."
+    usage: "sudo wg-quick up /path/to/wg0.conf"
+    description: "Connect to a WireGuard VPN server using the specified configuration file."
+
+  - command: systemctl
+    options:
+      - option: "start"
+        description: "Start the specified VPN service."
+      - option: "stop"
+        description: "Stop the specified VPN service."
+      - option: "status"
+        description: "Display the status of the specified VPN service."
+      - option: "enable"
+        description: "Enable the specified VPN service at startup."
+      - option: "disable"
+        description: "Disable the specified VPN service at startup."
+    usage: "sudo systemctl start openvpn@config.service"
+    description: "Start the OpenVPN service using the specified configuration."
+    
+---
+## OpenVPN
+
+- name: Setup OpenVPN
+  hosts: server1, client1
+  tasks:
+    - name: Install EPEL repository
+      ansible.builtin.yum:
+        name: epel-release
+        state: present
+
+    - name: Install OpenVPN
+      ansible.builtin.yum:
+        name: openvpn
+        state: present
+
+    - name: Install EasyRSA (Server1 only)
+      ansible.builtin.yum:
+        name: easy-rsa
+        state: present
+      when: "'server1' in inventory_hostname"
+
+    - name: Configure OpenVPN server (Server1 only)
+      block:
+        - name: Create /etc/openvpn/easy-rsa directory
+          ansible.builtin.file:
+            path: /etc/openvpn/easy-rsa
+            state: directory
+
+        # Add more tasks here to generate keys and certificates using EasyRSA
+
+        - name: Configure OpenVPN server
+          ansible.builtin.template:
+            src: server.conf.j2
+            dest: /etc/openvpn/server.conf
+
+        - name: Enable and start OpenVPN service
+          ansible.builtin.systemd:
+            name: openvpn@server.service
+            enabled: yes
+            state: started
+      when: "'server1' in inventory_hostname"
+
+    - name: Configure OpenVPN client (Client1 only)
+      block:
+        # Add tasks here to copy keys from Server1 to Client1
+
+        - name: Configure OpenVPN client
+          ansible.builtin.template:
+            src: client.conf.j2
+            dest: /etc/openvpn/client.conf
+
+        - name: Start OpenVPN client service
+          ansible.builtin.systemd:
+            name: openvpn@client.service
+            state: started
+
+        # Add optional tasks here to configure static route on Client1
+      when: "'client1' in inventory_hostname"
+
+
+---
+
+---
+# Установка и настройка OpenVPN на сервере (Server1) и клиенте (Client1)
+
+# Шаг 1: Установка EPEL репозитория на обеих машинах (Server1 и Client1)
+install_epel: yum -y install epel-release
+
+# Шаг 2: Установка OpenVPN на обеих машинах
+install_openvpn: yum -y install openvpn
+
+# Шаг 3: Установка EasyRSA на Server1
+install_easyrsa: yum -y install easy-rsa
+
+# Шаг 4: Создание директории для ключей и сертификатов на Server1
+create_easyrsa_dir:
+  - mkdir /etc/openvpn/easy-rsa
+  - cd /etc/openvpn/easy-rsa
+
+# Шаг 5: Выполнение команд EasyRSA для создания и подписания ключей и сертификатов сервера и клиента на Server1
+# (следуйте инструкциям, указанным в оригинальном тексте)
+
+# Шаг 6: Настройка OpenVPN сервера и клиента
+configure_openvpn:
+  server:
+    # (включает создание и редактирование /etc/openvpn/server.conf с указанными настройками)
+  client:
+    # (включает копирование ключей с Server1 на Client1 и создание файла /etc/openvpn/client.conf с указанными настройками)
+
+# Шаг 7: Запуск OpenVPN на сервере и клиенте
+start_openvpn:
+  server: systemctl start openvpn@server.service
+  client: systemctl start openvpn@client.service
+
+# Шаг 8 (опционально): Добавление статического маршрута на Client1
+add_static_route:
+  - ip route add 10.0.1.20 dev tun0
+  - ip route show
+
+# Шаг 9: Проверка соединения VPN на Client1
+check_vpn_connection:
+  - curl 10.0.1.20
+
+# После завершения всех шагов OpenVPN будет настроен и работать на сервере (Server1) и клиенте (Client1).
+# При необходимости следуйте дополнительным инструкциям и настройкам, указанным в оригинальном тексте.
+
+
+
+
