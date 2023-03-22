@@ -129,6 +129,7 @@ This lists all the defined rules.
 ```
 
 ### IPSet
+  IP sets are a feature in firewalld that allow you to create sets of IP addresses, networks, or ports, which can then be used in firewalld rules. This can help simplify the management of firewall rules when working with a large number of IP addresses or ports. Here's a YAML representation of using IP sets with firewalld:
 ```
 - step: Create an IP set
   description: Create an IP set with a specified type (e.g., hash:ip, hash:net, or hash:port).
