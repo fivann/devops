@@ -1,1 +1,79 @@
-##
+testing_connection:
+  description: >
+    This hands-on lab focuses on troubleshooting connectivity issues 
+    between Client1 (10.0.1.11) and Server1 (10.0.1.10) and
+    ensuring connectivity for SSL traffic.
+  steps:
+    - confirm_problem:
+        description: Confirm the problem exists by curling the headers of 10.0.1.10 from 10.0.1.11.
+        command: curl -I 10.0.1.10
+    - check_apache_status:
+        description: Verify a service is listening on port 80 on Server1.
+        command: ss -lntp | grep :80
+    - check_apache_running:
+        description: Check if Apache is running on Server1.
+        command: systemctl status httpd
+    - start_apache:
+        description: Start Apache on Server1 if necessary.
+        command: systemctl start httpd
+    - check_firewall_rules:
+        description: Verify that the firewall on Server1 is configured to permit HTTP traffic.
+        command: firewall-cmd --list-services
+    - add_http_firewall_rule:
+        description: Add the HTTP service to the firewall on Server1 if it is not present.
+        command: firewall-cmd --permanent --add-service=http
+    - reload_firewall_rules:
+        description: Reload the firewall rules on Server1 to apply changes.
+        command: firewall-cmd --reload
+    - add_https_firewall_rule:
+        description: Open port 443 in the firewall on Server1 for HTTPS traffic.
+        command: firewall-cmd --permanent --add-service=https
+    - reload_firewall_config:
+        description: Reload the firewall config on Server1.
+        command: firewall-cmd --reload
+    - install_nmap_ncat:
+        description: Install the nmap-ncat package on Server1 to facilitate listening on port 443.
+        command: yum install nmap-ncat
+    - listen_port_443:
+        description: Use nmap-ncat to listen on port 443 on Server1.
+        command: nc -l -p 443
+    - install_telnet:
+        description: Install telnet on Client1.
+        command: yum install -y telnet
+    - verify_port_443_accessible:
+        description: Verify that port 443 is accessible on Server1 from Client1 using telnet.
+        command: telnet 10.0.1.10 443
+
+---
+
+performing_packet_capture:
+  description: >
+    This hands-on lab focuses on obtaining evidence of network latency and response for web requests from Client1 to Server1
+    using a packet capture.
+  steps:
+    - install_tcpdump_and_screen:
+        description: Install tcpdump and screen on the host.
+        command: yum -y install tcpdump screen
+    - start_screen:
+        description: Start the screen session.
+        command: screen
+    - split_screen:
+        description: Split the screen session into two windows.
+        command: Ctrl+a 
+    - switch_between_windows:
+        description: Switch between the two windows using Ctrl+a and Tab.
+        command: Ctrl+a Tab
+    - begin_packet_capture:
+        description: Start the packet capture on the right-hand side, filtering for port 80 traffic and saving to capture.pcap.
+        command: tcpdump -i any port 80 -w capture.pcap
+    - generate_web_traffic:
+        description: Generate web traffic on the left-hand side by sending requests to Server1 at 10.0.1.10.
+        command: curl -I 10.0.1.10
+    - cancel_packet_capture:
+        description: Cancel the packet capture on the right-hand side by pressing Ctrl+k.
+        command: Ctrl+k
+    - view_capture_file:
+        description: View the contents of the capture.pcap file using tcpdump.
+        command: tcpdump -r capture.pcap
+
+
