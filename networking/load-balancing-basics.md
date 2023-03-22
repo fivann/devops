@@ -79,3 +79,71 @@ backend web_servers
     server web2 192.168.1.102:80 check
 ```
 ---
+```
+# Создание балансировщика нагрузки
+#----------------------------------------
+
+# Аутентифицируйтесь на сервере
+
+# Установите HAProxy на Server1
+# Установка HAProxy
+- name: Установка HAProxy
+  become: true
+  yum:
+    name: haproxy
+    state: present
+
+# Включение и запуск службы HAProxy
+- name: Включение и запуск службы HAProxy
+  become: true
+  service:
+    name: haproxy
+    enabled: true
+    state: started
+
+# Проверьте, что трафик на входящий порт 80 разрешен через брандмауэр
+- name: Разрешение трафика на входящий порт 80
+  become: true
+  shell: firewall-cmd --add-service=http --permanent
+- name: Перезагрузка брандмауэра
+  become: true
+  shell: firewall-cmd --reload
+
+# Настройка HAProxy на Server1
+- name: Настройка HAProxy на Server1
+  become: true
+  lineinfile:
+    path: /etc/haproxy/haproxy.cfg
+    line: |
+      timeout check 10s
+      maxconn 3000
+
+      frontend app1
+        bind *:80
+        mode http
+        default_backend apache_nodes
+
+      backend apache_nodes
+        mode http
+        balance source
+        server node1 10.0.1.20:8080 check
+        server node2 10.0.1.30:8080 check
+
+# Перезагрузка HAProxy для применения настроек
+- name: Перезагрузка HAProxy для применения настроек
+  become: true
+  service:
+    name: haproxy
+    state: restarted
+```
+---
+Объяснения для всех команд:
+```
+become: true - позволяет получить права суперпользователя (root);
+yum - менеджер пакетов, используемый в операционных системах семейства Red Hat;
+systemctl - утилита, используемая для управления службами в системах, использующих systemd;
+firewall-cmd - утилита, используемая для настройки брандмауэра;
+lineinfile - модуль Ansible, позволяющий добавлять, удалять или изменять строки в файле;
+shell - модуль Ansible, позволяющий выполнять команды shell.
+```
+
