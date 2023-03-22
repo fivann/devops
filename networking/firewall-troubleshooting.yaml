@@ -1,3 +1,5 @@
+#########################################################################################################
+
 - case: Cannot "curl -I site.name"
 
 - step: Check connection
@@ -50,3 +52,168 @@
 
     - command: curl -I site.name
       explanation: Test the connection to the site using curl after stopping the firewall services.
+
+---
+##############################################################################################################
+
+- step: Permitting and Blocking Traffic with the Firewall
+  description: Introduction
+  details: |
+    In this hands-on lab, you will need to configure Server1 (10.0.1.10) 
+    so that it only permits HTTP connections (port 80) from Client1 (10.0.1.11).
+
+- step: Log in to the lab server
+  description: Use the credentials provided on the hands-on lab page.
+  example:
+    - command: ssh cloud_user@PUBLIC_IP_ADDRESS
+      explanation: Log in to the server using the provided public IP address and user.
+
+- step: Become the root user
+  description: Switch to the root user.
+  example:
+    - command: sudo su -
+      explanation: Become the root user to perform administrative tasks.
+
+- step: Verify that a firewall is running
+  description: Check if iptables is started and running.
+  example:
+    - command: systemctl status iptables
+      explanation: Check the status of the iptables service.
+
+- step: Verify that the host is listening on port 80
+  description: Check if the host has a service listening on port 80.
+  example:
+    - command: ss -lntp | grep :80
+      explanation: List all listening TCP ports and filter for port 80. You should see that port 80 is listening for the httpd process.
+
+- step: Verify that port 80 is blocked, and add a rule to permit traffic from 10.0.1.11
+  description: Try to curl 10.0.1.10 from Client1 (10.0.1.11).
+  example:
+    - command: curl 10.0.1.10
+      explanation: Test the connection to 10.0.1.10 from Client1.
+    - command: iptables -I INPUT -p tcp -s 10.0.1.11 --dport 80 -j ACCEPT
+      explanation: Add a rule on Server1 (10.0.1.10) to permit traffic from Client1 (10.0.1.11) on port 80 (HTTP).
+      note: This command should be run on Server1 (10.0.1.10).
+
+- step: Test and save the configuration
+  description: Test the connection from Client1 and Client2, and save the configuration if successful.
+  example:
+    - command: service iptables save
+      explanation: Save the current iptables rules if the test is successful (Client1 can connect, and Client2 cannot).
+
+---
+##############################################################################################################
+
+- step: Advanced Firewalld
+  description: Introduction
+  details: |
+    In this hands-on lab, you will need to use firewalld to create a new service, add that new service to permitted connections for the default zone, drop all traffic from an IPSet, and add a rich rule for traffic from a specific subnet.
+
+- step: Log in to the lab server
+  description: Use the credentials provided on the hands-on lab page.
+  example:
+    - command: ssh cloud_user@PUBLIC_IP_ADDRESS
+      explanation: Log in to the server using the provided public IP address and user.
+
+- step: Become the root user
+  description: Switch to the root user.
+  example:
+    - command: sudo su -
+      explanation: Become the root user to perform administrative tasks.
+
+- step: Create a new service in firewalld
+  description: Create a new service named "jobsub".
+  example:
+    - command: firewall-cmd --permanent --new-service=jobsub
+      explanation: Create a new service named "jobsub" in firewalld.
+
+- step: Set the description for the service
+  description: Add a description to the "jobsub" service.
+  example:
+    - command: firewall-cmd --permanent --service=jobsub --set-description="Job Submission"
+      explanation: Set the description of the "jobsub" service to "Job Submission".
+
+- step: Set the service's ports
+  description: Add ports TCP 5671-5677 to the "jobsub" service.
+  example:
+    - command: firewall-cmd --permanent --service=jobsub --add-port=5671-5677/tcp
+      explanation: Add the TCP ports 5671-5677 to the "jobsub" service.
+
+- step: Enable the service for the default zone
+  description: Enable the "jobsub" service for the default zone (public).
+  example:
+    - command: firewall-cmd --reload
+      explanation: Reload the firewall to apply the changes.
+    - command: firewall-cmd --permanent --add-service=jobsub
+      explanation: Add the "jobsub" service to the default zone.
+
+- step: Create an IPSet in firewalld
+  description: Create an IPSet named "kiosk" containing specified IP addresses.
+  example:
+    - command: firewall-cmd --permanent --new-ipset=kiosk --type=hash:ip
+      explanation: Create a new IPSet named "kiosk" with the type "hash:ip".
+    - command: firewall-cmd --permanent --ipset=kiosk --add-entry=10.0.1.12
+      explanation: Add the IP address 10.0.1.12 to the "kiosk" IPSet.
+    - command: firewall-cmd --permanent --ipset=kiosk --add-entry=192.168.1.0/24
+      explanation: Add the IP address range 192.168.1.0/24 to the "kiosk" IPSet.
+    - command: firewall-cmd --reload
+      explanation: Reload the firewall to apply the changes.
+
+- step: Send all traffic from the kiosk IPSet to the drop zone
+  description: Drop all traffic from the "kiosk" IPSet.
+  example:
+    - command: firewall-cmd --permanent --zone=drop --add-source=ipset:kiosk
+      explanation: Add the "kiosk" IPSet as a source to the drop zone, dropping all traffic from the IPSet.
+
+- step: Add a rich rule for TCP 8080 traffic
+  description: Accept traffic from 10.0.1.0/24 to port 8080.
+  example:
+    - command: firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=10.0.1.0/24 port port=8080 protocol=tcp accept'
+      explanation: Add a rich rule to accept traffic from the 10.0.1.0/24 subnet to port 8080 using the TCP protocol.
+
+---
+##############################################################################################################
+
+- step: Firewall Troubleshooting
+  description: The Scenario
+  details: |
+    A business unit is complaining that their host (10.0.1.11) is unable to access the web API on 10.0.1.10. They are asserting that a system administrator has already added the firewall rule necessary for these hosts to be able to communicate. We'll need to assess the current firewall configuration and make the changes necessary that will permit port 80 requests from 10.0.1.11 to 10.0.1.10 while still preserving the generic rule that blocks 10.0.1.0/24 traffic.
+
+- step: Getting Logged In
+  description: Use the credentials provided in the hands-on lab overview page.
+  example:
+    - command: ssh cloud_user@PUBLIC_IP_ADDRESS
+      explanation: Log in to the server using the provided public IP address and user.
+
+- step: Verify That the Issue Exists
+  description: Verify the issue by trying to access the web API on 10.0.1.10.
+  example:
+    - command: curl -I 10.0.1.10
+      explanation: Attempt a curl command to 10.0.1.10. A "Connection refused" message indicates a problem.
+
+- step: Resolve the Problem by Creating a New Zone
+  description: Check if anything is listening on port 80 and start fixing the problem.
+  example:
+    - command: ss -lntp | grep :80
+      explanation: Check if httpd is listening on port 80.
+    - command: curl -I localhost
+      explanation: Get the headers to confirm the service is running.
+    - command: systemctl status firewalld
+      explanation: Check the status of firewalld.
+    - command: firewall-cmd --permanent --new-zone=api
+      explanation: Create a new zone named "api".
+    - command: firewall-cmd --reload
+      explanation: Reload firewalld to recognize the new zone.
+    - command: firewall-cmd --permanent --zone=api --add-service=http
+      explanation: Add the http service to the "api" zone.
+    - command: firewall-cmd --permanent --zone=api --add-source=10.0.1.11
+      explanation: Designate 10.0.1.11 as a source for the "api" zone.
+    - command: firewall-cmd --reload
+      explanation: Reload firewalld again to implement the changes.
+
+- step: Verify That the Problem Is Resolved
+  description: Test the web API on 10.0.1.10 again.
+  example:
+    - command: curl -I 10.0.1.10
+      explanation: Check if the issue is resolved by attempting the curl command again.
+
