@@ -1,0 +1,35 @@
+# Проверка доступности сервера DNS
+- name: Проверка доступности сервера DNS
+  become: true
+  command: dig google.com +short
+
+# Проверка наличия записей в зоне DNS
+- name: Проверка наличия записей в зоне DNS
+  become: true
+  command: dig example.com +short
+
+# Проверка наличия PTR-записей в зоне DNS
+- name: Проверка наличия PTR-записей в зоне DNS
+  become: true
+  command: dig -x 8.8.8.8 +short
+
+# Проверка корректности настройки файла зоны DNS
+- name: Проверка файла зоны DNS
+  become: true
+  command: named-checkzone example.com /etc/bind/example.com.zone
+
+# Проверка журналов DNS
+- name: Проверка журналов DNS
+  become: true
+  command: tail /var/log/syslog | grep named
+
+# Перезапуск службы DNS
+- name: Перезапуск службы DNS
+  become: true
+  service:
+    name: bind9
+    state: restarted
+
+---
+
+
