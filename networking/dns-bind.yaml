@@ -1,0 +1,52 @@
+# Установка DNS BIND на Ubuntu/Debian
+- name: Установка DNS BIND
+  become: true
+  apt:
+    name: bind9
+
+# Настройка DNS BIND
+- name: Настройка DNS BIND
+  become: true
+  copy:
+    src: named.conf.options
+    dest: /etc/bind/
+    owner: root
+    group: bind
+    mode: 0640
+  notify: restart bind
+
+- name: Добавление зоны DNS
+  become: true
+  copy:
+    src: example.com.zone
+    dest: /etc/bind/
+    owner: root
+    group: bind
+    mode: 0640
+  notify: restart bind
+
+# Настройка службы DNS BIND
+- name: Настройка службы DNS BIND
+  become: true
+  service:
+    name: bind9
+    enabled: true
+    state: started
+
+---
+
+# Проверка файла зоны с помощью команды named-checkzone
+- name: Проверка файла зоны
+  become: true
+  command: named-checkzone example.com /etc/bind/example.com.zone
+
+# Добавление проверки файла зоны в cron
+- name: Добавление проверки файла зоны в cron
+  become: true
+  cron:
+    name: Проверка файла зоны
+    minute: "0"
+    hour: "*/6"
+    job: named-checkzone example.com /etc/bind/example.com.zone > /dev/null || true
+
+
