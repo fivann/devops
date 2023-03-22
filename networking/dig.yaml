@@ -44,3 +44,26 @@
 
 # Set the maximum number of hops for the query
 - dig example.com +maxhop=10
+
+
+---
+
+# Запрос SOA-записи домена
+- name: Запрос SOA-записи домена
+  become: true
+  command: dig example.com SOA +noall +answer
+
+# Запрос SOA-записи домена с опцией time-out
+- name: Запрос SOA-записи домена с опцией time-out
+  become: true
+  command: dig example.com SOA +noall +answer +time=10
+
+# Запрос SOA-записи домена с опцией retry
+- name: Запрос SOA-записи домена с опцией retry
+  become: true
+  command: dig example.com SOA +noall +answer +retry=2
+
+# Запрос SOA-записи домена с опцией server
+- name: Запрос SOA-записи домена с опцией server
+  become: true
+  command: dig example.com SOA +noall +answer +server=ns1.example.com
