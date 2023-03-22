@@ -1,0 +1,76 @@
+- name: Capture network traffic
+  hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+  - name: Install tcpdump
+    apt:
+      name: tcpdump
+      state: present
+  - name: Capture traffic on eth0
+    shell: tcpdump -i eth0 -w capture.pcap
+
+---
+
+- name: Capture traffic from eth0 interface
+  hosts: all
+  become: true
+  tasks:
+    - name: Start tcpdump capture
+      shell: tcpdump -i eth0 -w /tmp/capture.pcap
+      async: 0
+      poll: 0
+
+    - name: Wait for some time for tcpdump to capture packets
+      pause:
+        seconds: 30
+
+    - name: Stop tcpdump capture
+      shell: killall tcpdump
+
+
+- name: Захват трафика с определенного порта
+  hosts: all
+  become: true
+  tasks:
+    - name: Захват трафика
+      command: tcpdump -i eth0 port 80 -nn -vvv -c 10
+      register: capture_output
+    - debug: var=capture_output.stdout_lines
+
+- name: Захват трафика с определенного IP-адреса
+  hosts: all
+  become: true
+  tasks:
+    - name: Захват трафика
+      command: tcpdump host 192.168.0.2 -nn -vvv -c 10
+      register: capture_output
+    - debug: var=capture_output.stdout_lines
+
+- name: Захват трафика для протокола ICMP
+  hosts: all
+  become: true
+  tasks:
+    - name: Захват трафика
+      command: tcpdump icmp -nn -vvv -c 10
+      register: capture_output
+    - debug: var=capture_output.stdout_lines
+
+- name: Захват трафика для конкретного протокола
+  hosts: all
+  become: true
+  tasks:
+    - name: Захват трафика
+      command: tcpdump -i eth0 -nn -vvv -c 10 tcp port 22
+      register: capture_output
+    - debug: var=capture_output.stdout_lines
+
+- name: Захват трафика с фильтрацией по IP-адресу и порту
+  hosts: all
+  become: true
+  tasks:
+    - name: Захват трафика
+      command: tcpdump host 192.168.0.2 and port 80 -nn -vvv -c 10
+      register: capture_output
+    - debug: var=capture_output.stdout_lines
+
