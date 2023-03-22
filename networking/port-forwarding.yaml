@@ -32,3 +32,64 @@ port_forwarding:
       - reload_firewalld:
           description: Reload firewalld to apply the new rule.
           command: firewall-cmd --reload
+
+---
+## LAB
+---
+
+port_forwarding_firewall:
+  description: Configure Server1 to forward incoming web traffic (port 80) requests from 10.0.1.0/24 to Server2 using firewalld.
+  scenario:
+    - Server1:
+        ip: 10.0.1.10
+        role: current web server
+    - Server2:
+        ip: 10.0.1.20
+        role: in-development web server
+    - Client1:
+        ip: 10.0.1.11
+        role: for testing
+
+  steps:
+    - verify_ports_open:
+        description: Verify port 80 is open on Server1 and Server2 from Client1.
+        commands:
+          - curl_server1: curl 10.0.1.10
+          - curl_server2: curl 10.0.1.20
+
+    - create_zone:
+        description: Create a new firewall zone named 'testing' on Server1.
+        commands:
+          - create_new_zone: firewall-cmd --permanent --new-zone=testing
+          - reload_firewall: firewall-cmd --reload
+
+    - add_subnet_as_source:
+        description: Add the subnet 10.0.1.0/24 as the source for the 'testing' zone on Server1.
+        command: firewall-cmd --permanent --zone=testing --add-source=10.0.1.0/24
+
+    - add_http_service:
+        description: Add the 'http' service to the 'testing' zone and reload the firewall configuration on Server1.
+        commands:
+          - add_service: firewall-cmd --permanent --zone=testing --add-service=http
+          - reload_firewall: firewall-cmd --reload
+
+    - enable_masquerading:
+        description: Enable masquerading for the 'testing' zone to permit forwarding and reload the firewall configuration on Server1.
+        commands:
+          - add_masquerade: firewall-cmd --permanent --zone=testing --add-masquerade
+          - reload_firewall: firewall-cmd --reload
+
+    - add_forwarding_rule:
+        description: | 
+          Add a rule to forward traffic from the 'testing' zone on port 80 
+          to 10.0.1.20:80 and reload the firewall configuration on Server1.
+        commands:
+          - add_forward_port: >
+              firewall-cmd --permanent --zone=testing --add-forward-port=port=80:proto=tcp:toport=80:toaddr=10.0.1.20
+          - reload_firewall: firewall-cmd --reload
+
+    - confirm_port_forwarded:
+        description: Confirm that the port is forwarded by running curl on the site from Client1.
+        command: curl 10.0.1.10
+
+
