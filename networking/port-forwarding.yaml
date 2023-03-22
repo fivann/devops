@@ -1,0 +1,34 @@
+port_forwarding:
+  description: | 
+    Port forwarding is a technique used to forward network traffic from one IP address and port to another. 
+    In Linux, this can be achieved using iptables and firewalld.
+
+  iptables:
+    description: Port forwarding using iptables.
+    steps:
+      - enable_ip_forwarding:
+          description: Enable IP forwarding.
+          command: echo 1 > /proc/sys/net/ipv4/ip_forward
+      - add_iptables_rule:
+          description: |
+            Add an iptables rule to forward traffic from a specific port (e.g., 8080) 
+            to another IP address and port (e.g., 192.168.1.100:80).
+          command: iptables -t nat -A PREROUTING -p tcp --dport 8080 -j DNAT --to-destination 192.168.1.100:80
+      - apply_masquerading:
+          description: Apply masquerading to maintain the original source IP address of the forwarded traffic.
+          command: iptables -t nat -A POSTROUTING -j MASQUERADE
+      - save_iptables_rules:
+          description: Save iptables rules to persist across reboots.
+          command: iptables-save > /etc/iptables/rules.v4
+
+  firewalld:
+    description: Port forwarding using firewalld.
+    steps:
+      - add_firewalld_rule:
+          description: | 
+          Add a firewalld rule to forward traffic from a specific port (e.g., 8080) 
+          to another IP address and port (e.g., 192.168.1.100:80).
+          command: firewall-cmd --permanent --zone=public --add-forward-port=port=8080:proto=tcp:toaddr=192.168.1.100:toport=80
+      - reload_firewalld:
+          description: Reload firewalld to apply the new rule.
+          command: firewall-cmd --reload
