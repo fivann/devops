@@ -1,0 +1,93 @@
+ssh_tunnel:
+  description: | 
+    An SSH tunnel is a secure, encrypted connection between a local and a remote machine using the SSH protocol. 
+    It can be used to forward local traffic to a remote machine or to secure unencrypted network connections.
+  steps:
+    - local_port_forwarding:
+        description: Forward a local port to a remote machine.
+        command: ssh -L <local_port>:<remote_host>:<remote_port> <ssh_server_username>@<ssh_server>
+        example: ssh -L 8080:localhost:80 user@example.com
+        explanation: >
+          This command forwards traffic from the local machine on port 8080 to the remote host 'localhost' 
+          on port 80, using the SSH server 'example.com'. Replace '<local_port>', '<remote_host>', '<remote_port>', 
+          '<ssh_server_username>', and '<ssh_server>' with appropriate values.
+
+    - remote_port_forwarding:
+        description: Forward a remote port to a local machine.
+        command: ssh -R <remote_port>:<local_host>:<local_port> <ssh_server_username>@<ssh_server>
+        example: ssh -R 9090:localhost:9000 user@example.com
+        explanation: >
+          This command forwards traffic from the remote machine on port 9090 to the local host 'localhost' 
+          on port 9000, using the SSH server 'example.com'. Replace '<remote_port>', '<local_host>', '<local_port>', 
+          '<ssh_server_username>', and '<ssh_server>' with appropriate values.
+
+    - dynamic_port_forwarding:
+        description: Create a SOCKS proxy for dynamic port forwarding.
+        command: ssh -D <local_port> <ssh_server_username>@<ssh_server>
+        example: ssh -D 1080 user@example.com
+        explanation: >
+          This command sets up a SOCKS proxy on the local machine on port 1080, 
+          using the SSH server 'example.com'. The SOCKS proxy can be used to forward traffic 
+          from various applications, such as web browsers, to the remote machine. 
+          Replace '<local_port>', '<ssh_server_username>', and '<ssh_server>' with appropriate values.
+
+    - ssh_config_file:
+        description: Use the SSH config file to simplify SSH tunnel commands.
+        config_file: "~/.ssh/config"
+        example_config: >
+          Host tunnel
+            HostName example.com
+            User user
+            LocalForward 8080 localhost:80
+            RemoteForward 9090 localhost:9000
+            DynamicForward 1080
+        connect_command: ssh tunnel
+        explanation: >
+          Create or edit the SSH config file and add a configuration for an SSH tunnel, 
+          specifying the desired local and remote port forwarding options, as well as dynamic forwarding. 
+          Then, simply use the 'ssh tunnel' command to connect using the pre-configured settings. 
+          Replace the example configuration with the desired settings.
+---
+
+create_ssh_tunnel:
+  description: Set up an SSH tunnel through Server1 to view web content served by Server2, which is unreachable from Client1 due to firewall rules.
+  steps:
+    - become_root:
+        description: Become the root user on Client1.
+        command: sudo su -
+
+    - install_screen:
+        description: Install the 'screen' utility on Client1.
+        command: yum -y install screen
+        explanation: | 
+          'screen' allows for multiple terminal sessions within a single terminal window and provides the ability to switch between them.
+
+    - start_screen:
+        description: Start 'screen' and create a split screen.
+        commands:
+          - screen
+          - Ctrl+a and 
+          - Ctrl+a and Tab
+          - Ctrl+a and c
+        explanation: | 
+          Start the 'screen' utility, split the screen, switch between screens with Ctrl+a and Tab, 
+          and create a new terminal in the blank side of the window with Ctrl+a and c.
+
+    - create_ssh_tunnel:
+        description: Create an SSH tunnel from Client1 through Server1 to Server2.
+        command: ssh -L 8080:10.0.1.20:80 cloud_user@10.0.1.10
+        explanation: This command forwards traffic from localhost on port 8080 to Server2 (10.0.1.20) on port 80 through Server1 (10.0.1.10).
+
+    - check_listening_port:
+        description: Check if port 8080 is listening on Client1.
+        command: ss -lntp
+
+    - view_web_content:
+        description: Verify the SSH tunnel is working by curling the web content locally.
+        command: curl localhost:8080
+        explanation: |
+          The command retrieves the web content served by Server2 (10.0.1.20) 
+          on port 80 by accessing it through the SSH tunnel on localhost:8080.
+
+
+
