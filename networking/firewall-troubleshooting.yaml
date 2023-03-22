@@ -1,0 +1,52 @@
+- case: Cannot "curl -I site.name"
+
+- step: Check connection
+  description: Ensure you can reach the site using ping or traceroute.
+  example:
+    - command: ping site.name
+      explanation: Check if the site is reachable using ping.
+
+    - command: traceroute site.name
+      explanation: Trace the route to the site to identify potential network issues.
+
+- step: Check DNS resolution
+  description: Ensure the site's domain name is resolving to the correct IP address.
+  example:
+    - command: nslookup site.name
+      explanation: Check the DNS resolution for the site's domain name.
+
+- step: Verify firewalld status
+  description: Ensure the firewalld service is running.
+  example:
+    - command: systemctl status firewalld
+      explanation: Check the status of the firewalld service.
+
+- step: Verify firewalld rules
+  description: Verify if the firewall rules are correctly set for the required services or ports.
+  example:
+    - command: firewall-cmd --list-all
+      explanation: List all active rules in the default zone for firewalld.
+
+- step: Verify iptables status
+  description: Ensure the iptables service is running.
+  example:
+    - command: systemctl status iptables
+      explanation: Check the status of the iptables service.
+
+- step: Verify iptables rules
+  description: Verify if the iptables rules are correctly set for the required services or ports.
+  example:
+    - command: iptables -nvL
+      explanation: List all active rules in iptables.
+
+- step: Temporarily disable firewalls
+  description: Temporarily disable firewalld and iptables to check if they are causing the issue.
+  example:
+    - command: systemctl stop firewalld
+      explanation: Stop the firewalld service.
+
+    - command: systemctl stop iptables
+      explanation: Stop the iptables service.
+
+    - command: curl -I site.name
+      explanation: Test the connection to the site using curl after stopping the firewall services.
