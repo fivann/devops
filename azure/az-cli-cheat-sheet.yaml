@@ -34,3 +34,53 @@
       description: Show details for the specified storage account
     - command: az storage account delete -n <account-name> -g <resource-group-name>
       description: Delete the specified storage account
+
+---
+
+- script: |
+    az login
+  explanation: Войти в вашу учетную запись Azure. Вы должны выполнить это перед работой с ресурсами Azure через Azure CLI.
+
+- script: |
+    az group create --name MyResourceGroup --location "East US"
+  explanation: Создать новую группу ресурсов с указанным именем и местоположением.
+
+- script: |
+    az vm create --resource-group MyResourceGroup --name MyVM --image UbuntuLTS --admin-username azureuser --generate-ssh-keys --size Standard_DS1_v2
+  explanation: Создать новую виртуальную машину с указанными параметрами, такими как имя, размер, образ и учетные данные администратора.
+
+- script: |
+    az resource list --resource-group MyResourceGroup
+  explanation: Получить список всех ресурсов в указанной группе ресурсов.
+
+- script: |
+    az vm stop --resource-group MyResourceGroup --name MyVM
+  explanation: Остановить указанную виртуальную машину, находящуюся в указанной группе ресурсов.
+
+- script: |
+    az vm start --resource-group MyResourceGroup --name MyVM
+  explanation: Запустить указанную виртуальную машину, находящуюся в указанной группе ресурсов.
+
+- script: |
+    az vm delete --resource-group MyResourceGroup --name MyVM
+  explanation: Удалить указанную виртуальную машину из указанной группы ресурсов.
+
+- script: |
+    az group delete --name MyResourceGroup --yes
+  explanation: Удалить указанную группу ресурсов и все связанные с ней ресурсы.
+
+- script: |
+    az storage account create --name mystorageaccount --resource-group MyResourceGroup --location "East US" --sku Standard_LRS --kind StorageV2
+  explanation: Создать новый аккаунт хранения с указанными параметрами, такими как имя, тип учетной записи и тип хранения.
+
+- script: |
+    az storage container create --name mycontainer --account-name mystorageaccount --account-key myaccountkey
+  explanation: Создать новый контейнер в указанном аккаунте хранения с указанным именем.
+
+- script: |
+    az storage blob upload --account-name mystorageaccount --account-key myaccountkey --container-name mycontainer --type block --name myblob --file "C:\path\to\file.txt"
+  explanation: Загрузить файл в блоб-хранилище, используя указанные параметры, такие как имя аккаунта хранения, ключ, имя контейнера и имя блоба.
+
+- script: |
+    az network vnet create --resource-group MyResourceGroup --name MyVNet --address-prefix 10.0.0.0/16 --subnet-name MySubnet --subnet-prefix 10.0.0.0/24
+ 
