@@ -1,0 +1,239 @@
+--- # BASICS
+
+- Команда: Get-ChildItem
+  Описание: Возвращает список файлов и папок в указанном каталоге.
+  Пример: Get-ChildItem C:\Users\
+
+- Команда: Set-Location
+  Описание: Изменяет текущий каталог.
+  Пример: Set-Location C:\Users\
+
+- Команда: New-Item
+  Описание: Создает новый файл, папку или другой объект.
+  Пример: New-Item -ItemType File -Path C:\Users\example.txt
+
+- Команда: Rename-Item
+  Описание: Переименовывает файл или папку.
+  Пример: Rename-Item C:\Users\example.txt C:\Users\newexample.txt
+
+- Команда: Copy-Item
+  Описание: Копирует файлы и папки из одного места в другое.
+  Пример: Copy-Item C:\Users\example.txt C:\Users\Backup\
+
+- Команда: Remove-Item
+  Описание: Удаляет файлы и папки.
+  Пример: Remove-Item C:\Users\example.txt
+
+- Команда: Get-Content
+  Описание: Возвращает содержимое файла.
+  Пример: Get-Content C:\Users\example.txt
+
+- Команда: Select-String
+  Описание: Ищет строки в текстовых файлах.
+  Пример: Select-String -Path C:\Users\example.txt -Pattern "example"
+
+- Команда: Get-Process
+  Описание: Возвращает информацию о запущенных процессах.
+  Пример: Get-Process
+
+- Команда: Stop-Process
+  Описание: Останавливает запущенный процесс.
+  Пример: Stop-Process -Name "notepad.exe"
+
+
+---  ### VARS
+
+- Команда: Get-ChildItem Env:
+  Описание: Возвращает список всех переменных окружения в системе.
+  Пример: Get-ChildItem Env:
+
+- Команда: $env:VariableName
+  Описание: Возвращает значение указанной переменной окружения.
+  Пример: $env:USERPROFILE
+
+- Команда: [Environment]::SetEnvironmentVariable("VariableName", "Value", "Scope")
+  Описание: Создает или изменяет переменную окружения с заданным именем, значением и уровнем области видимости.
+  Пример: [Environment]::SetEnvironmentVariable("Path", "$env:Path;C:\MyApp", "User")
+
+- Команда: [Environment]::GetEnvironmentVariable("VariableName", "Scope")
+  Описание: Возвращает значение переменной окружения с заданным именем и уровнем области видимости.
+  Пример: [Environment]::GetEnvironmentVariable("Path", "User")
+
+- Команда: [Environment]::GetFolderPath("FolderName")
+  Описание: Возвращает путь к указанной системной папке.
+  Пример: [Environment]::GetFolderPath("Desktop")
+
+- Команда: $env:VariableName = "Value"
+  Описание: Устанавливает значение переменной окружения.
+  Пример: $env:MyVar = "Hello, World!"
+
+- Команда: Remove-Item Env:\VariableName
+  Описание: Удаляет переменную окружения с заданным именем.
+  Пример: Remove-Item Env:\MyVar
+
+--- ## PIPELINES
+
+- Команда: |
+  Описание: Передает результат выполнения одной команды в качестве входных данных следующей команде.
+  Пример: Get-ChildItem | Select-Object Name
+
+- Команда: Get-Process | Where-Object {$_.ProcessName -eq "notepad"}
+  Описание: Использует условие для фильтрации результатов, передаваемых следующей команде.
+  Пример: Get-Process | Where-Object {$_.ProcessName -eq "notepad"}
+
+- Команда: Select-Object
+  Описание: Извлекает определенные свойства объектов и передает их в следующую команду в цепочке конвейера.
+  Пример: Get-ChildItem | Select-Object Name, Length
+
+- Команда: Sort-Object
+  Описание: Сортирует результаты и передает их в следующую команду в цепочке конвейера.
+  Пример: Get-ChildItem | Sort-Object Length
+
+- Команда: Out-File
+  Описание: Записывает результаты в файл.
+  Пример: Get-ChildItem | Out-File C:\Users\example.txt
+
+- Команда: ForEach-Object
+  Описание: Применяет определенную команду к каждому объекту, переданному в цепочке конвейера.
+  Пример: Get-ChildItem | ForEach-Object {Write-Host $_.Name}
+
+- Команда: Group-Object
+  Описание: Группирует результаты по определенным свойствам.
+  Пример: Get-ChildItem | Group-Object Extension
+
+- Команда: Measure-Object
+  Описание: Возвращает статистику о количестве, сумме, среднем и других значениях, связанных с результатами.
+  Пример: Get-ChildItem | Measure-Object Length -Sum
+
+- Команда: Tee-Object
+  Описание: Отправляет результаты в файл и передает их в следующую команду в цепочке конвейера.
+  Пример: Get-ChildItem | Tee-Object -FilePath C:\Users\example.txt | Select-Object Name
+
+- Команда: Out-GridView
+  Описание: Выводит результаты в формате таблицы с возможностью фильтрации и сортировки.
+  Пример: Get-Process | Out-GridView
+
+
+---
+
+cheat_sheet:
+  - command: Install-Module -Name Az
+    description: Установка модуля Azure PowerShell (Az)
+    example: |
+      PS> Install-Module -Name Az
+
+  - command: Connect-AzAccount
+    description: Вход в учетную запись Azure с интерактивной аутентификацией
+    example: |
+      PS> Connect-AzAccount
+
+  - command: Get-AzSubscription
+    description: Получение списка доступных подписок
+    example: |
+      PS> Get-AzSubscription
+
+  - command: Set-AzContext
+    description: Установка активной подписки для работы
+    example: |
+      PS> Set-AzContext -SubscriptionId "your-subscription-id"
+
+  - command: Get-AzResourceGroup
+    description: Вывод списка групп ресурсов
+    example: |
+      PS> Get-AzResourceGroup
+
+  - command: New-AzResourceGroup
+    description: Создание новой группы ресурсов
+    example: |
+      PS> New-AzResourceGroup -Name "MyResourceGroup" -Location "East US"
+
+  - command: Get-AzVM
+    description: Вывод списка виртуальных машин
+    example: |
+      PS> Get-AzVM
+
+  - command: New-AzVM
+    description: Создание новой виртуальной машины
+    example: |
+      PS> New-AzVm -ResourceGroupName "MyResourceGroup" -Name "MyVm" -Location "East US" -VirtualNetworkName "MyVnet" -SubnetName "MySubnet" -SecurityGroupName "MyNetworkSecurityGroup" -PublicIpAddressName "MyIpAddress" -OpenPorts 80,3389
+
+  - command: Start-AzVM
+    description: Запуск виртуальной машины
+    example: |
+      PS> Start-AzVM -ResourceGroupName "MyResourceGroup" -Name "MyVm"
+
+  - command: Stop-AzVM
+    description: Остановка виртуальной машины
+    example: |
+      PS> Stop-AzVM -ResourceGroupName "MyResourceGroup" -Name "MyVm"
+
+  - command: Remove-AzVM
+    description: Удаление виртуальной машины
+    example: |
+      PS> Remove-AzVM -ResourceGroupName "MyResourceGroup" -Name "MyVm"
+
+  - command: Get-AzStorageAccount
+    description: Вывод списка учетных записей хранилища
+    example: |
+      PS> Get-AzStorageAccount
+
+  - command: New-AzStorageAccount
+    description: Создание новой учетной записи хранилища
+    example: |
+      PS> New-AzStorageAccount -ResourceGroupName "MyResourceGroup" -Name "MyStorageAccount" -Location "East US" -SkuName Standard_LRS -Kind StorageV2
+
+
+
+----
+
+
+
+- Команда: Connect-AzAccount
+  Описание: Авторизует сеанс PowerShell для использования с аккаунтом Azure.
+  Пример: Connect-AzAccount
+
+- Команда: Get-AzSubscription
+  Описание: Возвращает информацию о доступных подписках Azure.
+  Пример: Get-AzSubscription
+
+- Команда: Select-AzSubscription
+  Описание: Выбирает активную подписку для текущего сеанса.
+  Пример: Select-AzSubscription -SubscriptionId "12345678-1234-1234-1234-123456789012"
+
+- Команда: Get-AzResourceGroup
+  Описание: Возвращает информацию о группах ресурсов в выбранной подписке.
+  Пример: Get-AzResourceGroup
+
+- Команда: New-AzResourceGroup
+  Описание: Создает новую группу ресурсов в выбранной подписке.
+  Пример: New-AzResourceGroup -Name "MyResourceGroup" -Location "EastUS"
+
+- Команда: Get-AzVM
+  Описание: Возвращает информацию о виртуальных машинах в выбранной группе ресурсов.
+  Пример: Get-AzVM -ResourceGroupName "MyResourceGroup"
+
+- Команда: New-AzVM
+  Описание: Создает новую виртуальную машину в выбранной группе ресурсов.
+  Пример: New-AzVM -ResourceGroupName "MyResourceGroup" -Name "MyVM" -Image "UbuntuLTS" -AdminUsername "MyAdmin" -AdminPassword "MyPassword"
+
+- Команда: Set-AzVM
+  Описание: Изменяет конфигурацию виртуальной машины.
+  Пример: Set-AzVM -ResourceGroupName "MyResourceGroup" -Name "MyVM" -Size "Standard_D4_v3"
+
+- Команда: Start-AzVM
+  Описание: Запускает выбранную виртуальную машину.
+  Пример: Start-AzVM -ResourceGroupName "MyResourceGroup" -Name "MyVM"
+
+- Команда: Stop-AzVM
+  Описание: Останавливает выбранную виртуальную машину.
+  Пример: Stop-AzVM -ResourceGroupName "MyResourceGroup" -Name "MyVM"
+
+- Команда: Remove-AzResourceGroup
+  Описание: Удаляет выбранную группу ресурсов и все связанные с ней ресурсы.
+  Пример: Remove-AzResourceGroup -Name "MyResourceGroup" -Force
+
+
+
+
+
+
