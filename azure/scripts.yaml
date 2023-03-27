@@ -1,0 +1,128 @@
+Для сохранения такого скрипта в файл и его запуска по расписанию, вам нужно выполнить следующие шаги:
+
+# Сохраните скрипт в файл:
+# Сохраните скрипт в файл с расширением .ps1. Например, назовите его myscript.ps1. 
+# Откройте текстовый редактор, такой как Notepad или Visual Studio Code, и вставьте в него содержимое вашего скрипта. 
+# Затем сохраните файл на вашем компьютере.
+
+# Создайте задачу планировщика:
+# Чтобы запустить скрипт по расписанию, вы можете использовать Планировщик задач в Windows. Вот как создать новую задачу:
+
+# Откройте "Планировщик задач" (наберите "Планировщик задач" в строке поиска Windows и выберите соответствующий результат).
+# В правой части окна нажмите "Создать задачу".
+# На вкладке "Общие" введите имя и описание для задачи.
+# Установите флажок "Выполнять с наивысшими привилегиями" (если ваш скрипт требует прав администратора).
+# На вкладке "Триггеры" нажмите "Новый", чтобы создать триггер для запуска вашей задачи. 
+# Выберите тип триггера (например, "Ежедневно" или "Еженедельно") и установите другие параметры, такие как время запуска.
+# На вкладке "Действия" нажмите "Новый", чтобы создать действие. 
+# В качестве "Программы/скрипта" выберите "PowerShell.exe". 
+# В поле "Аргументы" введите следующую строку, заменив путь на путь к вашему файлу сценария:
+
+# -ExecutionPolicy Bypass -File "C:\path\to\your\myscript.ps1"
+
+# Нажмите "ОК" для создания действия, а затем "ОК" для создания задачи.
+# Теперь ваш PowerShell скрипт будет запускаться по расписанию с использованием указанных параметров. 
+# Вы можете изменить расписание или другие настройки задачи в любое время, открыв Планировщик задач и выбрав вашу задачу.
+
+
+
+
+- Скрипт: Авторизация в Azure
+  Описание: Авторизует сеанс PowerShell для использования с аккаунтом Azure.
+  Пример:
+    Connect-AzAccount
+
+- Скрипт: Создание новой группы ресурсов
+  Описание: Создает новую группу ресурсов в выбранной подписке.
+  Пример:
+    $rgName = "MyResourceGroup"
+    $location = "EastUS"
+    New-AzResourceGroup -Name $rgName -Location $location
+
+- Скрипт: Создание новой виртуальной машины
+  Описание: Создает новую виртуальную машину в выбранной группе ресурсов.
+  Пример:
+    $rgName = "MyResourceGroup"
+    $vmName = "MyVM"
+    $location = "EastUS"
+    $vmSize = "Standard_D4_v3"
+    $adminUsername = "MyAdmin"
+    $adminPassword = "MyPassword"
+    $imageName = "UbuntuLTS"
+    $vmConfig = New-AzVMConfig -VMName $vmName -VMSize $vmSize
+    $vmConfig = Set-AzVMOperatingSystem -VM $vmConfig -Linux -ComputerName $vmName -Credential $(New-Object System.Management.Automation.PSCredential($adminUsername, $(ConvertTo-SecureString $adminPassword -AsPlainText -Force))) -ProvisionVMAgent -EnableAutoUpdate
+    $vmConfig = Add-AzVMNetworkInterface -VM $vmConfig -Id $(Get-AzNetworkInterface -ResourceGroupName $rgName).Id
+    $vmConfig = Set-AzVMSourceImage -VM $vmConfig -PublisherName Canonical -Offer UbuntuServer -Skus $imageName -Version latest
+    $vmConfig = Set-AzVMOSDisk -VM $vmConfig -CreateOption FromImage -StorageAccountType Standard_LRS
+    New-AzVM -ResourceGroupName $rgName -Location $location -VM $vmConfig
+
+- Скрипт: Управление состоянием виртуальной машины
+  Описание: Позволяет управлять состоянием виртуальной машины (запуск, остановка, удаление и т. д.).
+  Пример:
+    $rgName = "MyResourceGroup"
+    $vmName = "MyVM"
+    Start-AzVM -ResourceGroupName $rgName -Name $vmName
+    Stop-AzVM -ResourceGroupName $rgName -Name $vmName
+    Remove-AzVM -ResourceGroupName $rgName -Name $vmName -Force
+
+- Скрипт: Получение информации о ресурсах
+  Описание: Позволяет получить информацию о группах ресурсов, виртуальных машинах, дисках и других объектах Azure.
+  Пример:
+    Get-AzResourceGroup
+    Get-AzVM
+    Get-AzDisk
+
+
+------
+
+- script: |
+    Connect-AzAccount
+  explanation: Войти в вашу учетную запись Azure. Вы должны выполнить это перед работой с ресурсами Azure через PowerShell.
+
+- script: |
+    $resourceGroup = "MyResourceGroup"
+    $location = "East US"
+    New-AzResourceGroup -Name $resourceGroup -Location $location
+  explanation: Создать новую группу ресурсов с указанным именем и местоположением.
+
+- script: |
+    $vmName = "MyVM"
+    $resourceGroup = "MyResourceGroup"
+    $location = "East US"
+    $vmSize = "Standard_DS1_v2"
+    $adminUsername = "username"
+    $adminPassword = ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force
+    $credentials = New-Object System.Management.Automation.PSCredential($adminUsername, $adminPassword)
+    New-AzVm -ResourceGroupName $resourceGroup -Name $vmName -Location $location -VMSize $vmSize -Credential $credentials
+  explanation: Создать новую виртуальную машину с указанными параметрами, такими как имя, размер и учетные данные администратора.
+
+- script: |
+    $resourceGroup = "MyResourceGroup"
+    Get-AzResource -ResourceGroupName $resourceGroup
+  explanation: Получить список всех ресурсов в указанной группе ресурсов.
+
+- script: |
+    $resourceGroup = "MyResourceGroup"
+    $vmName = "MyVM"
+    Stop-AzVM -ResourceGroupName $resourceGroup -Name $vmName -Force
+  explanation: Остановить указанную виртуальную машину, находящуюся в указанной группе ресурсов.
+
+- script: |
+    $resourceGroup = "MyResourceGroup"
+    $vmName = "MyVM"
+    Start-AzVM -ResourceGroupName $resourceGroup -Name $vmName
+  explanation: Запустить указанную виртуальную машину, находящуюся в указанной группе ресурсов.
+
+- script: |
+    $resourceGroup = "MyResourceGroup"
+    $vmName = "MyVM"
+    Remove-AzVM -ResourceGroupName $resourceGroup -Name $vmName
+  explanation: Удалить указанную виртуальную машину из указанной группы ресурсов.
+
+- script: |
+    $resourceGroup = "MyResourceGroup"
+    Remove-AzResourceGroup -Name $resourceGroup -Force
+  explanation: Удалить указанную группу ресурсов и все связанные с ней ресурсы.
+
+
+
