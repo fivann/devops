@@ -1,0 +1,33 @@
++------------------------+----------------------------+-------------------------------+
+| AWS Service            | GCP Service                | Description                   |
++------------------------+----------------------------+-------------------------------+
+| EC2                    | Compute Engine             | Virtual Servers               |
+| Lambda                 | Cloud Functions            | Function as a Service         |
+| S3                     | Cloud Storage              | Object Storage                |
+| EFS                    | Filestore                  | Managed File Storage          |
+| Glacier                | Archive                    | Long-term Data Archiving      |
+| RDS                    | Cloud SQL                  | Relational Database           |
+| DynamoDB               | Firestore                  | NoSQL Database                |
+| Redshift               | BigQuery                   | Data Warehousing              |
+| Athena                 | BigQuery                   | Serverless Interactive Query  |
+| Elastic Beanstalk      | App Engine                 | Platform as a Service         |
+| Sagemaker              | AI Platform                | Machine Learning Platform     |
+| Lex                    | Dialogflow                 | Conversation Interfaces       |
+| Polly                  | Text-to-Speech             | Text to Speech Service        |
+| Rekognition            | Vision AI                  | Image Analysis                |
+| IAM                    | Identity and Access Mgmt   | User and Access Management    |
+| Cognito                | Identity Platform          | User and Identity Services    |
+| KMS                    | Cloud KMS                  | Key Management Service        |
+| CloudWatch             | Cloud Monitoring           | Monitoring and Logging        |
+| CloudFormation         | Cloud Deployment Manager   | Infrastructure as Code        |
+| CodeCommit             | Cloud Source Repositories  | Source Code Repository        |
+| CodeDeploy             | Cloud Deployment Manager   | Automated Code Deployment     |
+| API Gateway            | Apigee API Platform        | API Gateway                   |
+| SNS                    | Cloud Pub/Sub              | Messaging and Notification    |
+| SQS                    | Cloud Tasks                | Message Queue Service         |
+| CloudFront             | Cloud CDN                  | Content Delivery Network      |
+| Route 53               | Cloud DNS                  | DNS Service                   |
+| VPC                    | VPC                        | Virtual Private Cloud         |
+| Direct Connect         | Cloud Interconnect         | Network Service               |
+| Elastic Load Balancing | Cloud Load Balancing       | Load Balancer                 |
++------------------------+----------------------------+-------------------------------+
