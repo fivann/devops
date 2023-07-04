@@ -56,7 +56,7 @@ FILE_FORMAT = (FORMAT_NAME = 'my_format');
 -- Viewing data in a stage
 SELECT * FROM @my_stage;
 
-```sql
+sql
 -- Creating a stage for Amazon S3
 CREATE STAGE my_s3_stage
 URL = 's3://my_bucket/my_path'
@@ -72,4 +72,4 @@ CREATE STAGE my_azure_stage
 URL = 'azure://my_container/my_path'
 CREDENTIALS = (AZURE_SAS_TOKEN = 'my_sas_token');
 
-
+```
